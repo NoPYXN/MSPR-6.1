@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import LogoArosaje from "./assets/logo"
+import LogoArosaje from "../assets/logo.png"
 
 const Header = ({ onMenuPress, onProfilePress }) => {
     return (

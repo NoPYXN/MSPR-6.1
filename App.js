@@ -1,24 +1,24 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Header from './src/components/header.js'; // Assurez-vous d'importer correctement
+import Header from './src/components/header';
 
-const SomeScreen = () => {
-    return (
-        <View style={styles.screen}>
-            <Header
-                onMenuPress={() => console.log('Menu Pressed')}
-                onProfilePress={() => console.log('Profile Pressed')}
-            />
-            {/* Reste de votre écran */}
-        </View>
-    );
-};
+const App = () => {
+  return (
+    <View style={styles.container}>
+      <Header 
+        onMenuPress={() => console.log('Menu Pressed')}
+        onProfilePress={() => console.log('Profile Pressed')}
+      />
+      {/* Autres composants ou vues */}
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
-    screen: {
-        flex: 1,
-        // Autres styles pour votre écran
-    },
+  container: {
+    flex: 1,
+    // Vous pouvez ajouter d'autres styles pour le conteneur si nécessaire
+  },
 });
 
-export default SomeScreen;
+export default App;
