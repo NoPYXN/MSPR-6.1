@@ -1,20 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import Header from './src/components/header.js'; // Assurez-vous d'importer correctement
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+const SomeScreen = () => {
+    return (
+        <View style={styles.screen}>
+            <Header
+                onMenuPress={() => console.log('Menu Pressed')}
+                onProfilePress={() => console.log('Profile Pressed')}
+            />
+            {/* Reste de votre écran */}
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    screen: {
+        flex: 1,
+        // Autres styles pour votre écran
+    },
 });
+
+export default SomeScreen;
