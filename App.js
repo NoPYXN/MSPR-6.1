@@ -1,14 +1,17 @@
-import { StatusBar } from 'expo-status-bar';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import Header from './src/components/header';
 
-export default function App() {
+const App = () => {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <Header 
+        onMenuPress={() => console.log('Menu Pressed')}
+        onProfilePress={() => console.log('Profile Pressed')}
+      />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -17,4 +20,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  welcomeText: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
 });
+
+export default App;
