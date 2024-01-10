@@ -4,29 +4,30 @@ import LogoArosaje from "../assets/logo.png"
 
 const Header = ({ onMenuPress, onProfilePress }) => {
     return (
-        <View style={styles.headerContainer}>
-            {/* Menu Hamburger */}
-            <TouchableOpacity onPress={onMenuPress}>
-                <Image
-                    src={LogoArosaje} // Remplacez par votre icône de menu
-                    style={styles.icon}
-                />
-            </TouchableOpacity>
+<View style={styles.headerContainer}>
+    {/* Menu Hamburger */}
+    <TouchableOpacity onPress={onMenuPress}>
+        <Image
+            source={LogoArosaje} // Remplacez par votre icône de menu
+            style={styles.icon}
+        />
+    </TouchableOpacity>
 
-            {/* Logo */}
-            <Image
-                src={LogoArosaje} // Remplacez par votre logo
-                style={styles.logo}
-            />
+    {/* Logo */}
+    <Image
+        source={LogoArosaje} // Remplacez par votre logo
+        style={styles.logo}
+    />
 
-            {/* Bouton Profil */}
-            <TouchableOpacity onPress={onProfilePress}>
-                <Image
-                    src={LogoArosaje} // Remplacez par votre icône de profil
-                    style={styles.icon}
-                />
-            </TouchableOpacity>
-        </View>
+    {/* Bouton Profil */}
+    <TouchableOpacity onPress={onProfilePress}>
+        <Image
+            source={LogoArosaje} // Remplacez par votre icône de profil
+            style={styles.icon}
+        />
+    </TouchableOpacity>
+</View>
+
     );
 };
 
