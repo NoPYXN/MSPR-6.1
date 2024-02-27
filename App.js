@@ -14,12 +14,27 @@ import { format, parseISO } from "date-fns"
 import { fr } from "date-fns/locale"
 import { FaMapMarkerAlt } from "react-icons/fa"
 import Input from "./src/components/input/input"
+import ResearchBar from "./src/components/researchBar"
 
 const App = () => {
     const [annonces, setAnnonces] = useState([])
     const [showFirstView, setShowFirstView] = useState(true)
     const [calculPage, setCalculPage] = useState(0)
     const [pageChoisie, setPageChoisie] = useState(0)
+    const [searchVille, setSearchVille] = useState()
+    const [coordonnees, setCoordonnees] = useState()
+    const [selected, setSelected] = useState()
+
+    useEffect(() => {
+        console.log(searchVille, "searchville")
+    }, [searchVille])
+    useEffect(() => {
+        console.log(coordonnees, "coordonnees")
+    }, [coordonnees])
+
+    useEffect(() => {
+        console.log(selected, "selected")
+    }, [selected])
 
     useEffect(() => {
         axios
@@ -58,9 +73,6 @@ const App = () => {
             .get(`http://localhost:8080/api/v1/annonces?page=${index}`)
             .then(data => {
                 if (data.status == 200) {
-                    // console.log(data.data.content)
-
-                    // setCalculPage(Math.ceil(data.data.content.length / 4))
                     setAnnonces(data.data.content)
                 }
             })
@@ -87,7 +99,12 @@ const App = () => {
                     </View>
                     <View style={styles.ViewSearchAnnonces}>
                         <Text style={styles.SearchVille}>Chercher une ville</Text>
-                        <Input type="search" />
+                        {/* <Input type="search" /> */}
+                        <ResearchBar
+                            setCoordonnees={setCoordonnees}
+                            setSearchVille={setSearchVille}
+                            setSelected={setSelected}
+                        />
                         {annonces ? (
                             <View style={styles.ViewAnnonces}>
                                 {annonces.map(item => (
