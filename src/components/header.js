@@ -1,30 +1,23 @@
 import React from "react"
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native"
-import LogoArosaje from "../assets/logo.png"
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native"
 
-const Header = ({ onMenuPress, onProfilePress }) => {
+const Header = ({ navigation }) => {
     return (
         <View style={styles.headerContainer}>
-            {/* Menu Hamburger */}
-            <TouchableOpacity onPress={onMenuPress}>
-                <Image
-                    source={LogoArosaje} // Remplacez par votre icône de menu
-                    style={styles.icon}
-                />
+            <TouchableOpacity onPress={() => console.log("Menu clicked")}>
+                <View>
+                    <Image source={require("../assets/menu.png")} style={styles.icon} />
+                </View>
             </TouchableOpacity>
-
-            {/* Logo */}
-            <Image
-                source={LogoArosaje} // Remplacez par votre logo
-                style={styles.logo}
-            />
-
-            {/* Bouton Profil */}
-            <TouchableOpacity onPress={onProfilePress}>
-                <Image
-                    source={LogoArosaje} // Remplacez par votre icône de profil
-                    style={styles.icon}
-                />
+            <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
+                <View>
+                    <Image source={require("../assets/logo.png")} style={styles.logo} />
+                </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => console.log("Profil clicked")}>
+                <View>
+                    <Image source={require("../assets/profil.png")} style={styles.icon} />
+                </View>
             </TouchableOpacity>
         </View>
     )
@@ -35,16 +28,18 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: 10,
-        backgroundColor: "#fff", // Modifiez selon votre thème
+        width: "100%",
+        paddingHorizontal: 10,
+        backgroundColor: "green",
     },
     icon: {
         width: 25,
         height: 25,
+        resizeMode: "contain",
     },
     logo: {
-        width: 100,
-        height: 40,
+        width: 50,
+        height: 50,
         resizeMode: "contain",
     },
 })
