@@ -16,6 +16,8 @@ import {
 import { FiEye, FiEyeOff } from "react-icons/fi"
 import { FaSearch } from "react-icons/fa"
 
+import axios from "axios"
+
 import {
     Combobox,
     ComboboxInput,
@@ -25,7 +27,16 @@ import {
 } from "@reach/combobox"
 import "@reach/combobox/styles.css"
 
-export default function Index({ setSearchVille, setCoordonnees, setSelected }) {
+export default function Index({
+    setSearchVille,
+    setCoordonnees,
+    setSelected,
+    searchVille,
+    setCalculPage,
+    setAnnonces,
+    pageChoisie,
+    selected,
+}) {
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: "AIzaSyB8jSTHSpmqZDIl3wz5Nyz8FJfAL0bYvVE",
         libraries: ["places"],
@@ -38,10 +49,24 @@ export default function Index({ setSearchVille, setCoordonnees, setSelected }) {
             setSearchVille={setSearchVille}
             setCoordonnees={setCoordonnees}
             setSelected={setSelected}
+            searchVille={searchVille}
+            setCalculPage={setCalculPage}
+            setAnnonces={setAnnonces}
+            pageChoisie={pageChoisie}
+            selected={selected}
         />
     )
 }
-function Map({ setSearchVille, setCoordonnees, setSelected }) {
+function Map({
+    setSearchVille,
+    setCoordonnees,
+    setSelected,
+    searchVille,
+    setAnnonces,
+    setCalculPage,
+    pageChoisie,
+    selected,
+}) {
     // const [selected, setSelected] = useState<any>(false)
     return (
         <div>
@@ -50,13 +75,27 @@ function Map({ setSearchVille, setCoordonnees, setSelected }) {
                     setSearchVille={setSearchVille}
                     setSelected={setSelected}
                     setCoordonnees={setCoordonnees}
+                    searchVille={searchVille}
+                    setCalculPage={setCalculPage}
+                    setAnnonces={setAnnonces}
+                    pageChoisie={pageChoisie}
+                    selected={selected}
                 />
             </div>
         </div>
     )
 }
 
-const PlacesAutocomplete = ({ setSelected, setSearchVille, setCoordonnees }) => {
+const PlacesAutocomplete = ({
+    setSelected,
+    setSearchVille,
+    setCoordonnees,
+    searchVille,
+    setCalculPage,
+    setAnnonces,
+    pageChoisie,
+    selected,
+}) => {
     const {
         ready,
         value,
@@ -69,6 +108,8 @@ const PlacesAutocomplete = ({ setSelected, setSearchVille, setCoordonnees }) => 
         },
     })
 
+    const [countryChoice, setCountryChoice] = useState("")
+
     const handleSelect = async address => {
         console.log(address)
         setValue(address, false)
@@ -78,6 +119,29 @@ const PlacesAutocomplete = ({ setSelected, setSearchVille, setCoordonnees }) => 
         setSearchVille(address.split(",")[0])
         setCoordonnees({ lat: lat, lng: lng })
         setSelected(true)
+        setCountryChoice(address.split(",")[0])
+    }
+
+    const search = () => {
+        if (selected) {
+            console.log(
+                "req",
+                `http://localhost:8080/api/v1/annonces?page=${pageChoisie}&Ville=${countryChoice}`,
+            )
+            axios
+                .get(
+                    `http://localhost:8080/api/v1/annonces?page=${pageChoisie}&Ville=${countryChoice}`,
+                )
+                .then(data => {
+                    if (data.status == 200) {
+                        console.log(data.data.content)
+
+                        setCalculPage(Math.ceil(data.data.content.length / 4))
+                        setAnnonces(data.data.content)
+                    }
+                })
+                .catch(err => console.log(err))
+        }
     }
 
     return (
@@ -100,7 +164,12 @@ const PlacesAutocomplete = ({ setSelected, setSearchVille, setCoordonnees }) => 
                             fontSize: 16,
                         }}
                     />
-                    <TouchableOpacity style={styles.iconSearch} onPress={() => {}}>
+                    <TouchableOpacity
+                        style={styles.iconSearch}
+                        onPress={() => {
+                            search()
+                        }}
+                    >
                         <FaSearch />
                     </TouchableOpacity>
 

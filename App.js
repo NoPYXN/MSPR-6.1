@@ -26,17 +26,6 @@ const App = () => {
     const [selected, setSelected] = useState()
 
     useEffect(() => {
-        console.log(searchVille, "searchville")
-    }, [searchVille])
-    useEffect(() => {
-        console.log(coordonnees, "coordonnees")
-    }, [coordonnees])
-
-    useEffect(() => {
-        console.log(selected, "selected")
-    }, [selected])
-
-    useEffect(() => {
         axios
             .get(`http://localhost:8080/api/v1/annonces?page=${pageChoisie}`)
             .then(data => {
@@ -69,8 +58,12 @@ const App = () => {
     ))
 
     const changePage = index => {
+        let requete = `http://localhost:8080/api/v1/annonces?page=${index}`
+        if (searchVille) {
+            requete += `&Ville=${searchVille}`
+        }
         axios
-            .get(`http://localhost:8080/api/v1/annonces?page=${index}`)
+            .get(requete)
             .then(data => {
                 if (data.status == 200) {
                     setAnnonces(data.data.content)
@@ -81,7 +74,9 @@ const App = () => {
 
     return (
         <SafeAreaView style={styles.SafeAreaView}>
-            <View style={styles.ViewHeader}></View>
+            <View style={styles.ViewHeader}>
+                <TouchableOpacity onPress={() => {}} />
+            </View>
             {showFirstView ? (
                 <View style={styles.container}>
                     <Header
@@ -104,6 +99,10 @@ const App = () => {
                             setCoordonnees={setCoordonnees}
                             setSearchVille={setSearchVille}
                             setSelected={setSelected}
+                            selected={selected}
+                            setCalculPage={setCalculPage}
+                            setAnnonces={setAnnonces}
+                            pageChoisie={pageChoisie}
                         />
                         {annonces ? (
                             <View style={styles.ViewAnnonces}>
