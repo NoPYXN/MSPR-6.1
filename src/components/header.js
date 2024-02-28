@@ -1,34 +1,22 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import LogoArosaje from "../assets/logo.png"
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
-const Header = ({ onMenuPress, onProfilePress }) => {
-    return (
-<View style={styles.headerContainer}>
-    {/* Menu Hamburger */}
-    <TouchableOpacity onPress={onMenuPress}>
-        <Image
-            source={LogoArosaje} // Remplacez par votre icône de menu
-            style={styles.icon}
-        />
-    </TouchableOpacity>
-
-    {/* Logo */}
-    <Image
-        source={LogoArosaje} // Remplacez par votre logo
-        style={styles.logo}
-    />
-
-    {/* Bouton Profil */}
-    <TouchableOpacity onPress={onProfilePress}>
-        <Image
-            source={LogoArosaje} // Remplacez par votre icône de profil
-            style={styles.icon}
-        />
-    </TouchableOpacity>
-</View>
-
-    );
+const Header = () => {
+  return (
+    <View style={styles.headerContainer}>
+      <TouchableOpacity onPress={() => console.log('Menu clicked')}>
+        {/* Icône du menu, remplacer 'menu-icon.png' par votre image locale ou utiliser une icône de bibliothèque */}
+        <Image source={require('../assets/menu.png')} style={styles.icon} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => console.log('Logo clicked')}>
+        {/* Logo, remplacer 'logo.png' par votre image locale */}
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => console.log('Pofil clicked')}>
+        <Image source={require('../assets/profil.png')} style={styles.icon} />
+      </TouchableOpacity>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -36,18 +24,20 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 10,
-        backgroundColor: '#fff', // Modifiez selon votre thème
-    },
-    icon: {
+        width: '100%', // Assurez-vous que le conteneur s'étend sur toute la largeur
+        paddingHorizontal: 10, // Padding horizontal pour ne pas coller sur les bords de l'écran
+        backgroundColor: 'green', // Couleur de fond de l'en-tête
+      },
+      icon: {
         width: 25,
         height: 25,
-    },
-    logo: {
-        width: 100,
-        height: 40,
-        resizeMode: 'contain',
-    },
+        resizeMode: 'contain', // Garantit que les icônes s'adaptent à la taille définie
+      },
+      logo: {
+        width: 50,
+        height: 50,
+        resizeMode: 'contain', // Garantit que le logo s'adapte à la taille définie
+      },
 });
 
 export default Header;
