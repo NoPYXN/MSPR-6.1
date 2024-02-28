@@ -15,6 +15,7 @@ import { fr } from "date-fns/locale"
 import { FaMapMarkerAlt } from "react-icons/fa"
 import Input from "./src/components/input/input"
 import ResearchBar from "./src/components/researchBar"
+import { AutoComplete } from "./src/components/test/test"
 
 const App = () => {
     const [annonces, setAnnonces] = useState([])
@@ -94,7 +95,6 @@ const App = () => {
                     </View>
                     <View style={styles.ViewSearchAnnonces}>
                         <Text style={styles.SearchVille}>Chercher une ville</Text>
-                        {/* <Input type="search" /> */}
                         <ResearchBar
                             setCoordonnees={setCoordonnees}
                             setSearchVille={setSearchVille}
@@ -104,6 +104,7 @@ const App = () => {
                             setAnnonces={setAnnonces}
                             pageChoisie={pageChoisie}
                         />
+                        {/* <AutoComplete /> */}
                         {annonces ? (
                             <View style={styles.ViewAnnonces}>
                                 {annonces.map(item => (

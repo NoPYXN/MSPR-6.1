@@ -13,19 +13,9 @@ import {
     TextInput,
     TouchableOpacity,
 } from "react-native"
-import { FiEye, FiEyeOff } from "react-icons/fi"
 import { FaSearch } from "react-icons/fa"
 
 import axios from "axios"
-
-import {
-    Combobox,
-    ComboboxInput,
-    ComboboxPopover,
-    ComboboxList,
-    ComboboxOption,
-} from "@reach/combobox"
-import "@reach/combobox/styles.css"
 
 export default function Index({
     setSearchVille,
@@ -67,7 +57,6 @@ function Map({
     pageChoisie,
     selected,
 }) {
-    // const [selected, setSelected] = useState<any>(false)
     return (
         <div>
             <div>
@@ -124,10 +113,6 @@ const PlacesAutocomplete = ({
 
     const search = () => {
         if (selected) {
-            console.log(
-                "req",
-                `http://localhost:8080/api/v1/annonces?page=${pageChoisie}&Ville=${countryChoice}`,
-            )
             axios
                 .get(
                     `http://localhost:8080/api/v1/annonces?page=${pageChoisie}&Ville=${countryChoice}`,
@@ -145,18 +130,17 @@ const PlacesAutocomplete = ({
     }
 
     return (
-        <Combobox onSelect={handleSelect}>
+        <View>
             <View style={styles.container}>
                 <View style={styles.divInput}>
-                    <ComboboxInput
-                        id="comboboxInput"
-                        value={value}
-                        onChange={e => setValue(e.target.value)}
-                        disabled={!ready}
-                        // placeholder="Rechercher une ville ...."
+                    <TextInput
+                        value={value ?? ""}
+                        onChangeText={text => setValue(text)}
+                        editable={ready}
                         style={{
                             flex: 1,
                             // paddingRight: 40,
+                            width: "50%",
                             padding: 8,
                             borderWidth: 2,
                             borderColor: "#ccc",
@@ -164,6 +148,7 @@ const PlacesAutocomplete = ({
                             fontSize: 16,
                         }}
                     />
+
                     <TouchableOpacity
                         style={styles.iconSearch}
                         onPress={() => {
@@ -172,26 +157,28 @@ const PlacesAutocomplete = ({
                     >
                         <FaSearch />
                     </TouchableOpacity>
-
-                    <ComboboxPopover>
-                        <ComboboxList>
-                            {status === "OK" &&
-                                data
-                                    .filter(({ types }) => types.includes("locality"))
-
-                                    .filter(
-                                        ({ terms }) =>
-                                            terms.some(obj => obj.value === "France") == true,
-                                    )
-
-                                    .map(({ place_id, description }) => (
-                                        <ComboboxOption key={place_id} value={description} />
-                                    ))}
-                        </ComboboxList>
-                    </ComboboxPopover>
                 </View>
             </View>
-        </Combobox>
+            <View style={styles.ViewXX}>
+                {status === "OK" && (
+                    <FlatList
+                        data={data}
+                        keyExtractor={item => item.place_id}
+                        renderItem={({ item }) => (
+                            <View style={styles.ViewFlatList}>
+                                <TouchableOpacity
+                                    onPress={() => handleSelect(item.description)}
+                                    style={styles.listItem}
+                                >
+                                    <Text>{item.description}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                        style={styles.list}
+                    />
+                )}
+            </View>
+        </View>
     )
 }
 
@@ -221,5 +208,15 @@ const styles = StyleSheet.create({
         height: "100%",
         justifyContent: "center",
         alignItems: "center",
+    },
+    ViewFlatList: {
+        justifyContent: "center",
+        alignItems: "left",
+    },
+    ViewXX: {
+        width: "55%",
+        marginLeft: "auto",
+        marginRight: "auto",
+        zIndex: 1,
     },
 })
