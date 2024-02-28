@@ -1,14 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Header from './src/components/header';
+import CreateAccountForm from './src/components/CreateAccountForm';
 
 const App = () => {
   return (
     <View style={styles.container}>
       <Header 
-        onMenuPress={() => console.log('Menu Pressed')}
-        onProfilePress={() => console.log('Profile Pressed')}
       />
+      <CreateAccountForm />
     </View>
   );
 };
