@@ -4,8 +4,9 @@ import axios from "axios"
 import { format, parseISO } from "date-fns"
 import { fr } from "date-fns/locale"
 import { FaMapMarkerAlt } from "react-icons/fa"
+import { useNavigation } from "@react-navigation/native"
 
-import Header from "../components/Header"
+import HeaderComponent from "../components/HeaderComponent"
 import ResearchBar from "../components/ResearchBar"
 
 const HomeScreen = () => {
@@ -16,6 +17,7 @@ const HomeScreen = () => {
     const [searchVille, setSearchVille] = useState()
     const [coordonnees, setCoordonnees] = useState()
     const [selected, setSelected] = useState()
+    const navigation = useNavigation()
 
     useEffect(() => {
         axios
@@ -29,11 +31,6 @@ const HomeScreen = () => {
                 }
             })
             .catch(err => console.log(err))
-        const timer = setTimeout(() => {
-            setShowFirstView(false)
-        }, 2000)
-
-        return () => clearTimeout(timer)
     }, [])
 
     const boutons = Array.from({ length: calculPage }, (_, index) => (
@@ -66,74 +63,63 @@ const HomeScreen = () => {
 
     return (
         <SafeAreaView style={styles.SafeAreaView}>
-            <Header />
-            {/* <View style={styles.ViewHeader}>
-                <TouchableOpacity onPress={() => {}} />
-            </View> */}
-            {showFirstView ? (
-                <View style={styles.container}>
-                    <Header
-                        onMenuPress={() => console.log("Menu Pressed")}
-                        onProfilePress={() => console.log("Profile Pressed")}
-                    />
-                </View>
-            ) : (
-                <View style={styles.ViewGlobale}>
-                    <View style={styles.ViewLocalisation}>
-                        <Text>Se localiser </Text>
-                        <View>
-                            <FaMapMarkerAlt />
-                        </View>
-                    </View>
-                    <View style={styles.ViewSearchAnnonces}>
-                        <Text style={styles.SearchVille}>Chercher une ville</Text>
-                        <ResearchBar
-                            setCoordonnees={setCoordonnees}
-                            setSearchVille={setSearchVille}
-                            setSelected={setSelected}
-                            selected={selected}
-                            setCalculPage={setCalculPage}
-                            setAnnonces={setAnnonces}
-                            pageChoisie={pageChoisie}
-                        />
-                        {/* <AutoComplete /> */}
-                        {annonces ? (
-                            <View style={styles.ViewAnnonces}>
-                                {annonces.map(item => (
-                                    <View key={item.Id_Annonce} style={styles.ViewAnnonce}>
-                                        <Image
-                                            style={styles.imageAnnonce}
-                                            source={{
-                                                uri: item.Id_Plante[0],
-                                            }}
-                                        />
-                                        <View style={styles.infoAnnonce}>
-                                            <Text style={styles.titreAnnonce}>{item.Titre}</Text>
-                                            <Text style={styles.villeAnnonce}>{item.Ville}</Text>
-                                            <Text style={styles.dateAnnonce}>
-                                                Depuis le{" "}
-                                                {format(
-                                                    parseISO(item.DateCreation),
-                                                    "EEEE dd MMMM yyyy",
-                                                    {
-                                                        locale: fr,
-                                                    },
-                                                )}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                ))}
-                            </View>
-                        ) : (
-                            <View>Aucune annonce trouvée</View>
-                        )}
-                    </View>
+            <HeaderComponent navigation={navigation} />
 
-                    <View style={styles.ViewButtons}>
-                        {annonces && annonces.length > 0 ? boutons : <Text>Pas d'annonces</Text>}
+            <View style={styles.ViewGlobale}>
+                <View style={styles.ViewLocalisation}>
+                    <Text>Se localiser </Text>
+                    <View>
+                        <FaMapMarkerAlt />
                     </View>
                 </View>
-            )}
+                <View style={styles.ViewSearchAnnonces}>
+                    <Text style={styles.SearchVille}>Chercher une ville</Text>
+                    <ResearchBar
+                        setCoordonnees={setCoordonnees}
+                        setSearchVille={setSearchVille}
+                        setSelected={setSelected}
+                        selected={selected}
+                        setCalculPage={setCalculPage}
+                        setAnnonces={setAnnonces}
+                        pageChoisie={pageChoisie}
+                    />
+                    {/* <AutoComplete /> */}
+                    {annonces ? (
+                        <View style={styles.ViewAnnonces}>
+                            {annonces.map(item => (
+                                <View key={item.Id_Annonce} style={styles.ViewAnnonce}>
+                                    <Image
+                                        style={styles.imageAnnonce}
+                                        source={{
+                                            uri: item.Id_Plante[0],
+                                        }}
+                                    />
+                                    <View style={styles.infoAnnonce}>
+                                        <Text style={styles.titreAnnonce}>{item.Titre}</Text>
+                                        <Text style={styles.villeAnnonce}>{item.Ville}</Text>
+                                        <Text style={styles.dateAnnonce}>
+                                            Depuis le{" "}
+                                            {format(
+                                                parseISO(item.DateCreation),
+                                                "EEEE dd MMMM yyyy",
+                                                {
+                                                    locale: fr,
+                                                },
+                                            )}
+                                        </Text>
+                                    </View>
+                                </View>
+                            ))}
+                        </View>
+                    ) : (
+                        <View>Aucune annonce trouvée</View>
+                    )}
+                </View>
+
+                <View style={styles.ViewButtons}>
+                    {annonces && annonces.length > 0 ? boutons : <Text>Pas d'annonces</Text>}
+                </View>
+            </View>
         </SafeAreaView>
     )
 }

@@ -1,7 +1,11 @@
 import React from "react"
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native"
 
-const Header = ({ navigation }) => {
+const HeaderComponent = ({ navigation }) => {
+    const handleReload = () => {
+        navigation.replace("HomeScreen") // Redirige vers la même page pour la recharger
+    }
+
     return (
         <View style={styles.headerContainer}>
             <TouchableOpacity onPress={() => console.log("Menu clicked")}>
@@ -9,7 +13,7 @@ const Header = ({ navigation }) => {
                     <Image source={require("../assets/menu.png")} style={styles.icon} />
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
+            <TouchableOpacity onPress={() => handleReload()}>
                 <View>
                     <Image source={require("../assets/logo.png")} style={styles.logo} />
                 </View>
@@ -44,4 +48,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default Header
+export default HeaderComponent
