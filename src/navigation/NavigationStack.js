@@ -15,11 +15,6 @@ const NavigationStack = () => {
                     name="HomeScreen"
                     component={HomeScreen}
                 />
-                {/* <Stack.Screen
-                options={{ title: 'PAGE2' }}
-                name="Page2" 
-                component={Page2}
-            /> */}
             </Stack.Navigator>
         </NavigationContainer>
     )
