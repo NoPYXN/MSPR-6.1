@@ -1,30 +1,8 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import Header from './src/components/header';
-import CreateAccountForm from './src/components/CreateAccountForm';
+import React, { useState, useEffect } from "react"
+import NavigationStack from "./src/navigation/NavigationStack"
 
 const App = () => {
-  return (
-    <View style={styles.container}>
-      <Header 
-      />
-      <CreateAccountForm />
-    </View>
-  );
-};
+    return <NavigationStack />
+}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  welcomeText: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-});
-
-export default App;
+export default App
