@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react"
+import React, { useState, useEffect } from "react"
 
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete"
 import { useLoadScript } from "@react-google-maps/api"
@@ -100,6 +100,10 @@ const PlacesAutocomplete = ({
 
     const [countryChoice, setCountryChoice] = useState("")
 
+    useEffect(() => {
+        console.log(searchVille, "searchVille")
+    }, [searchVille])
+
     const handleSelect = async address => {
         console.log(address)
         setValue(address, false)
@@ -155,6 +159,7 @@ const PlacesAutocomplete = ({
                             borderRadius: 5,
                             fontSize: 16,
                         }}
+                        placeholder={searchVille}
                     />
 
                     <TouchableOpacity

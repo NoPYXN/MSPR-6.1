@@ -33,7 +33,7 @@ const HomeScreen = () => {
     const [isVisible, setIsVisible] = useState()
     const [isDelete, setIsDelete] = useState()
     const navigation = useNavigation()
-    const [numPage, setNumPage] = useState(1)
+    const [numPage, setNumPage] = useState(0)
 
     const changeUrlPagination = pageNumber => {
         pageNumber += 1
@@ -101,6 +101,7 @@ const HomeScreen = () => {
                 }
             })
             .catch(err => console.log(err))
+        console.log(searchVille, "search ville HOME SCREEN")
     }, [])
 
     const boutons = Array.from({ length: calculPage }, (_, index) => (
@@ -124,6 +125,7 @@ const HomeScreen = () => {
         axios.get(`http://localhost:8080/api/v1/annonces?page=0`).then(data => {
             setAnnonces(data.data.content)
         })
+        setNumPage(0)
     }
     const supprimerAnnonce = id => {
         axios
@@ -217,9 +219,11 @@ const HomeScreen = () => {
                     {!isVisible ? (
                         <View>
                             <Text style={styles.SearchVille}>Chercher une ville</Text>
+
                             <ResearchBar
                                 setCoordonnees={setCoordonnees}
                                 setSearchVille={setSearchVille}
+                                searchVille={searchVille}
                                 setSelected={setSelected}
                                 selected={selected}
                                 setCalculPage={setCalculPage}
