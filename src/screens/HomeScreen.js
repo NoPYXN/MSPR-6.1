@@ -20,7 +20,6 @@ import { AiFillEdit, AiOutlineClose, AiFillDelete } from "react-icons/ai"
 import HeaderComponent from "../components/HeaderComponent"
 import ResearchBar from "../components/ResearchBar"
 import { NumeroPage } from "../utils/NumeroPage"
-//PROCHIANEMENT VOIR POUR LE MESSAGE DE SUPPRESSION LE PASSER DANS LE RELOAD ET RESTER SUR LA MEME PAGE ET EN MODE MODIFIER QUAND ON FAIT LE RELOZD
 
 const HomeScreen = () => {
     const [annonces, setAnnonces] = useState([])
@@ -35,9 +34,9 @@ const HomeScreen = () => {
     const navigation = useNavigation()
     const [numPage, setNumPage] = useState(0)
     const route = useRoute()
-    if (route.params) {
-        const { isAnnonceDelete } = route.params
-    }
+    // if (route.params) {
+    //     const { isAnnonceDelete } = route.params
+    // }
 
     const changeUrlPagination = pageNumber => {
         pageNumber += 1
@@ -233,68 +232,96 @@ const HomeScreen = () => {
                             />
                         </View>
                     ) : (
-                        <View></View>
+                        <View style={styles.BoutonAjouterAnnonce}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    window.history.pushState({}, "", "/FormulaireAnnonceScreen")
+                                    navigation.navigate("FormulaireAnnonceScreen")
+                                }}
+                            >
+                                <Text style={styles.TextAjouterAnnonce}>Créer une annonce</Text>
+                            </TouchableOpacity>
+                        </View>
                     )}
-
+                    {/* <View style={styles.BoutonAjouterAnnonce}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                // window.history.pushState({}, "", "/FormulaireAnnonceScreen")
+                                navigation.navigate("FormulaireAnnonceScreen")
+                            }}
+                        >
+                            <Text style={styles.TextAjouterAnnonce}>Créer une annonce</Text>
+                        </TouchableOpacity>
+                    </View> */}
                     {annonces ? (
                         <View style={styles.ViewAnnonces}>
                             {annonces.map(item => (
                                 <View key={item.Id_Annonce} style={styles.ViewActions}>
-                                    <View
-                                        style={
-                                            isVisible
-                                                ? styles.ViewAnnonceAvecActions
-                                                : styles.ViewAnnonce
-                                        }
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            navigation.navigate({
+                                                name: "AnnonceScreen",
+                                                params: { id: item.Id_Annonce },
+                                            })
+                                        }}
+                                        style={isVisible ? { width: "80%" } : { width: "100%" }}
                                     >
-                                        <Image
+                                        <View
                                             style={
                                                 isVisible
-                                                    ? styles.imageAnnonceAvecActions
-                                                    : styles.imageAnnonce
+                                                    ? styles.ViewAnnonceAvecActions
+                                                    : styles.ViewAnnonce
                                             }
-                                            source={{
-                                                uri: item.Id_Plante[0],
-                                            }}
-                                        />
+                                        >
+                                            <Image
+                                                style={
+                                                    isVisible
+                                                        ? styles.imageAnnonceAvecActions
+                                                        : styles.imageAnnonce
+                                                }
+                                                source={{
+                                                    uri: item.Id_Plante[0],
+                                                }}
+                                            />
 
-                                        <View style={styles.infoAnnonce}>
-                                            <Text
-                                                style={
-                                                    isVisible
-                                                        ? styles.titreAnnonceAvecActions
-                                                        : styles.titreAnnonce
-                                                }
-                                            >
-                                                {item.Titre}
-                                            </Text>
-                                            <Text
-                                                style={
-                                                    isVisible
-                                                        ? styles.villeAnnonceAvecActions
-                                                        : styles.villeAnnonce
-                                                }
-                                            >
-                                                {item.Ville}
-                                            </Text>
-                                            {!isVisible ? (
-                                                <View>
-                                                    <Text style={styles.dateAnnonce}>
-                                                        Depuis le{" "}
-                                                        {format(
-                                                            parseISO(item.DateCreation),
-                                                            "EEEE dd MMMM yyyy",
-                                                            {
-                                                                locale: fr,
-                                                            },
-                                                        )}
-                                                    </Text>
-                                                </View>
-                                            ) : (
-                                                <View></View>
-                                            )}
+                                            <View style={styles.infoAnnonce}>
+                                                <Text
+                                                    style={
+                                                        isVisible
+                                                            ? styles.titreAnnonceAvecActions
+                                                            : styles.titreAnnonce
+                                                    }
+                                                >
+                                                    {item.Titre}
+                                                </Text>
+                                                <Text
+                                                    style={
+                                                        isVisible
+                                                            ? styles.villeAnnonceAvecActions
+                                                            : styles.villeAnnonce
+                                                    }
+                                                >
+                                                    {item.Ville}
+                                                </Text>
+                                                {!isVisible ? (
+                                                    <View>
+                                                        <Text style={styles.dateAnnonce}>
+                                                            Depuis le{" "}
+                                                            {format(
+                                                                parseISO(item.DateCreation),
+                                                                "EEEE dd MMMM yyyy",
+                                                                {
+                                                                    locale: fr,
+                                                                },
+                                                            )}
+                                                        </Text>
+                                                    </View>
+                                                ) : (
+                                                    <View></View>
+                                                )}
+                                            </View>
                                         </View>
-                                    </View>
+                                    </TouchableOpacity>
                                     {isVisible ? (
                                         <View style={styles.BoutonsActions}>
                                             <TouchableOpacity onPress={() => {}}>
@@ -465,6 +492,19 @@ const styles = StyleSheet.create({
     },
     NumeroPageGras: {
         fontWeight: "bold",
+    },
+    BoutonAjouterAnnonce: {
+        backgroundColor: "green",
+        borderRadius: 5,
+        padding: 10,
+        width: "45%",
+        marginLeft: "auto",
+        marginRight: "auto",
+        marginTop: "5%",
+    },
+    TextAjouterAnnonce: {
+        color: "white",
+        textAlign: "center",
     },
 })
 
