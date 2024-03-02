@@ -99,8 +99,14 @@ const HomeScreen = () => {
                 }
             })
             .catch(err => console.log(err))
-        if (route.params) {
+        if (route.params?.isAnnonceDelete) {
             setIsDelete(true)
+            delete route.params.isAnnonceDelete
+
+            navigation.navigate({
+                name: "HomeScreen",
+                params: { isActions: "true" },
+            })
             const timer = setTimeout(() => {
                 setShowFirstView(false)
             }, 2000)
@@ -138,6 +144,10 @@ const HomeScreen = () => {
             .then(data => {
                 if (data.status == 200) {
                     setIsDelete(true)
+                    // navigation.replace({
+                    //     name: "HomeScreen",
+                    //     params: { isAnnonceDelete: "ok" },
+                    // })
                     navigation.replace("HomeScreen", { isAnnonceDelete: "ok" })
                 }
             })
