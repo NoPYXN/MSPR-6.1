@@ -14,8 +14,8 @@ import axios from "axios"
 import { useNavigation, useParams, useRoute } from "@react-navigation/native"
 import { AiOutlineClose } from "react-icons/ai"
 
-import CreateAccountForm from "../components/CreateAccountForm"
 import HeaderComponent from "../components/HeaderComponent"
+import AddPlantForm from "../components/AddPlantForm"
 
 const FormulaireAnnonceScreen = () => {
     const navigation = useNavigation()
@@ -37,7 +37,7 @@ const FormulaireAnnonceScreen = () => {
                 </TouchableOpacity>
             </View>
             <Text style={styles.TextTitre}>Ajouter une annonce</Text>
-            <CreateAccountForm />
+            <AddPlantForm />
         </SafeAreaView>
     )
 }
