@@ -14,8 +14,9 @@ import {
     TouchableOpacity,
 } from "react-native"
 import { FaSearch } from "react-icons/fa"
-
 import axios from "axios"
+
+import { NumeroPage } from "../utils/NumeroPage"
 
 export default function Index({
     setSearchVille,
@@ -111,18 +112,25 @@ const PlacesAutocomplete = ({
         setCountryChoice(address.split(",")[0])
     }
 
+    const changeUrlVille = ville => {
+        window.history.pushState({ page: ville }, "", "?page=1&ville=" + ville)
+    }
+
     const search = () => {
+        NumeroPage(countryChoice).then(numero => {
+            setCalculPage(numero)
+        })
         if (selected) {
             axios
                 .get(
-                    `http://localhost:8080/api/v1/annonces?page=${pageChoisie}&Ville=${countryChoice}`,
+                    `http://localhost:8080/api/v1/annonces?page=${
+                        pageChoisie ? pageChoisie : 0
+                    }&Ville=${countryChoice}`,
                 )
                 .then(data => {
                     if (data.status == 200) {
-                        console.log(data.data.content)
-
-                        setCalculPage(Math.ceil(data.data.content.length / 4))
                         setAnnonces(data.data.content)
+                        changeUrlVille(countryChoice)
                     }
                 })
                 .catch(err => console.log(err))

@@ -1,15 +1,27 @@
-import React, { useState, useEffect } from "react"
-import { StyleSheet, Text, View, Image, SafeAreaView, TouchableOpacity } from "react-native"
+import React, { useState, useEffect, useRef } from "react"
+import {
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    SafeAreaView,
+    TouchableOpacity,
+    Linking,
+    TextInput,
+    Touchable,
+} from "react-native"
 import axios from "axios"
 import { format, parseISO } from "date-fns"
 import { fr } from "date-fns/locale"
 import { FaMapMarkerAlt } from "react-icons/fa"
-import { useNavigation, useParams } from "@react-navigation/native"
+import { useNavigation, useParams, useRoute } from "@react-navigation/native"
 import { AiFillEdit, AiOutlineClose, AiFillDelete } from "react-icons/ai"
 
 import HeaderComponent from "../components/HeaderComponent"
 import ResearchBar from "../components/ResearchBar"
+import { NumeroPage } from "../utils/NumeroPage"
 //PROCHIANEMENT VOIR POUR LE MESSAGE DE SUPPRESSION LE PASSER DANS LE RELOAD ET RESTER SUR LA MEME PAGE ET EN MODE MODIFIER QUAND ON FAIT LE RELOZD
+
 const HomeScreen = () => {
     const [annonces, setAnnonces] = useState([])
     const [showFirstView, setShowFirstView] = useState(true)
@@ -20,26 +32,70 @@ const HomeScreen = () => {
     const [selected, setSelected] = useState()
     const [isVisible, setIsVisible] = useState()
     const [isDelete, setIsDelete] = useState()
-    const [isReload, setIsReload] = useState()
     const navigation = useNavigation()
 
+    const changeUrlPagination = pageNumber => {
+        pageNumber += 1
+        let url = "?page=" + pageNumber
+        if (searchVille) {
+            url += "&ville=" + searchVille
+        }
+        if (isVisible) {
+            url += "&isActions=true"
+        }
+
+        window.history.pushState({ page: pageNumber }, "", url)
+    }
+
     useEffect(() => {
-        console.log(navigation)
-        setIsDelete(false)
-        axios
-            .get(`http://localhost:8080/api/v1/annonces`)
-            .then(data => {
-                if (data.status == 200) {
-                    setCalculPage(Math.ceil(data.data.content.length / 5))
+        let urlParam = ""
+        let nombrePage = 1
+        let separerFiltre = ""
+        let ville = ""
+        let isActions = false
+        if (window.location.search) {
+            urlParam = window.location.search.split("?")[1]
+            separerFiltre = urlParam.split("&")
+            for (let i = 0; i < separerFiltre.length; i++) {
+                if (separerFiltre[i].split("=")[0] == "page") {
+                    nombrePage = separerFiltre[i].split("=")[1]
                 }
-            })
-            .catch(err => console.log(err))
+                if (separerFiltre[i].split("=")[0] == "ville") {
+                    ville = separerFiltre[i].split("=")[1]
+                    setSearchVille(ville)
+                }
+                if (separerFiltre[i].split("=")[0] == "isActions") {
+                    isActions = true
+                }
+            }
+        }
+
+        let requete = `http://localhost:8080/api/v1/annonces?page=${nombrePage - 1}`
+        if (ville != "") {
+            requete += `&Ville=${ville}`
+        }
+
+        setIsDelete(false)
+
+        NumeroPage(ville).then(numero => {
+            setCalculPage(numero)
+        })
+        console.log(requete, "requete")
         axios
-            .get(`http://localhost:8080/api/v1/annonces?page=${pageChoisie ? pageChoisie : 0}`)
+            .get(requete)
             .then(data => {
                 if (data.status == 200) {
-                    setIsVisible(false)
+                    if (isActions) {
+                        setIsVisible(true)
+                    } else {
+                        setIsVisible(false)
+                    }
                     setAnnonces(data.data.content)
+
+                    if (ville != "") {
+                        console.log(data.data.content.length, "VV")
+                        console.log(nombrePage - 1)
+                    }
                 }
             })
             .catch(err => console.log(err))
@@ -47,6 +103,7 @@ const HomeScreen = () => {
 
     const boutons = Array.from({ length: calculPage }, (_, index) => (
         <View style={styles.ViewButton} key={index}>
+            {/* <Text>{calculPage} index</Text> */}
             <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
@@ -58,6 +115,11 @@ const HomeScreen = () => {
         </View>
     ))
 
+    const getAnnonces = () => {
+        axios.get(`http://localhost:8080/api/v1/annonces?page=0`).then(data => {
+            setAnnonces(data.data.content)
+        })
+    }
     const supprimerAnnonce = id => {
         axios
             .delete(`http://localhost:8080/api/v1/annonces/${id}`)
@@ -83,6 +145,7 @@ const HomeScreen = () => {
     }, [showFirstView])
 
     const changePage = index => {
+        console.log(searchVille, "searchville")
         let requete = `http://localhost:8080/api/v1/annonces?page=${index}`
         if (searchVille) {
             requete += `&Ville=${searchVille}`
@@ -92,6 +155,7 @@ const HomeScreen = () => {
             .then(data => {
                 if (data.status == 200) {
                     setAnnonces(data.data.content)
+                    changeUrlPagination(index)
                 }
             })
             .catch(err => console.log(err))
@@ -124,6 +188,8 @@ const HomeScreen = () => {
                     {isVisible ? (
                         <TouchableOpacity
                             onPress={() => {
+                                window.history.pushState({}, "", "/")
+                                getAnnonces()
                                 setIsVisible(false)
                             }}
                         >
@@ -132,6 +198,8 @@ const HomeScreen = () => {
                     ) : (
                         <TouchableOpacity
                             onPress={() => {
+                                window.history.pushState({}, "", "?isActions=true")
+                                getAnnonces()
                                 setIsVisible(true)
                             }}
                         >
@@ -157,7 +225,6 @@ const HomeScreen = () => {
                         <View></View>
                     )}
 
-                    {/* <AutoComplete /> */}
                     {annonces ? (
                         <View style={styles.ViewAnnonces}>
                             {annonces.map(item => (
@@ -263,6 +330,7 @@ const styles = StyleSheet.create({
     },
     SafeAreaView: {
         width: "100%",
+        backgroundColor: "white",
     },
     ViewGlobale: {
         margin: "5%",

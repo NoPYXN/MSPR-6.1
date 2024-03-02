@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native"
 
 const HeaderComponent = ({ navigation }) => {
     const handleReload = () => {
+        window.history.pushState({}, "", "/")
         navigation.replace("HomeScreen") // Redirige vers la même page pour la recharger
     }
 
