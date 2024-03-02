@@ -33,6 +33,7 @@ const HomeScreen = () => {
     const [isVisible, setIsVisible] = useState()
     const [isDelete, setIsDelete] = useState()
     const navigation = useNavigation()
+    const [numPage, setNumPage] = useState(1)
 
     const changeUrlPagination = pageNumber => {
         pageNumber += 1
@@ -59,6 +60,7 @@ const HomeScreen = () => {
             for (let i = 0; i < separerFiltre.length; i++) {
                 if (separerFiltre[i].split("=")[0] == "page") {
                     nombrePage = separerFiltre[i].split("=")[1]
+                    setNumPage(parseInt(nombrePage) - 1)
                 }
                 if (separerFiltre[i].split("=")[0] == "ville") {
                     ville = separerFiltre[i].split("=")[1]
@@ -103,14 +105,17 @@ const HomeScreen = () => {
 
     const boutons = Array.from({ length: calculPage }, (_, index) => (
         <View style={styles.ViewButton} key={index}>
-            {/* <Text>{calculPage} index</Text> */}
             <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
                     changePage(index)
                 }}
             >
-                <Text>{index + 1}</Text>
+                {parseInt(numPage) == parseInt(index) ? (
+                    <Text style={styles.NumeroPageGras}>{index + 1}</Text>
+                ) : (
+                    <Text>{index + 1}</Text>
+                )}
             </TouchableOpacity>
         </View>
     ))
@@ -156,6 +161,7 @@ const HomeScreen = () => {
                 if (data.status == 200) {
                     setAnnonces(data.data.content)
                     changeUrlPagination(index)
+                    setNumPage(index)
                 }
             })
             .catch(err => console.log(err))
@@ -451,6 +457,9 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: "auto",
         marginBottom: "auto",
+    },
+    NumeroPageGras: {
+        fontWeight: "bold",
     },
 })
 
