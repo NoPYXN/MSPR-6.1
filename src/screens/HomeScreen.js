@@ -34,6 +34,10 @@ const HomeScreen = () => {
     const [isDelete, setIsDelete] = useState()
     const navigation = useNavigation()
     const [numPage, setNumPage] = useState(0)
+    const route = useRoute()
+    if (route.params) {
+        const { isAnnonceDelete } = route.params
+    }
 
     const changeUrlPagination = pageNumber => {
         pageNumber += 1
@@ -49,6 +53,7 @@ const HomeScreen = () => {
     }
 
     useEffect(() => {
+        console.log(route, "ROUTE")
         let urlParam = ""
         let nombrePage = 1
         let separerFiltre = ""
@@ -82,7 +87,6 @@ const HomeScreen = () => {
         NumeroPage(ville).then(numero => {
             setCalculPage(numero)
         })
-        console.log(requete, "requete")
         axios
             .get(requete)
             .then(data => {
@@ -93,15 +97,17 @@ const HomeScreen = () => {
                         setIsVisible(false)
                     }
                     setAnnonces(data.data.content)
-
-                    if (ville != "") {
-                        console.log(data.data.content.length, "VV")
-                        console.log(nombrePage - 1)
-                    }
                 }
             })
             .catch(err => console.log(err))
-        console.log(searchVille, "search ville HOME SCREEN")
+        if (route.params) {
+            setIsDelete(true)
+            const timer = setTimeout(() => {
+                setShowFirstView(false)
+            }, 2000)
+
+            return () => clearTimeout(timer)
+        }
     }, [])
 
     const boutons = Array.from({ length: calculPage }, (_, index) => (
@@ -133,15 +139,10 @@ const HomeScreen = () => {
             .then(data => {
                 if (data.status == 200) {
                     setIsDelete(true)
-                    navigation.replace("HomeScreen", { pageChoisie, isVisible })
+                    navigation.replace("HomeScreen", { isAnnonceDelete: "ok" })
                 }
             })
             .catch(err => console.log(err))
-        const timer = setTimeout(() => {
-            setShowFirstView(false)
-        }, 2000)
-
-        return () => clearTimeout(timer)
     }
 
     useEffect(() => {
