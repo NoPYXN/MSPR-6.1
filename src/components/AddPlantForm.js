@@ -9,12 +9,12 @@ import {
     ScrollView,
     TouchableOpacity,
 } from "react-native"
-// import * as ImagePicker from "react-native-image-picker"
 import * as ImagePicker from "expo-image-picker"
 import ResearchBar from "./ResearchBar"
-// import * as DocumentPicker from "react-native-document-picker"
-import * as Permissions from "expo-permissions" // Importez Permissions depuis Expo
+import * as Permissions from "expo-permissions"
 import * as DocumentPicker from "expo-document-picker"
+
+import { BsTrash } from "react-icons/bs"
 
 const AddPlantForm = () => {
     const [imageUri, setImageUri] = useState(null)
@@ -107,7 +107,7 @@ const AddPlantForm = () => {
         // console.log(data.secure_url, "DATA SECURE URL")
         console.log(data, "DATA")
         if (data.upload) {
-            setCloudinaryImage(data)
+            // setCloudinaryImage(data)
             // console.log(data, "DATA")
             setTabImages([
                 ...tabImages,
@@ -127,20 +127,19 @@ const AddPlantForm = () => {
         console.log(tabImages)
     }, [tabImages])
 
-    const deleteImage = async () => {
-        console.log(cloudinaryImage, "cloudinary image")
-        const response = await fetch(
-            `http://localhost:8080/api/v1/upload/upload/` + "nt7p5oeuuyuigrynxhfs",
-            {
-                method: "DELETE",
-                headers: {
-                    "content-type": "application/json",
-                },
+    const deleteImage = async id => {
+        // console.log(cloudinaryImage, "cloudinary image")
+        const response = await fetch(`http://localhost:8080/api/v1/upload/upload/` + id, {
+            method: "DELETE",
+            headers: {
+                "content-type": "application/json",
             },
-        )
+        })
         const data = await response.json()
-        if (data.message) {
-            setCloudinaryImage("")
+        console.log(data)
+        if (data.delete) {
+            // setCloudinaryImage("")
+            setTabImages(tabImages.filter(element => element.api_key !== id))
         }
     }
 
@@ -197,23 +196,16 @@ const AddPlantForm = () => {
             <View style={styles.viewTabImage}>
                 {tabImages
                     ? tabImages.map((image, index) => (
-                          <View style={styles.viewImageMap}>
-                              <View className={styles.buttonCroix}>
-                                  <TouchableOpacity
-                                      onPress={() => {
-                                          deleteImage(image.api_key)
-                                      }}
-                                      style={styles.croix}
-                                  >
-                                      <Text>X</Text>
-                                      {/* <AiOutlineClose size={20} /> */}
-                                  </TouchableOpacity>
-                              </View>
-                              <Image
-                                  key={index}
-                                  source={{ uri: image.secure_url }}
-                                  style={styles.imagetab}
-                              />
+                          <View key={index} style={styles.viewImageMap}>
+                              <TouchableOpacity
+                                  onPress={() => {
+                                      deleteImage(image.api_key)
+                                  }}
+                                  style={styles.croix}
+                              >
+                                  <BsTrash size={15} />
+                              </TouchableOpacity>
+                              <Image source={{ uri: image.secure_url }} style={styles.imagetab} />
                           </View>
                       ))
                     : ""}
@@ -230,19 +222,18 @@ const styles = StyleSheet.create({
         marginLeft: "2%",
         marginRight: "2%",
         marginBottom: "2%",
+        position: "relative",
     },
     imagetab: {
         height: 100,
         width: 100,
-        position: "relative",
     },
 
     croix: {
         position: "absolute",
-        right: 10,
-        height: "100%",
-        justifyContent: "center",
-        alignItems: "center",
+        top: 2,
+        right: 2,
+        zIndex: 1,
     },
 
     container: {
