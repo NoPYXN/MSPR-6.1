@@ -27,6 +27,8 @@ export default function Index({
     setAnnonces,
     pageChoisie,
     selected,
+    isAddPlantFrom,
+    annonces,
 }) {
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: "AIzaSyB8jSTHSpmqZDIl3wz5Nyz8FJfAL0bYvVE",
@@ -45,6 +47,8 @@ export default function Index({
             setAnnonces={setAnnonces}
             pageChoisie={pageChoisie}
             selected={selected}
+            isAddPlantFrom={isAddPlantFrom}
+            annonces={annonces}
         />
     )
 }
@@ -57,6 +61,8 @@ function Map({
     setCalculPage,
     pageChoisie,
     selected,
+    isAddPlantFrom,
+    annonces,
 }) {
     return (
         <div>
@@ -70,6 +76,8 @@ function Map({
                     setAnnonces={setAnnonces}
                     pageChoisie={pageChoisie}
                     selected={selected}
+                    isAddPlantFrom={isAddPlantFrom}
+                    annonces={annonces}
                 />
             </div>
         </div>
@@ -85,6 +93,8 @@ const PlacesAutocomplete = ({
     setAnnonces,
     pageChoisie,
     selected,
+    isAddPlantFrom,
+    annonces,
 }) => {
     const {
         ready,
@@ -114,6 +124,14 @@ const PlacesAutocomplete = ({
         setCoordonnees({ lat: lat, lng: lng })
         setSelected(true)
         setCountryChoice(address.split(",")[0])
+        if (isAddPlantFrom) {
+            setAnnonces({
+                ...annonces,
+                Ville: address.split(",")[0],
+                Latitude: lat,
+                Longitude: lng,
+            })
+        }
     }
 
     const changeUrlVille = ville => {
@@ -144,35 +162,29 @@ const PlacesAutocomplete = ({
     return (
         <View>
             <View style={styles.container}>
-                <View style={styles.divInput}>
+                <View style={isAddPlantFrom ? styles.divInputIdAddPlantForm : styles.divInput}>
                     <TextInput
                         value={value ?? ""}
                         onChangeText={text => setValue(text)}
                         editable={ready}
-                        style={{
-                            flex: 1,
-                            // paddingRight: 40,
-                            width: "50%",
-                            padding: 8,
-                            borderWidth: 2,
-                            borderColor: "#ccc",
-                            borderRadius: 5,
-                            fontSize: 16,
-                        }}
-                        placeholder={searchVille}
+                        style={isAddPlantFrom ? styles.inputIsAddPlantForm : styles.input}
+                        placeholder={isAddPlantFrom ? "Sélectionnez la ville" : searchVille}
                     />
-
-                    <TouchableOpacity
-                        style={styles.iconSearch}
-                        onPress={() => {
-                            search()
-                        }}
-                    >
-                        <FaSearch />
-                    </TouchableOpacity>
+                    {isAddPlantFrom ? (
+                        <View></View>
+                    ) : (
+                        <TouchableOpacity
+                            style={styles.iconSearch}
+                            onPress={() => {
+                                search()
+                            }}
+                        >
+                            <FaSearch />
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
-            <View style={styles.ViewXX}>
+            <View style={isAddPlantFrom ? styles.ViewXXIdAddPlantForm : styles.ViewXX}>
                 {status === "OK" && (
                     <FlatList
                         data={data}
@@ -203,7 +215,9 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        padding: 5,
+        // paddingRight: 40,
+        width: "50%",
+        padding: 8,
         borderWidth: 2,
         borderColor: "#ccc",
         borderRadius: 5,
@@ -214,6 +228,17 @@ const styles = StyleSheet.create({
         alignItems: "center",
         width: "60%",
         position: "relative",
+    },
+    divInputIdAddPlantForm: {
+        width: "100%",
+    },
+    inputIsAddPlantForm: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 10,
+        padding: 10,
+        marginBottom: 15,
+        backgroundColor: "#fff",
     },
     iconSearch: {
         position: "absolute",
@@ -231,5 +256,8 @@ const styles = StyleSheet.create({
         marginLeft: "auto",
         marginRight: "auto",
         zIndex: 1,
+    },
+    ViewXXIdAddPlantForm: {
+        marginLeft: "2%",
     },
 })

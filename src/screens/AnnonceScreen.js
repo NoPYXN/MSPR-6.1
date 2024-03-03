@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import {
     StyleSheet,
     Text,
@@ -10,6 +10,9 @@ import {
     TextInput,
     Touchable,
 } from "react-native"
+import { useNavigation, useParams, useRoute } from "@react-navigation/native"
+import axios from "axios"
+
 import HeaderComponent from "../components/HeaderComponent"
 import Carousel from "../components/Carrousel"
 
@@ -18,18 +21,55 @@ import profil from "../assets/profil.png"
 import favicon from "../assets/favicon.png"
 
 const AnnonceScreen = () => {
-    const images = [logo, profil, favicon]
+    // const images = [logo, profil, favicon]
+    const [annonce, setAnnonce] = useState({})
+    const navigation = useNavigation()
+    const router = useRoute()
+    const [images, setImages] = useState([])
+
+    useEffect(() => {
+        axios
+            .get(`http://localhost:8080/api/v1/annonces/${router.params.id}`)
+            .then(data => {
+                if (data.status == 200) {
+                    data.data.content.DateDebut = convertirDate(data.data.content.DateDebut)
+                    data.data.content.DateFin = convertirDate(data.data.content.DateFin)
+                    setAnnonce(data.data.content)
+                    setImages(data.data.content.Id_Plante)
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }, [])
+
+    const convertirDate = dateString => {
+        const date = new Date(dateString)
+
+        const jour = ("0" + date.getDate()).slice(-2)
+        const mois = ("0" + (date.getMonth() + 1)).slice(-2)
+        const annee = date.getFullYear()
+
+        const dateFormatee = `${jour}/${mois}/${annee}`
+
+        return dateFormatee
+    }
+
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
-            <Text style={styles.TextCenter}>Nom de la plante</Text>
+            <Text style={styles.TextCenter}>{annonce.Titre}</Text>
             <Carousel images={images} imageHeight={200} />
-            <View style={styles.descriptionContainer}>
-                <View style={styles.description}>
-                    <Text style={styles.descriptionText}>Description de la plante...</Text>
-                </View>
-                <View style={styles.dateContainer}>
-                    <Text style={styles.dateText}>Date de gardiennage</Text>
+            <View style={styles.blocInfo}>
+                <Text style={styles.descriptionText}>Description : {annonce.Description}</Text>
+                <Text style={styles.infosTitreText}>Date de gardiennage</Text>
+                <View style={styles.descriptionContainer}>
+                    <View style={styles.description}>
+                        <Text style={styles.infosText}>Début : {annonce.DateDebut}</Text>
+                    </View>
+                    <View style={styles.dateContainer}>
+                        <Text style={styles.dateText}>Fin : {annonce.DateFin}</Text>
+                    </View>
                 </View>
             </View>
             <View style={styles.separator}></View>
@@ -137,13 +177,24 @@ const styles = StyleSheet.create({
     },
     descriptionContainer: {
         flexDirection: "row",
+    },
+    blocInfo: {
         padding: 20,
     },
     description: {
         flex: 1,
     },
+    infosText: {
+        fontSize: 16,
+    },
+    infosTitreText: {
+        fontSize: 16,
+        textAlign: "center",
+        marginBottom: "3%",
+    },
     descriptionText: {
         fontSize: 16,
+        marginBottom: "5%",
     },
     dateContainer: {
         flex: 1,
