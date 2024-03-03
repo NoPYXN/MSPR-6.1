@@ -1,21 +1,36 @@
 import React, { useState, useEffect } from "react"
-import { StyleSheet, Text, View, Image, SafeAreaView, TouchableOpacity } from "react-native"
+import { StyleSheet, Text, View, TextInput, SafeAreaView} from "react-native"
+import { useNavigation} from "@react-navigation/native"
 
 import HeaderComponent from "../components/HeaderComponent"
 import Carousel from "../components/CarrouselComponent"
 import PhotoPicker from "../components/SelectionPhotosComponent"
-
-
-import logo from '../assets/logo.png';
-import profil from '../assets/profil.png';
-import favicon from '../assets/favicon.png';
-
+import TextZoneInfo from "../components/TextZoneInfoComponent"
 
 const AnnonceScreen = () => {
     
-    const images = [logo, profil, favicon];
+    const navigation = useNavigation()
 
-    return (
+    // const logo = "https://res.cloudinary.com/melly-lucas/image/upload/v1704971723/Arosaje/annonces/plante_kqt4sg.avif"
+    // const profil = "https://res.cloudinary.com/melly-lucas/image/upload/v1704971723/Arosaje/annonces/plante_kqt4sg.avif"
+    // const favicon = "https://res.cloudinary.com/melly-lucas/image/upload/v1704971723/Arosaje/annonces/plante_kqt4sg.avif"
+    // const images = [logo, profil, favicon];
+
+    const [images, setImages] = useState([])
+
+    useEffect(() => {setImages(["https://res.cloudinary.com/melly-lucas/image/upload/v1704971723/Arosaje/annonces/plante_kqt4sg.avif", "https://res.cloudinary.com/melly-lucas/image/upload/v1704971723/Arosaje/annonces/plante_kqt4sg.avif", "https://res.cloudinary.com/melly-lucas/image/upload/v1704971723/Arosaje/annonces/plante_kqt4sg.avif"])},[])
+
+    const handleSubmission = (text) => {
+        // Logique de soumission ou d'envoi des données du texte
+        console.log('Text submitted:', text);
+    };
+    const handleImageSelect = (imageUri) => {
+        // Logique à exécuter lorsque l'image est sélectionnée
+        console.log('Image selected:', imageUri);
+        // Vous pouvez stocker l'URI de l'image dans un état ou effectuer toute autre opération nécessaire
+    };
+
+    return ( 
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
             <Text style={styles.TextCenter}>Nom de la plante</Text>
@@ -32,10 +47,13 @@ const AnnonceScreen = () => {
                     </Text>
                 </View>
             </View>
-            <View style={styles.separator}></View>
-            <Text style={styles.TextModule}>Module de tchat même visuel ...</Text>
-            <View style={styles.separator}></View>
-            <PhotoPicker></PhotoPicker>
+            <View style={styles.separateur}></View>
+            <Text style={styles.TextModule}>Module de tchat (même visuel...)</Text>
+            <View style={styles.separateur}></View>
+            <PhotoPicker onImageSelect={handleImageSelect} />
+            <View style={styles.separateur}></View>
+            <Text style={styles.TextIndication}>Avez-vous des indications a transmettre ?</Text>
+            <TextZoneInfo onSubmit={handleSubmission} />
         </SafeAreaView>
     )
 }
@@ -45,96 +63,20 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 24,
     },
+    TextIndication: {
+        paddingTop: 10,
+        textAlign: "center",
+        fontWeight: "bold",
+        fontSize: 18,
+    },
     container: {
         flex: 1,
         backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
     },
-    welcomeText: {
-        fontSize: 20,
-        textAlign: "center",
-        margin: 10,
-    },
     SafeAreaView: {
         width: "100%",
-    },
-    ViewGlobale: {
-        margin: "5%",
-    },
-    SearchVille: {
-        textAlign: "center",
-        marginBottom: "2%",
-    },
-    imageAnnonce: {
-        width: 100,
-        height: 100,
-        borderRadius: 10,
-        marginBottom: 10,
-    },
-    ViewSearchAnnonces: {
-        marginTop: "7%",
-    },
-    ViewAnnonce: {
-        flexDirection: "row",
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: "#E0E0E0",
-        width: "100%",
-    },
-    ViewAnnonces: {
-        flexDirection: "column",
-        width: "90%",
-        marginLeft: "5%",
-        marginRight: "5%",
-        marginTop: "7%",
-    },
-    infoAnnonce: {
-        flexDirection: "column",
-        justifyContent: "center",
-        marginLeft: "5%",
-        flex: 1,
-    },
-    titreAnnonce: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 5,
-    },
-    villeAnnonce: {
-        fontSize: 14,
-        color: "#29771D",
-        fontWeight: "bold",
-        marginBottom: 5,
-    },
-    dateAnnonce: {
-        fontSize: 10,
-        color: "#757575",
-        textAlign: "right",
-    },
-    ViewLocalisation: {
-        display: "flex",
-        flexDirection: "row",
-    },
-    ViewHeader: {
-        width: "100%",
-        height: "10%",
-        backgroundColor: "#29771D",
-    },
-    ViewButtons: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-    },
-    ViewButton: {
-        margin: "5%",
-    },
-    TextCenter: {
-        textAlign: "center",
-        fontWeight: "bold",
-        fontSize: 24,
-    },
-    SafeAreaView: {
-        flex: 1,
     },
     descriptionContainer: {
         flexDirection: "row",
@@ -154,7 +96,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: "right",
     },
-    separator: {
+    separateur: {
         height: 1,
         backgroundColor: "black",
         padding: 1,

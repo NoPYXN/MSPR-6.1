@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Image, Dimensions, StyleSheet } from 'react-native';
 
 const Carousel = ({ images }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    console.log(images[activeIndex]); // Affiche l'image active dans la console
+  }, [activeIndex, images]); // S'exécute à chaque changement de activeIndex ou de images
 
   const handleScroll = (event) => {
     const slideSize = event.nativeEvent.layoutMeasurement.width;
@@ -24,6 +28,7 @@ const Carousel = ({ images }) => {
             <Image source={{ uri: image }} style={styles.image} />
           </View>
         ))}
+        
       </ScrollView>
       <View style={styles.pagination}>
         {images.map((_, index) => (

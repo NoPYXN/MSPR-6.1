@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Image, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome5 } from '@expo/vector-icons';
 
-const PhotoPicker = () => {
+const PhotoPicker = ({ onImageSelect }) => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
@@ -25,6 +25,8 @@ const PhotoPicker = () => {
 
     if (!result.cancelled) {
       setSelectedImage(result.uri);
+      // Appel de la fonction de rappel avec l'URI de l'image sélectionnée
+      onImageSelect(result.uri);
     }
   };
 
@@ -32,6 +34,7 @@ const PhotoPicker = () => {
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={pickImage}>
         <FontAwesome5 name="upload" size={50} color="black" />
+        <Text style={styles.text}>Ajouter des photos</Text>
       </TouchableOpacity>
       {selectedImage && (
         <Image source={{ uri: selectedImage }} style={styles.image} />
@@ -52,15 +55,19 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderRadius: 5,
     width: 200,
-    height: 130,
+    height: 150,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    margin: 20,
   },
   image: {
     width: 200,
     height: 200,
     marginTop: 20,
+  },
+  text: {
+    marginTop: 10,
+    fontSize: 16,
   },
 });
 
