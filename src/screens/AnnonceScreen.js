@@ -16,12 +16,7 @@ import axios from "axios"
 import HeaderComponent from "../components/HeaderComponent"
 import Carousel from "../components/Carrousel"
 
-import logo from "../assets/logo.png"
-import profil from "../assets/profil.png"
-import favicon from "../assets/favicon.png"
-
 const AnnonceScreen = () => {
-    // const images = [logo, profil, favicon]
     const [annonce, setAnnonce] = useState({})
     const navigation = useNavigation()
     const router = useRoute()

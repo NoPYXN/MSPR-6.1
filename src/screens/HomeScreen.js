@@ -58,7 +58,7 @@ const HomeScreen = () => {
         let separerFiltre = ""
         let ville = ""
         let isActions = false
-        if (window.location.search) {
+        if (window.location?.search) {
             urlParam = window.location.search.split("?")[1]
             separerFiltre = urlParam.split("&")
             for (let i = 0; i < separerFiltre.length; i++) {
@@ -81,7 +81,7 @@ const HomeScreen = () => {
             requete += `&Ville=${ville}`
         }
 
-        setIsDelete(false)
+        // setIsDelete(false)
 
         NumeroPage(ville).then(numero => {
             setCalculPage(numero)
@@ -144,10 +144,6 @@ const HomeScreen = () => {
             .then(data => {
                 if (data.status == 200) {
                     setIsDelete(true)
-                    // navigation.replace({
-                    //     name: "HomeScreen",
-                    //     params: { isAnnonceDelete: "ok" },
-                    // })
                     navigation.replace("HomeScreen", { isAnnonceDelete: "ok" })
                 }
             })
@@ -253,16 +249,7 @@ const HomeScreen = () => {
                             </TouchableOpacity>
                         </View>
                     )}
-                    {/* <View style={styles.BoutonAjouterAnnonce}>
-                        <TouchableOpacity
-                            onPress={() => {
-                                // window.history.pushState({}, "", "/FormulaireAnnonceScreen")
-                                navigation.navigate("FormulaireAnnonceScreen")
-                            }}
-                        >
-                            <Text style={styles.TextAjouterAnnonce}>Créer une annonce</Text>
-                        </TouchableOpacity>
-                    </View> */}
+
                     {annonces ? (
                         <View style={styles.ViewAnnonces}>
                             {annonces.map(item => (

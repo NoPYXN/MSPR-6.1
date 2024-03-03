@@ -1,4 +1,5 @@
 import React from "react"
+import { Text } from "react-native"
 
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
@@ -23,7 +24,6 @@ const linking = {
 
 const NavigationStack = () => {
     return (
-        // <NavigationContainer>
         <NavigationContainer linking={linking} fallback={<Text>Loading...</Text>}>
             <Stack.Navigator>
                 <Stack.Screen
