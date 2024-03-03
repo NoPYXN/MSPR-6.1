@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react"
 import { StyleSheet, Text, View, Image, SafeAreaView, TouchableOpacity } from "react-native"
 
 import HeaderComponent from "../components/HeaderComponent"
-import Carousel from "../components/Carrousel"
+import Carousel from "../components/CarrouselComponent"
+import PhotoPicker from "../components/SelectionPhotosComponent"
 
 
 import logo from '../assets/logo.png';
@@ -18,7 +19,7 @@ const AnnonceScreen = () => {
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
             <Text style={styles.TextCenter}>Nom de la plante</Text>
-            <Carousel images={images} imageHeight={200}/>
+            <Carousel images={images} imageWidth={200} imageHeight={200} />
             <View style={styles.descriptionContainer}>
                 <View style={styles.description}>
                     <Text style={styles.descriptionText}>
@@ -34,6 +35,7 @@ const AnnonceScreen = () => {
             <View style={styles.separator}></View>
             <Text style={styles.TextModule}>Module de tchat même visuel ...</Text>
             <View style={styles.separator}></View>
+            <PhotoPicker></PhotoPicker>
         </SafeAreaView>
     )
 }
