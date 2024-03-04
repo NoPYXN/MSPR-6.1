@@ -31,13 +31,11 @@ const FormulaireAnnonceScreen = () => {
                         })
                     }
                 >
-                    <View>
-                        <AiOutlineClose />
-                    </View>
+                    <AiOutlineClose />
                 </TouchableOpacity>
             </View>
             <Text style={styles.TextTitre}>Ajouter une annonce</Text>
-            <AddPlantForm />
+            <AddPlantForm navigation={navigation} />
         </SafeAreaView>
     )
 }

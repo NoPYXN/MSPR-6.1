@@ -33,7 +33,9 @@ const HomeScreen = () => {
     const [isDelete, setIsDelete] = useState()
     const navigation = useNavigation()
     const [numPage, setNumPage] = useState(0)
+
     const route = useRoute()
+    const [message, setMessage] = useState(route.params?.popup || "")
     // if (route.params) {
     //     const { isAnnonceDelete } = route.params
     // }
@@ -52,7 +54,6 @@ const HomeScreen = () => {
     }
 
     useEffect(() => {
-        console.log(route, "ROUTE")
         let urlParam = ""
         let nombrePage = 1
         let separerFiltre = ""
@@ -99,9 +100,9 @@ const HomeScreen = () => {
                 }
             })
             .catch(err => console.log(err))
-        if (route.params?.isAnnonceDelete) {
+        if (route.params?.popup) {
             setIsDelete(true)
-            delete route.params.isAnnonceDelete
+            delete route.params.popup
 
             navigation.navigate({
                 name: "HomeScreen",
@@ -144,7 +145,7 @@ const HomeScreen = () => {
             .then(data => {
                 if (data.status == 200) {
                     setIsDelete(true)
-                    navigation.replace("HomeScreen", { isAnnonceDelete: "ok" })
+                    navigation.replace("HomeScreen", { popup: "Votre annonce a été supprimée" })
                 }
             })
             .catch(err => console.log(err))
@@ -181,7 +182,7 @@ const HomeScreen = () => {
 
             {isDelete && showFirstView ? (
                 <View style={styles.ViewMessage}>
-                    <Text style={styles.textMessage}>Votre annonce a été supprimée</Text>
+                    <Text style={styles.textMessage}>{message}</Text>
                 </View>
             ) : (
                 <View></View>

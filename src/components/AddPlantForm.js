@@ -13,10 +13,10 @@ import * as ImagePicker from "expo-image-picker"
 import ResearchBar from "./ResearchBar"
 import * as Permissions from "expo-permissions"
 import * as DocumentPicker from "expo-document-picker"
-
 import { BsTrash } from "react-icons/bs"
+import axios from "axios"
 
-const AddPlantForm = () => {
+const AddPlantForm = ({ navigation }) => {
     const [imageUri, setImageUri] = useState(null)
     const [isAddPlantFrom, setIsAddPlantFrom] = useState(true)
     const [searchVille, setSearchVille] = useState()
@@ -25,26 +25,7 @@ const AddPlantForm = () => {
     const [annonce, setAnnonce] = useState({})
     const [selectedImage, setSelectedImage] = useState()
     const [isChangeUploadFile, setIsChangeUploadFile] = useState(false)
-    const [cloudinaryImage, setCloudinaryImage] = useState()
-
-    const [tabImages, setTabImages] = useState([
-        {
-            api_key: "kkk",
-            secure_url:
-                "https://res.cloudinary.com/melly-lucas/image/upload/v1704971723/Arosaje/annonces/plante_kqt4sg.avif",
-        },
-        {
-            api_key: "kkk",
-            secure_url:
-                "https://res.cloudinary.com/melly-lucas/image/upload/v1704971723/Arosaje/annonces/plante_kqt4sg.avif",
-        },
-        {
-            api_key: "kkk",
-            secure_url:
-                "https://res.cloudinary.com/melly-lucas/image/upload/v1704971723/Arosaje/annonces/plante_kqt4sg.avif",
-        },
-    ])
-
+    const [tabImages, setTabImages] = useState([])
     const [selectedFile, setSelectedFile] = useState(null)
 
     const handleFileSelected = async () => {
@@ -60,7 +41,6 @@ const AddPlantForm = () => {
                         { type: metadata.type },
                     )
                     setSelectedImage(file)
-                    console.log("Fichier sélectionné:", file)
                 }
             } else {
                 console.log("Sélection de fichier annulée ou aucun fichier sélectionné")
@@ -94,21 +74,16 @@ const AddPlantForm = () => {
     }, [selectedImage])
 
     const handleSubmit = async () => {
-        console.log(selectedImage, "file")
         const formData = new FormData()
         formData.append("file", selectedImage)
         formData.append("upload_preset", "ml_default")
-        console.log(formData, "formData")
         const response = await fetch(`http://localhost:8080/api/v1/upload/uploadPhotoUser`, {
             method: "POST",
             body: formData,
         })
         const data = await response.json()
-        // console.log(data.secure_url, "DATA SECURE URL")
         console.log(data, "DATA")
         if (data.upload) {
-            // setCloudinaryImage(data)
-            // console.log(data, "DATA")
             setTabImages([
                 ...tabImages,
                 {
@@ -116,19 +91,12 @@ const AddPlantForm = () => {
                     secure_url: data.message.secure_url,
                 },
             ])
-            // console.log(data.api_key)
         } else {
-            // console.log(data.message)
+            console.log("")
         }
-        // console.log(data)
     }
 
-    useEffect(() => {
-        console.log(tabImages)
-    }, [tabImages])
-
     const deleteImage = async id => {
-        // console.log(cloudinaryImage, "cloudinary image")
         const response = await fetch(`http://localhost:8080/api/v1/upload/upload/` + id, {
             method: "DELETE",
             headers: {
@@ -136,16 +104,27 @@ const AddPlantForm = () => {
             },
         })
         const data = await response.json()
-        console.log(data)
         if (data.delete) {
-            // setCloudinaryImage("")
             setTabImages(tabImages.filter(element => element.api_key !== id))
         }
     }
 
-    useEffect(() => {
-        console.log(cloudinaryImage, "cloudinaryimage")
-    }, [cloudinaryImage])
+    const ajouterAnnonce = async () => {
+        let tab = []
+        tabImages.forEach(element => {
+            tab.push(element.secure_url)
+        })
+        await axios
+            .post(`http://localhost:8080/api/v1/annonces`, { ...annonce, Id_Plante: tab })
+            .then(data => {
+                if (data.status == 201) {
+                    navigation.replace("HomeScreen", { popup: "Votre annonce a bien été ajoutée" })
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
 
     return (
         <View style={styles.formContainer}>
@@ -195,7 +174,7 @@ const AddPlantForm = () => {
             </View>
             <View style={styles.viewTabImage}>
                 {tabImages
-                    ? tabImages.map((image, index) => (
+                    ? tabImages?.map((image, index) => (
                           <View key={index} style={styles.viewImageMap}>
                               <TouchableOpacity
                                   onPress={() => {
@@ -210,7 +189,12 @@ const AddPlantForm = () => {
                       ))
                     : ""}
             </View>
-            <Pressable style={styles.submitButton}>
+            <Pressable
+                onPress={() => {
+                    ajouterAnnonce()
+                }}
+                style={styles.submitButton}
+            >
                 <Text style={styles.submitButtonText}>Valider</Text>
             </Pressable>
         </View>
