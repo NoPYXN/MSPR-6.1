@@ -5,10 +5,9 @@ import {
     View,
     Image,
     SafeAreaView,
-    TouchableOpacity,
     Linking,
     TextInput,
-    Touchable,
+    Pressable,
 } from "react-native"
 import axios from "axios"
 import { format, parseISO } from "date-fns"
@@ -21,7 +20,7 @@ import HeaderComponent from "../components/HeaderComponent"
 import ResearchBar from "../components/ResearchBar"
 import { NumeroPage } from "../utils/NumeroPage"
 
-const HomeScreen = () => {
+const HomeScreen = ({ loaded }) => {
     const [annonces, setAnnonces] = useState([])
     const [showFirstView, setShowFirstView] = useState(true)
     const [calculPage, setCalculPage] = useState(0)
@@ -54,6 +53,7 @@ const HomeScreen = () => {
     }
 
     useEffect(() => {
+        console.log(loaded, "LOADED")
         let urlParam = ""
         let nombrePage = 1
         let separerFiltre = ""
@@ -106,7 +106,6 @@ const HomeScreen = () => {
 
             navigation.navigate({
                 name: "HomeScreen",
-                params: { isActions: "true" },
             })
             const timer = setTimeout(() => {
                 setShowFirstView(false)
@@ -118,7 +117,7 @@ const HomeScreen = () => {
 
     const boutons = Array.from({ length: calculPage }, (_, index) => (
         <View style={styles.ViewButton} key={index}>
-            <TouchableOpacity
+            <Pressable
                 style={styles.button}
                 onPress={() => {
                     changePage(index)
@@ -129,7 +128,7 @@ const HomeScreen = () => {
                 ) : (
                     <Text>{index + 1}</Text>
                 )}
-            </TouchableOpacity>
+            </Pressable>
         </View>
     ))
 
@@ -176,6 +175,10 @@ const HomeScreen = () => {
             .catch(err => console.log(err))
     }
 
+    const modifierAnnonce = id => {
+        navigation.navigate("FormulaireAnnonceScreen", { id: id })
+    }
+
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
@@ -201,7 +204,7 @@ const HomeScreen = () => {
                     )}
 
                     {isVisible ? (
-                        <TouchableOpacity
+                        <Pressable
                             onPress={() => {
                                 window.history.pushState({}, "", "/")
                                 getAnnonces()
@@ -209,9 +212,9 @@ const HomeScreen = () => {
                             }}
                         >
                             <AiOutlineClose />
-                        </TouchableOpacity>
+                        </Pressable>
                     ) : (
-                        <TouchableOpacity
+                        <Pressable
                             onPress={() => {
                                 window.history.pushState({}, "", "?isActions=true")
                                 getAnnonces()
@@ -219,7 +222,7 @@ const HomeScreen = () => {
                             }}
                         >
                             <AiFillEdit />
-                        </TouchableOpacity>
+                        </Pressable>
                     )}
                 </View>
                 <View style={isVisible ? "" : styles.ViewSearchAnnonces}>
@@ -240,14 +243,14 @@ const HomeScreen = () => {
                         </View>
                     ) : (
                         <View style={styles.BoutonAjouterAnnonce}>
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={() => {
                                     window.history.pushState({}, "", "/FormulaireAnnonceScreen")
                                     navigation.navigate("FormulaireAnnonceScreen")
                                 }}
                             >
                                 <Text style={styles.TextAjouterAnnonce}>Créer une annonce</Text>
-                            </TouchableOpacity>
+                            </Pressable>
                         </View>
                     )}
 
@@ -255,7 +258,7 @@ const HomeScreen = () => {
                         <View style={styles.ViewAnnonces}>
                             {annonces.map(item => (
                                 <View key={item.Id_Annonce} style={styles.ViewActions}>
-                                    <TouchableOpacity
+                                    <Pressable
                                         onPress={() => {
                                             navigation.navigate({
                                                 name: "AnnonceScreen",
@@ -319,19 +322,23 @@ const HomeScreen = () => {
                                                 )}
                                             </View>
                                         </View>
-                                    </TouchableOpacity>
+                                    </Pressable>
                                     {isVisible ? (
                                         <View style={styles.BoutonsActions}>
-                                            <TouchableOpacity onPress={() => {}}>
+                                            <Pressable
+                                                onPress={() => {
+                                                    modifierAnnonce(item.Id_Annonce)
+                                                }}
+                                            >
                                                 <AiFillEdit size={20} />
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
+                                            </Pressable>
+                                            <Pressable
                                                 onPress={() => {
                                                     supprimerAnnonce(item.Id_Annonce)
                                                 }}
                                             >
                                                 <AiFillDelete size={20} />
-                                            </TouchableOpacity>
+                                            </Pressable>
                                         </View>
                                     ) : (
                                         <View></View>

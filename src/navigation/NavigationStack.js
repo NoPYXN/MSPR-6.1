@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Text } from "react-native"
 
 import { NavigationContainer } from "@react-navigation/native"
@@ -22,7 +22,7 @@ const linking = {
     config,
 }
 
-const NavigationStack = () => {
+const NavigationStack = isLoaded => {
     return (
         <NavigationContainer linking={linking} fallback={<Text>Loading...</Text>}>
             <Stack.Navigator>
@@ -30,6 +30,7 @@ const NavigationStack = () => {
                     options={{ headerShown: false }}
                     name="HomeScreen"
                     component={HomeScreen}
+                    isLoaded={isLoaded}
                 />
                 <Stack.Screen
                     options={{ headerShown: false }}

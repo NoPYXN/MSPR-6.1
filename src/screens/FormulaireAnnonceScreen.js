@@ -1,14 +1,14 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import {
     StyleSheet,
     Text,
     View,
     Image,
     SafeAreaView,
-    TouchableOpacity,
     Linking,
     TextInput,
     Touchable,
+    Pressable,
 } from "react-native"
 import axios from "axios"
 import { useNavigation, useParams, useRoute } from "@react-navigation/native"
@@ -19,11 +19,51 @@ import AddPlantForm from "../components/AddPlantForm"
 
 const FormulaireAnnonceScreen = () => {
     const navigation = useNavigation()
+    const router = useRoute()
+    const [id, setId] = useState(router.params?.id || undefined)
+    const [images, setImages] = useState([])
+
+    const [annonce, setAnnonce] = useState({})
+
+    useEffect(() => {
+        console.log(id, "id")
+        console.log(router.params, "FFFFFFFFFFFF")
+        if (router.params?.id) {
+            setId(router.params.id)
+            axios
+                .get(`http://localhost:8080/api/v1/annonces/${router.params.id}`)
+                .then(data => {
+                    if (data.status == 200) {
+                        data.data.content.DateDebut = convertirDate(data.data.content.DateDebut)
+                        data.data.content.DateFin = convertirDate(data.data.content.DateFin)
+                        setAnnonce(data.data.content)
+                        console.log(data.data.content.Id_Plante, "BBBBBBB")
+                        setImages(data.data.content.Id_Plante)
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
+    }, [])
+
+    const convertirDate = dateString => {
+        const date = new Date(dateString)
+
+        const jour = ("0" + date.getDate()).slice(-2)
+        const mois = ("0" + (date.getMonth() + 1)).slice(-2)
+        const annee = date.getFullYear()
+
+        const dateFormatee = `${jour}/${mois}/${annee}`
+
+        return dateFormatee
+    }
+
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
             <View style={styles.ViewGoBack}>
-                <TouchableOpacity
+                <Pressable
                     onPress={() =>
                         navigation.navigate({
                             name: "HomeScreen",
@@ -32,10 +72,25 @@ const FormulaireAnnonceScreen = () => {
                     }
                 >
                     <AiOutlineClose />
-                </TouchableOpacity>
+                </Pressable>
             </View>
-            <Text style={styles.TextTitre}>Ajouter une annonce</Text>
-            <AddPlantForm navigation={navigation} />
+            {id ? (
+                <Text style={styles.TextTitre}>Modifier une annonce</Text>
+            ) : (
+                <Text style={styles.TextTitre}>Ajouter une annonce</Text>
+            )}
+            {annonce ? (
+                <AddPlantForm
+                    navigation={navigation}
+                    id={id}
+                    router={router}
+                    annonce={annonce}
+                    setAnnonce={setAnnonce}
+                    images={images}
+                />
+            ) : (
+                ""
+            )}
         </SafeAreaView>
     )
 }

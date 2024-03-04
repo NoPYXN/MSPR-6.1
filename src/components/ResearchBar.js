@@ -11,7 +11,7 @@ import {
     FlatList,
     SafeAreaView,
     TextInput,
-    TouchableOpacity,
+    Pressable,
 } from "react-native"
 import { FaSearch } from "react-icons/fa"
 import axios from "axios"
@@ -29,6 +29,7 @@ export default function Index({
     selected,
     isAddPlantFrom,
     annonces,
+    valueVille,
 }) {
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: "AIzaSyB8jSTHSpmqZDIl3wz5Nyz8FJfAL0bYvVE",
@@ -49,6 +50,7 @@ export default function Index({
             selected={selected}
             isAddPlantFrom={isAddPlantFrom}
             annonces={annonces}
+            valueVille={valueVille}
         />
     )
 }
@@ -63,6 +65,7 @@ function Map({
     selected,
     isAddPlantFrom,
     annonces,
+    valueVille,
 }) {
     return (
         <div>
@@ -78,6 +81,7 @@ function Map({
                     selected={selected}
                     isAddPlantFrom={isAddPlantFrom}
                     annonces={annonces}
+                    valueVille={valueVille}
                 />
             </div>
         </div>
@@ -95,6 +99,7 @@ const PlacesAutocomplete = ({
     selected,
     isAddPlantFrom,
     annonces,
+    valueVille,
 }) => {
     const {
         ready,
@@ -109,6 +114,11 @@ const PlacesAutocomplete = ({
     })
 
     const [countryChoice, setCountryChoice] = useState("")
+
+    useEffect(() => {
+        console.log(valueVille, "valueVille")
+        setValue(valueVille)
+    }, [])
 
     useEffect(() => {
         console.log(searchVille, "searchVille")
@@ -173,14 +183,14 @@ const PlacesAutocomplete = ({
                     {isAddPlantFrom ? (
                         <View></View>
                     ) : (
-                        <TouchableOpacity
+                        <Pressable
                             style={styles.iconSearch}
                             onPress={() => {
                                 search()
                             }}
                         >
                             <FaSearch />
-                        </TouchableOpacity>
+                        </Pressable>
                     )}
                 </View>
             </View>
@@ -191,12 +201,12 @@ const PlacesAutocomplete = ({
                         keyExtractor={item => item.place_id}
                         renderItem={({ item }) => (
                             <View style={styles.ViewFlatList}>
-                                <TouchableOpacity
+                                <Pressable
                                     onPress={() => handleSelect(item.description)}
                                     style={styles.listItem}
                                 >
                                     <Text>{item.description}</Text>
-                                </TouchableOpacity>
+                                </Pressable>
                             </View>
                         )}
                         style={styles.list}

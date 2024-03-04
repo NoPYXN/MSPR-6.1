@@ -1,32 +1,28 @@
 import React, { useState, useEffect } from "react"
-import {
-    View,
-    Text,
-    TextInput,
-    Pressable,
-    StyleSheet,
-    Image,
-    ScrollView,
-    TouchableOpacity,
-} from "react-native"
+import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView } from "react-native"
 import * as ImagePicker from "expo-image-picker"
 import ResearchBar from "./ResearchBar"
 import * as Permissions from "expo-permissions"
 import * as DocumentPicker from "expo-document-picker"
 import { BsTrash } from "react-icons/bs"
 import axios from "axios"
+import { useRoute } from "@react-navigation/native"
 
-const AddPlantForm = ({ navigation }) => {
+const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
     const [imageUri, setImageUri] = useState(null)
     const [isAddPlantFrom, setIsAddPlantFrom] = useState(true)
     const [searchVille, setSearchVille] = useState()
     const [coordonnees, setCoordonnees] = useState()
     const [selected, setSelected] = useState()
-    const [annonce, setAnnonce] = useState({})
+    // const [annonce, setAnnonce] = useState({})
     const [selectedImage, setSelectedImage] = useState()
     const [isChangeUploadFile, setIsChangeUploadFile] = useState(false)
     const [tabImages, setTabImages] = useState([])
     const [selectedFile, setSelectedFile] = useState(null)
+
+    useEffect(() => {
+        console.log(tabImages)
+    }, [tabImages])
 
     const handleFileSelected = async () => {
         try {
@@ -110,6 +106,7 @@ const AddPlantForm = ({ navigation }) => {
     }
 
     const ajouterAnnonce = async () => {
+        console.log(annonce, "annonce")
         let tab = []
         tabImages.forEach(element => {
             tab.push(element.secure_url)
@@ -133,6 +130,7 @@ const AddPlantForm = ({ navigation }) => {
                 style={styles.input}
                 onChangeText={text => setAnnonce({ ...annonce, Titre: text })}
                 placeholder="Entrez le nom de la plante"
+                // value={annonce?.Titre || ""}
             />
             <Text style={styles.label}>Description</Text>
             <TextInput
@@ -140,18 +138,21 @@ const AddPlantForm = ({ navigation }) => {
                 onChangeText={text => setAnnonce({ ...annonce, Description: text })}
                 placeholder="Entrez une description"
                 multiline
+                // value={annonce?.Description || ""}
             />
             <Text style={styles.label}>Date de début de gardiennage</Text>
             <TextInput
                 style={styles.input}
                 onChangeText={text => setAnnonce({ ...annonce, DateDebut: text })}
                 placeholder="Sélectionnez une date"
+                // value={annonce?.DateDebut || ""}
             />
             <Text style={styles.label}>Date de fin de gardiennage</Text>
             <TextInput
                 style={styles.input}
                 onChangeText={text => setAnnonce({ ...annonce, DateFin: text })}
                 placeholder="Sélectionnez une date"
+                // value={annonce?.DateFin || ""}
             />
             <Text style={styles.label}>Ville</Text>
             <ResearchBar
@@ -163,27 +164,31 @@ const AddPlantForm = ({ navigation }) => {
                 setCoordonnees={setCoordonnees}
                 annonces={annonce}
                 setAnnonces={setAnnonce}
+                // valueVille={annonce?.Ville || ""}
             />
 
             <Text style={styles.label}>Télécharger des images</Text>
             <View style={styles.uploadButton}>
-                <TouchableOpacity onPress={handleFileSelected}>
+                <Pressable onPress={handleFileSelected}>
                     <Text style={styles.labelUploadButton}>Sélectionner un fichier</Text>
-                </TouchableOpacity>
+                </Pressable>
                 {selectedFile && <Text>Fichier sélectionné : {selectedFile.name}</Text>}
             </View>
+
             <View style={styles.viewTabImage}>
                 {tabImages
-                    ? tabImages?.map((image, index) => (
+                    ? tabImages.map((image, index) => (
                           <View key={index} style={styles.viewImageMap}>
-                              <TouchableOpacity
+                              <Pressable
                                   onPress={() => {
                                       deleteImage(image.api_key)
                                   }}
                                   style={styles.croix}
                               >
-                                  <BsTrash size={15} />
-                              </TouchableOpacity>
+                                  <View>
+                                      <BsTrash size={15} />
+                                  </View>
+                              </Pressable>
                               <Image source={{ uri: image.secure_url }} style={styles.imagetab} />
                           </View>
                       ))
