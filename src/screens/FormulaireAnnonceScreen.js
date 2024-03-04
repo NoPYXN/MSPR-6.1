@@ -22,14 +22,14 @@ const FormulaireAnnonceScreen = () => {
     const router = useRoute()
     const [id, setId] = useState(router.params?.id || undefined)
     const [images, setImages] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
 
     const [annonce, setAnnonce] = useState({})
 
     useEffect(() => {
-        console.log(id, "id")
-        console.log(router.params, "FFFFFFFFFFFF")
         if (router.params?.id) {
             setId(router.params.id)
+            setIsLoading(true)
             axios
                 .get(`http://localhost:8080/api/v1/annonces/${router.params.id}`)
                 .then(data => {
@@ -37,8 +37,8 @@ const FormulaireAnnonceScreen = () => {
                         data.data.content.DateDebut = convertirDate(data.data.content.DateDebut)
                         data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                         setAnnonce(data.data.content)
-                        console.log(data.data.content.Id_Plante, "BBBBBBB")
-                        setImages(data.data.content.Id_Plante)
+                        // setImages(data.data.content.Id_Plante)
+                        setIsLoading(false)
                     }
                 })
                 .catch(err => {
@@ -46,6 +46,10 @@ const FormulaireAnnonceScreen = () => {
                 })
         }
     }, [])
+
+    useEffect(() => {
+        console.log(annonce, "annonce")
+    }, [annonce])
 
     const convertirDate = dateString => {
         const date = new Date(dateString)
@@ -79,17 +83,23 @@ const FormulaireAnnonceScreen = () => {
             ) : (
                 <Text style={styles.TextTitre}>Ajouter une annonce</Text>
             )}
-            {annonce ? (
+
+            {isLoading ? (
+                <AddPlantForm
+                    navigation={navigation}
+                    router={router}
+                    annonce={annonce}
+                    setAnnonce={setAnnonce}
+                />
+            ) : (
                 <AddPlantForm
                     navigation={navigation}
                     id={id}
                     router={router}
                     annonce={annonce}
                     setAnnonce={setAnnonce}
-                    images={images}
+                    // images={images}
                 />
-            ) : (
-                ""
             )}
         </SafeAreaView>
     )

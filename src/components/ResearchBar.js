@@ -116,8 +116,11 @@ const PlacesAutocomplete = ({
     const [countryChoice, setCountryChoice] = useState("")
 
     useEffect(() => {
-        console.log(valueVille, "valueVille")
-        setValue(valueVille)
+        if (valueVille) {
+            console.log(valueVille, "valueVille")
+            setValue(valueVille)
+            // setSelected(true)
+        }
     }, [])
 
     useEffect(() => {
@@ -194,6 +197,7 @@ const PlacesAutocomplete = ({
                     )}
                 </View>
             </View>
+
             <View style={isAddPlantFrom ? styles.ViewXXIdAddPlantForm : styles.ViewXX}>
                 {status === "OK" && (
                     <FlatList

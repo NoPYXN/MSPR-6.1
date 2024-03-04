@@ -14,15 +14,25 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
     const [searchVille, setSearchVille] = useState()
     const [coordonnees, setCoordonnees] = useState()
     const [selected, setSelected] = useState()
-    // const [annonce, setAnnonce] = useState({})
+    const [annonce2, setAnnonce2] = useState({})
     const [selectedImage, setSelectedImage] = useState()
     const [isChangeUploadFile, setIsChangeUploadFile] = useState(false)
     const [tabImages, setTabImages] = useState([])
     const [selectedFile, setSelectedFile] = useState(null)
 
     useEffect(() => {
-        console.log(tabImages)
-    }, [tabImages])
+        if (id) {
+            let tab = []
+            annonce.Id_Plante.forEach(element => {
+                tab.push({
+                    secure_url: element,
+                    api_key: element.split("/Arosaje/annonces/")[1].split(".")[0],
+                })
+            })
+            console.log(tab)
+            setTabImages(tab)
+        }
+    }, [])
 
     const handleFileSelected = async () => {
         try {
@@ -123,6 +133,23 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
             })
     }
 
+    const modifierAnnonce = async () => {
+        let tab = []
+        tabImages.forEach(element => {
+            tab.push(element.secure_url)
+        })
+        await axios
+            .put(`http://localhost:8080/api/v1/annonces/${id}`, { ...annonce, Id_Plante: tab })
+            .then(data => {
+                if (data.status == 200) {
+                    navigation.replace("HomeScreen", { popup: "Votre annonce a bien été modifiée" })
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
     return (
         <View style={styles.formContainer}>
             <Text style={styles.label}>Nom de la plante</Text>
@@ -130,7 +157,7 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
                 style={styles.input}
                 onChangeText={text => setAnnonce({ ...annonce, Titre: text })}
                 placeholder="Entrez le nom de la plante"
-                // value={annonce?.Titre || ""}
+                value={annonce?.Titre || ""}
             />
             <Text style={styles.label}>Description</Text>
             <TextInput
@@ -138,21 +165,21 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
                 onChangeText={text => setAnnonce({ ...annonce, Description: text })}
                 placeholder="Entrez une description"
                 multiline
-                // value={annonce?.Description || ""}
+                value={annonce?.Description || ""}
             />
             <Text style={styles.label}>Date de début de gardiennage</Text>
             <TextInput
                 style={styles.input}
                 onChangeText={text => setAnnonce({ ...annonce, DateDebut: text })}
                 placeholder="Sélectionnez une date"
-                // value={annonce?.DateDebut || ""}
+                value={annonce?.DateDebut || ""}
             />
             <Text style={styles.label}>Date de fin de gardiennage</Text>
             <TextInput
                 style={styles.input}
                 onChangeText={text => setAnnonce({ ...annonce, DateFin: text })}
                 placeholder="Sélectionnez une date"
-                // value={annonce?.DateFin || ""}
+                value={annonce?.DateFin || ""}
             />
             <Text style={styles.label}>Ville</Text>
             <ResearchBar
@@ -164,7 +191,7 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
                 setCoordonnees={setCoordonnees}
                 annonces={annonce}
                 setAnnonces={setAnnonce}
-                // valueVille={annonce?.Ville || ""}
+                valueVille={annonce?.Ville || ""}
             />
 
             <Text style={styles.label}>Télécharger des images</Text>
@@ -194,14 +221,25 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
                       ))
                     : ""}
             </View>
-            <Pressable
-                onPress={() => {
-                    ajouterAnnonce()
-                }}
-                style={styles.submitButton}
-            >
-                <Text style={styles.submitButtonText}>Valider</Text>
-            </Pressable>
+            {id ? (
+                <Pressable
+                    onPress={() => {
+                        modifierAnnonce()
+                    }}
+                    style={styles.submitButton}
+                >
+                    <Text style={styles.submitButtonText}>Valider</Text>
+                </Pressable>
+            ) : (
+                <Pressable
+                    onPress={() => {
+                        ajouterAnnonce()
+                    }}
+                    style={styles.submitButton}
+                >
+                    <Text style={styles.submitButtonText}>Valider</Text>
+                </Pressable>
+            )}
         </View>
     )
 }
