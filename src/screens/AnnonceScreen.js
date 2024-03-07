@@ -11,17 +11,21 @@ import TextZoneInfo from "../components/TextZoneInfoComponent"
 
 import { ConvertirDateHeure } from "../utils/ConvertirDateHeure"
 import { convertirDate } from "../utils/ConvertiDate"
+import { sortDateConseils } from "../utils/AffichageConseils"
 
 const AnnonceScreen = () => {
     const [annonce, setAnnonce] = useState({})
     const navigation = useNavigation()
     const router = useRoute()
     const [images, setImages] = useState([])
-    const [selectedImage, setSelectedImage] = useState(null)
+    // const [selectedImage, setSelectedImage] = useState(null)
     const [messages, setMessages] = useState([])
     const [blocMessages, setBlocMessages] = useState([])
     const [numero, setNumero] = useState(0)
     const [isVisible, setIsVisible] = useState(false)
+    const [selectedImages, setSelectedImages] = useState([
+        // "https://res.cloudinary.com/melly-lucas/image/upload/v1704971723/Arosaje/annonces/cf2n96vnymuxuogwarmr.webp",
+    ])
 
     useEffect(() => {
         axios
@@ -32,9 +36,8 @@ const AnnonceScreen = () => {
                     data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                     setAnnonce(data.data.content)
                     setImages(data.data.content.Id_Plante)
-
-                    // setMessages(data.data.content.Conseils)
                     setBlocMessages(data.data.content.Conseils.sort(sortDateConseils))
+                    // setSelectedImages(data.data.content.EtatPlantes)
 
                     if (data.data.content.Conseils.length <= 2) {
                         setMessages(data.data.content.Conseils)
@@ -56,45 +59,23 @@ const AnnonceScreen = () => {
     }, [])
 
     const afficherPlus = () => {
-        // console.log(blocMessages, "bloc message")
         let tab = []
         let i = numero
-        console.log(numero, "numero")
-        console.log(blocMessages.length, "bloc message longueur")
-        console.log(blocMessages, "blocMessages")
-        // blocMessages.sort(sortDateConseils)
-        console.log(blocMessages, "blocMessages")
         while (blocMessages.length >= i + 1 && tab.length < 2) {
             tab.push(blocMessages[i])
             i += 1
         }
-
         setMessages(messages.concat(tab))
         setNumero(numero + 2)
         if (blocMessages.length <= numero + 2) {
             setIsVisible(false)
         }
     }
-    const sortDateConseils = (a, b) => {
-        var dateA = new Date(
-            a.DateCreation.replace(
-                /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/,
-                "$3-$1-$2T$4:$5:$6",
-            ),
-        )
-        var dateB = new Date(
-            b.DateCreation.replace(
-                /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/,
-                "$3-$1-$2T$4:$5:$6",
-            ),
-        )
-        return dateB - dateA
-    }
 
-    const handleImageSelect = imageUri => {
-        setSelectedImage(imageUri)
-        // console.log("Image selected:", imageUri)
-    }
+    // const handleImageSelect = imageUri => {
+    //     // setSelectedImage(imageUri)
+    //     // console.log("Image selected:", imageUri)
+    // }
 
     return (
         <SafeAreaView style={styles.SafeAreaView}>
@@ -102,12 +83,17 @@ const AnnonceScreen = () => {
             <Text style={styles.TextCenter}>
                 {annonce.Titre && annonce.Titre.length > 0
                     ? annonce.Titre.charAt(0).toUpperCase() + annonce.Titre.slice(1)
-                    : "Undefined"}
+                    : "Pas de titre"}
             </Text>
             <Carousel images={images} imageHeight={200} />
             <View style={styles.blocInfo}>
-                <Text style={styles.descriptionText}>Description : {annonce.Description}</Text>
-                <Text style={styles.infosTitreText}>Date de gardiennage</Text>
+                <Text style={styles.descriptionText}>
+                    {annonce.Description && annonce.Description.length > 0
+                        ? annonce.Description.charAt(0).toUpperCase() + annonce.Description.slice(1)
+                        : "Pas de description"}
+                </Text>
+                <Text style={styles.descriptionText}>{annonce.Ville}</Text>
+                {/* <Text style={styles.infosTitreText}>Date de gardiennage</Text> */}
                 <View style={styles.descriptionContainer}>
                     <View style={styles.description}>
                         <Text style={styles.infosText}>Début : {annonce.DateDebut}</Text>
@@ -119,7 +105,12 @@ const AnnonceScreen = () => {
             </View>
             <View style={styles.separateur}></View>
 
-            <PhotoPicker onImageSelect={handleImageSelect} />
+            <PhotoPicker
+                // onImageSelect={handleImageSelect}
+                setSelectedImages={setSelectedImages}
+                selectedImages={selectedImages}
+            />
+
             <View style={styles.separateur}></View>
 
             <View style={styles.messageContainer}>
@@ -143,7 +134,6 @@ const AnnonceScreen = () => {
                             </View>
                             <View style={styles.messageContent}>
                                 <Text style={styles.messageText}>{message.Message}</Text>
-                                {/* <Text style={styles.messageTime}>{message.time.toLocaleString()}</Text> */}
                             </View>
                         </View>
                     ))
@@ -156,7 +146,9 @@ const AnnonceScreen = () => {
                             afficherPlus()
                         }}
                     >
-                        <Text style={{ textAlign: "center" }}>Afficher plus</Text>
+                        <Text style={{ textAlign: "center", marginTop: "2%", marginBottom: "2%" }}>
+                            Afficher plus
+                        </Text>
                     </Pressable>
                 ) : (
                     <View></View>
@@ -193,7 +185,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
     },
     blocInfo: {
-        padding: 20,
+        padding: "6%",
     },
     description: {
         flex: 1,
@@ -219,10 +211,10 @@ const styles = StyleSheet.create({
         textAlign: "right",
     },
     separateur: {
-        height: 1,
+        height: "1px",
         backgroundColor: "black",
-        padding: 1,
-        marginHorizontal: 30,
+        // padding: 1,
+        marginHorizontal: "6%",
     },
     TextModule: {
         textAlign: "center",
@@ -231,10 +223,14 @@ const styles = StyleSheet.create({
         paddingVertical: 70,
     },
     messageContainer: {
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        marginHorizontal: 20,
-        marginTop: 10,
+        // paddingHorizontal: 20,
+        // paddingVertical: 10,
+        // marginHorizontal: 20,
+        // marginTop: 10,
+        paddingHorizontal: "3%",
+        paddingVertical: "2%",
+        marginHorizontal: "3%",
+        marginTop: "2%",
     },
     message: {
         flexDirection: "column",

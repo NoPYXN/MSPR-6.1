@@ -288,7 +288,8 @@ const HomeScreen = ({ loaded }) => {
                                                             : styles.titreAnnonce
                                                     }
                                                 >
-                                                    {item.Titre}
+                                                    {item.Titre.charAt(0).toUpperCase() +
+                                                        item.Titre.slice(1)}
                                                 </Text>
                                                 <Text
                                                     style={
