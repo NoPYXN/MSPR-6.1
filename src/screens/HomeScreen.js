@@ -19,6 +19,7 @@ import { AiFillEdit, AiOutlineClose, AiFillDelete } from "react-icons/ai"
 import HeaderComponent from "../components/HeaderComponent"
 import ResearchBar from "../components/ResearchBar"
 import { NumeroPage } from "../utils/NumeroPage"
+import { ConvertirDateHeure } from "../utils/ConvertirDateHeure"
 
 const HomeScreen = ({ loaded }) => {
     const [annonces, setAnnonces] = useState([])
@@ -301,14 +302,7 @@ const HomeScreen = ({ loaded }) => {
                                                 {!isVisible ? (
                                                     <View>
                                                         <Text style={styles.dateAnnonce}>
-                                                            Depuis le{" "}
-                                                            {format(
-                                                                parseISO(item.DateCreation),
-                                                                "EEEE dd MMMM yyyy",
-                                                                {
-                                                                    locale: fr,
-                                                                },
-                                                            )}
+                                                            {ConvertirDateHeure(item.DateCreation)}
                                                         </Text>
                                                     </View>
                                                 ) : (

@@ -2,15 +2,23 @@ import React, { useState, useEffect } from "react"
 import { StyleSheet, Text, View, Image, SafeAreaView } from "react-native"
 import { useNavigation, useParams, useRoute } from "@react-navigation/native"
 import axios from "axios"
+import { Ionicons } from "@expo/vector-icons" // Import Ionicons from expo
 
 import HeaderComponent from "../components/HeaderComponent"
-import Carousel from "../components/Carrousel"
+import Carousel from "../components/CarrouselComponent"
+import PhotoPicker from "../components/SelectionPhotosComponent"
+import TextZoneInfo from "../components/TextZoneInfoComponent"
+
+import { ConvertirDateHeure } from "../utils/ConvertirDateHeure"
+import { convertirDate } from "../utils/ConvertiDate"
 
 const AnnonceScreen = () => {
     const [annonce, setAnnonce] = useState({})
     const navigation = useNavigation()
     const router = useRoute()
     const [images, setImages] = useState([])
+    const [selectedImage, setSelectedImage] = useState(null)
+    const [messages, setMessages] = useState([])
 
     useEffect(() => {
         axios
@@ -21,6 +29,10 @@ const AnnonceScreen = () => {
                     data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                     setAnnonce(data.data.content)
                     setImages(data.data.content.Id_Plante)
+                    // if (data.data.content.Conseils.length > 0){
+                    //     formatDate()
+                    // }
+                    setMessages(data.data.content.Conseils)
                 }
             })
             .catch(err => {
@@ -28,22 +40,19 @@ const AnnonceScreen = () => {
             })
     }, [])
 
-    const convertirDate = dateString => {
-        const date = new Date(dateString)
-
-        const jour = ("0" + date.getDate()).slice(-2)
-        const mois = ("0" + (date.getMonth() + 1)).slice(-2)
-        const annee = date.getFullYear()
-
-        const dateFormatee = `${jour}/${mois}/${annee}`
-
-        return dateFormatee
+    const handleImageSelect = imageUri => {
+        setSelectedImage(imageUri)
+        console.log("Image selected:", imageUri)
     }
 
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
-            <Text style={styles.TextCenter}>{annonce.Titre}</Text>
+            <Text style={styles.TextCenter}>
+                {annonce.Titre && annonce.Titre.length > 0
+                    ? annonce.Titre.charAt(0).toUpperCase() + annonce.Titre.slice(1)
+                    : "Undefined"}
+            </Text>
             <Carousel images={images} imageHeight={200} />
             <View style={styles.blocInfo}>
                 <Text style={styles.descriptionText}>Description : {annonce.Description}</Text>
@@ -57,17 +66,55 @@ const AnnonceScreen = () => {
                     </View>
                 </View>
             </View>
-            <View style={styles.separator}></View>
-            <Text style={styles.TextModule}>Module de tchat même visuel ...</Text>
-            <View style={styles.separator}></View>
+            <View style={styles.separateur}></View>
+
+            <PhotoPicker onImageSelect={handleImageSelect} />
+            <View style={styles.separateur}></View>
+            <View style={styles.messageContainer}>
+                {messages.length != 0 ? (
+                    messages.map((message, index) => (
+                        <View key={index} style={styles.message}>
+                            <View style={styles.infosMessage}>
+                                <View style={styles.avatarContainer}>
+                                    <Ionicons
+                                        name="person-circle-outline"
+                                        size={24}
+                                        color="black"
+                                    />
+                                    <Text style={styles.pseudo}>{message.Username}</Text>
+                                </View>
+                                <Text style={styles.messageTime}>
+                                    {ConvertirDateHeure(message.DateCreation)}
+                                </Text>
+                            </View>
+                            <View style={styles.messageContent}>
+                                <Text style={styles.messageText}>{message.Message}</Text>
+                                {/* <Text style={styles.messageTime}>{message.time.toLocaleString()}</Text> */}
+                            </View>
+                        </View>
+                    ))
+                ) : (
+                    <View></View>
+                )}
+            </View>
+            <Text style={styles.TextIndication}>Avez-vous des indications à transmettre ?</Text>
+            <TextZoneInfo messages={messages} setMessages={setMessages} />
         </SafeAreaView>
     )
 }
+
 const styles = StyleSheet.create({
     TextCenter: {
         textAlign: "center",
         fontWeight: "bold",
         fontSize: 24,
+        padding: 10,
+    },
+    TextIndication: {
+        paddingTop: 10,
+        textAlign: "center",
+        fontWeight: "bold",
+        fontSize: 18,
     },
     container: {
         flex: 1,
@@ -75,90 +122,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
-    welcomeText: {
-        fontSize: 20,
-        textAlign: "center",
-        margin: 10,
-    },
     SafeAreaView: {
         width: "100%",
-    },
-    ViewGlobale: {
-        margin: "5%",
-    },
-    SearchVille: {
-        textAlign: "center",
-        marginBottom: "2%",
-    },
-    imageAnnonce: {
-        width: 100,
-        height: 100,
-        borderRadius: 10,
-        marginBottom: 10,
-    },
-    ViewSearchAnnonces: {
-        marginTop: "7%",
-    },
-    ViewAnnonce: {
-        flexDirection: "row",
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: "#E0E0E0",
-        width: "100%",
-    },
-    ViewAnnonces: {
-        flexDirection: "column",
-        width: "90%",
-        marginLeft: "5%",
-        marginRight: "5%",
-        marginTop: "7%",
-    },
-    infoAnnonce: {
-        flexDirection: "column",
-        justifyContent: "center",
-        marginLeft: "5%",
-        flex: 1,
-    },
-    titreAnnonce: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 5,
-    },
-    villeAnnonce: {
-        fontSize: 14,
-        color: "#29771D",
-        fontWeight: "bold",
-        marginBottom: 5,
-    },
-    dateAnnonce: {
-        fontSize: 10,
-        color: "#757575",
-        textAlign: "right",
-    },
-    ViewLocalisation: {
-        display: "flex",
-        flexDirection: "row",
-    },
-    ViewHeader: {
-        width: "100%",
-        height: "10%",
-        backgroundColor: "#29771D",
-    },
-    ViewButtons: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-    },
-    ViewButton: {
-        margin: "5%",
-    },
-    TextCenter: {
-        textAlign: "center",
-        fontWeight: "bold",
-        fontSize: 24,
-    },
-    SafeAreaView: {
-        flex: 1,
+        backgroundColor: "white",
     },
     descriptionContainer: {
         flexDirection: "row",
@@ -189,7 +155,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: "right",
     },
-    separator: {
+    separateur: {
         height: 1,
         backgroundColor: "black",
         padding: 1,
@@ -200,6 +166,49 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 24,
         paddingVertical: 70,
+    },
+    messageContainer: {
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        marginHorizontal: 20,
+        marginTop: 10,
+    },
+    message: {
+        flexDirection: "column",
+        marginBottom: "2%",
+        marginTop: "2%",
+    },
+    avatarContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginRight: 10,
+    },
+    pseudo: {
+        marginLeft: 5,
+        fontWeight: "bold",
+    },
+    messageContent: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+    },
+    messageText: {
+        fontSize: 16,
+    },
+    messageTime: {
+        fontSize: 12,
+        color: "#888",
+        marginTop: "auto",
+        marginBottom: "auto",
+        marginRight: "1%",
+    },
+    infosMessage: {
+        flexDirection: "row",
+        // marginBottom: 10,
+        justifyContent: "space-between",
     },
 })
 export default AnnonceScreen
