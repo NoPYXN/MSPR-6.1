@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { StyleSheet, Text, View, Image, SafeAreaView } from "react-native"
+import { StyleSheet, Text, View, Image, SafeAreaView, Pressable } from "react-native"
 import { useNavigation, useParams, useRoute } from "@react-navigation/native"
 import axios from "axios"
 import { Ionicons } from "@expo/vector-icons" // Import Ionicons from expo
@@ -19,6 +19,9 @@ const AnnonceScreen = () => {
     const [images, setImages] = useState([])
     const [selectedImage, setSelectedImage] = useState(null)
     const [messages, setMessages] = useState([])
+    const [blocMessages, setBlocMessages] = useState([])
+    const [numero, setNumero] = useState(0)
+    const [isVisible, setIsVisible] = useState(false)
 
     useEffect(() => {
         axios
@@ -29,16 +32,64 @@ const AnnonceScreen = () => {
                     data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                     setAnnonce(data.data.content)
                     setImages(data.data.content.Id_Plante)
-                    // if (data.data.content.Conseils.length > 0){
-                    //     formatDate()
-                    // }
-                    setMessages(data.data.content.Conseils)
+
+                    // setMessages(data.data.content.Conseils)
+                    setBlocMessages(data.data.content.Conseils)
+
+                    if (data.data.content.Conseils.length <= 2) {
+                        setMessages(data.data.content.Conseils)
+                        setIsVisible(false)
+                    } else {
+                        let tab = []
+                        for (let i = numero; i < numero + 2; i++) {
+                            tab.push(data.data.content.Conseils[i])
+                        }
+                        setMessages(tab)
+                        setNumero(numero + 2)
+                        setIsVisible(true)
+                    }
                 }
             })
             .catch(err => {
                 console.log(err)
             })
     }, [])
+
+    const afficherPlus = () => {
+        // console.log(blocMessages, "bloc message")
+        let tab = []
+        let i = numero
+        while (blocMessages.length <= numero + 2 || tab.length <= 2) {
+            console.log(blocMessages.length <= numero + 2)
+            console.log(tab.length >= 2)
+            tab.push(blocMessages[i])
+            i += 1
+        }
+        // for (let i = numero; i < numero + 2; i++) {
+        //     tab.push(blocMessages[i])
+        // }
+        // console.log(tab)
+        setMessages(messages.concat(tab))
+        setNumero(numero + 2)
+        console.log("XXXXXXXXXXXXXX")
+        console.log(blocMessages.length)
+        console.log(numero)
+        console.log("FFFIIINN")
+        if (blocMessages.length <= numero + 2) {
+            setIsVisible(false)
+        }
+    }
+
+    // useEffect(() => {
+    //     console.log("numero", numero)
+    //     if (blocMessages.length <= numero) {
+    //         console.log("XXXXXXXXXXXXXX")
+    //         console.log(blocMessages.length)
+    //         console.log(numero)
+    //         console.log("FFFIIINN")
+    //         setIsVisible(false)
+    //     }
+    // }, [numero])
 
     const handleImageSelect = imageUri => {
         setSelectedImage(imageUri)
@@ -70,7 +121,10 @@ const AnnonceScreen = () => {
 
             <PhotoPicker onImageSelect={handleImageSelect} />
             <View style={styles.separateur}></View>
+
             <View style={styles.messageContainer}>
+                <Text style={styles.TextIndication}>Avez-vous des indications à transmettre ?</Text>
+                <TextZoneInfo messages={messages} setMessages={setMessages} />
                 {messages.length != 0 ? (
                     messages.map((message, index) => (
                         <View key={index} style={styles.message}>
@@ -96,9 +150,18 @@ const AnnonceScreen = () => {
                 ) : (
                     <View></View>
                 )}
+                {isVisible ? (
+                    <Pressable
+                        onPress={() => {
+                            afficherPlus()
+                        }}
+                    >
+                        <Text style={{ textAlign: "center" }}>Afficher plus</Text>
+                    </Pressable>
+                ) : (
+                    <View></View>
+                )}
             </View>
-            <Text style={styles.TextIndication}>Avez-vous des indications à transmettre ?</Text>
-            <TextZoneInfo messages={messages} setMessages={setMessages} />
         </SafeAreaView>
     )
 }

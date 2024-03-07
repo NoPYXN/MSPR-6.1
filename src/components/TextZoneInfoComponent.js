@@ -49,10 +49,11 @@ const TextZoneInfo = ({ setMessages, messages }) => {
 
 const styles = StyleSheet.create({
     container: {
+        // width: "100%",
         borderWidth: 1,
         borderColor: "gray",
         borderRadius: 5,
-        marginHorizontal: 20,
+        // marginHorizontal: 20,
         marginTop: 10,
         marginBottom: 20,
         flexDirection: "row",
