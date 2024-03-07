@@ -94,6 +94,7 @@ const PhotoPicker = ({ onImageSelect, selectedImages, setSelectedImages, id }) =
                 body: { EtatPlantes: [...selectedImages, data.message.secure_url] },
             })
             const data2 = await response2.json()
+            console.log("DATA2", data2)
         } else {
             console.log("")
         }

@@ -37,7 +37,12 @@ const AnnonceScreen = () => {
                     setAnnonce(data.data.content)
                     setImages(data.data.content.Id_Plante)
                     setBlocMessages(data.data.content.Conseils.sort(sortDateConseils))
-                    // setSelectedImages(data.data.content.EtatPlantes)
+                    setSelectedImages(data.data.content.EtatPlantes)
+                    console.log(
+                        data.data.content.EtatPlantes,
+                        "SELETEDED IMAGE DANS ANNONCE SCREEN",
+                    )
+                    console.log(data.data.content, "SELETEDED IMAGE DANS ANNONCE SCREEN")
 
                     if (data.data.content.Conseils.length <= 2) {
                         setMessages(data.data.content.Conseils)
