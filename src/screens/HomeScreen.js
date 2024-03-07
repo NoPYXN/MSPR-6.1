@@ -32,12 +32,8 @@ const HomeScreen = ({ loaded }) => {
     const [isDelete, setIsDelete] = useState()
     const navigation = useNavigation()
     const [numPage, setNumPage] = useState(0)
-
     const route = useRoute()
     const [message, setMessage] = useState(route.params?.popup || "")
-    // if (route.params) {
-    //     const { isAnnonceDelete } = route.params
-    // }
 
     const changeUrlPagination = pageNumber => {
         pageNumber += 1
@@ -81,8 +77,6 @@ const HomeScreen = ({ loaded }) => {
         if (ville != "") {
             requete += `&Ville=${ville}`
         }
-
-        // setIsDelete(false)
 
         NumeroPage(ville).then(numero => {
             setCalculPage(numero)

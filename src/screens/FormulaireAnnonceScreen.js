@@ -23,12 +23,13 @@ const FormulaireAnnonceScreen = () => {
     const [id, setId] = useState(router.params?.id || undefined)
     const [images, setImages] = useState([])
     const [isLoading, setIsLoading] = useState(true)
+    const [isCreate, setIsCreate] = useState(false)
 
     const [annonce, setAnnonce] = useState({})
 
     useEffect(() => {
+        console.log(router.params, "[router.params]")
         if (router.params?.id) {
-            setId(router.params.id)
             setIsLoading(true)
             axios
                 .get(`http://localhost:8080/api/v1/annonces/${router.params.id}`)
@@ -37,6 +38,7 @@ const FormulaireAnnonceScreen = () => {
                         data.data.content.DateDebut = convertirDate(data.data.content.DateDebut)
                         data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                         setAnnonce(data.data.content)
+                        setId(router.params.id)
                         // setImages(data.data.content.Id_Plante)
                         setIsLoading(false)
                     }
@@ -44,6 +46,8 @@ const FormulaireAnnonceScreen = () => {
                 .catch(err => {
                     console.log(err)
                 })
+        } else {
+            setIsCreate(true)
         }
     }, [])
 
@@ -85,13 +89,15 @@ const FormulaireAnnonceScreen = () => {
             )}
 
             {isLoading ? (
-                <AddPlantForm
-                    navigation={navigation}
-                    router={router}
-                    annonce={annonce}
-                    setAnnonce={setAnnonce}
-                />
+                <Text></Text>
             ) : (
+                // <AddPlantForm
+                //     navigation={navigation}
+                //     router={router}
+                //     annonce={annonce}
+                //     setAnnonce={setAnnonce}
+                // />
+
                 <AddPlantForm
                     navigation={navigation}
                     id={id}

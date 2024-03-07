@@ -25,9 +25,6 @@ const Carousel = ({ images }) => {
                           <Image key={index} source={{ uri: image }} style={styles.image} />
                       ))
                     : ""}
-                {/* {images.map((image, index) => (
-          <Image key={index} source={{ uri: image }} style={styles.image} />
-        ))} */}
             </ScrollView>
             <View style={styles.pagination}>
                 {images.map((_, index) => (
@@ -50,7 +47,7 @@ const styles = StyleSheet.create({
     },
     image: {
         width: Dimensions.get("window").width,
-        height: 200, // you can adjust the height as needed
+        height: 200,
         resizeMode: "cover",
     },
     pagination: {

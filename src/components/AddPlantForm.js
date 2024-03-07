@@ -7,6 +7,7 @@ import * as DocumentPicker from "expo-document-picker"
 import { BsTrash } from "react-icons/bs"
 import axios from "axios"
 import { useRoute } from "@react-navigation/native"
+import UploadImage from "./UploadImage"
 
 const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
     const [imageUri, setImageUri] = useState(null)
@@ -21,6 +22,7 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
     const [selectedFile, setSelectedFile] = useState(null)
 
     useEffect(() => {
+        console.log(id, "ID")
         if (id) {
             let tab = []
             annonce.Id_Plante.forEach(element => {
@@ -29,11 +31,15 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
                     api_key: element.split("/Arosaje/annonces/")[1].split(".")[0],
                 })
             })
-            console.log(tab)
+            console.log(tab, "TAB")
             setTabImages(tab)
         }
     }, [])
 
+    useEffect(() => {
+        console.log(tabImages, "IMAGETANB")
+    }, [tabImages])
+    ////
     const handleFileSelected = async () => {
         try {
             const result = await DocumentPicker.getDocumentAsync()
@@ -114,6 +120,7 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
             setTabImages(tabImages.filter(element => element.api_key !== id))
         }
     }
+    /////////
 
     const ajouterAnnonce = async () => {
         console.log(annonce, "annonce")
@@ -195,6 +202,15 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
             />
 
             <Text style={styles.label}>Télécharger des images</Text>
+            {/* <UploadImage
+                selectedImage={selectedImage}
+                setSelectedImage={setSelectedImage}
+                setIsChangeUploadFile={setIsChangeUploadFile}
+                isChangeUploadFile={isChangeUploadFile}
+                selectedFile={selectedFile}
+                tabImages={tabImages}
+                setTabImages={setTabImages}
+            /> */}
             <View style={styles.uploadButton}>
                 <Pressable onPress={handleFileSelected}>
                     <Text style={styles.labelUploadButton}>Sélectionner un fichier</Text>
@@ -245,6 +261,7 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
 }
 
 const styles = StyleSheet.create({
+    ////
     viewImageMap: {
         marginLeft: "2%",
         marginRight: "2%",
@@ -262,11 +279,11 @@ const styles = StyleSheet.create({
         right: 2,
         zIndex: 1,
     },
-
+    ////
     container: {
         flex: 1,
     },
-
+    ////////////
     viewTabImage: {
         display: "flex",
         flexDirection: "row",
@@ -274,6 +291,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         marginBottom: "5%",
     },
+    ////////
     formContainer: {
         padding: 20,
     },
@@ -294,6 +312,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         backgroundColor: "#fff",
     },
+    ///////////
     uploadButton: {
         borderWidth: 1,
         borderColor: "#ccc",
@@ -304,6 +323,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
+    ///////
     submitButton: {
         backgroundColor: "green",
         borderRadius: 10,
@@ -315,7 +335,7 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "bold",
     },
-
+    ///////////
     labelUploadButton: {
         display: "flex",
         justifyContent: "center",
@@ -323,6 +343,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         height: "100%",
     },
+    //////////
 })
 
 export default AddPlantForm
