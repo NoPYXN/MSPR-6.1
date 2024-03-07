@@ -34,7 +34,7 @@ const AnnonceScreen = () => {
                     setImages(data.data.content.Id_Plante)
 
                     // setMessages(data.data.content.Conseils)
-                    setBlocMessages(data.data.content.Conseils)
+                    setBlocMessages(data.data.content.Conseils.sort(sortDateConseils))
 
                     if (data.data.content.Conseils.length <= 2) {
                         setMessages(data.data.content.Conseils)
@@ -59,41 +59,41 @@ const AnnonceScreen = () => {
         // console.log(blocMessages, "bloc message")
         let tab = []
         let i = numero
-        while (blocMessages.length <= numero + 2 || tab.length <= 2) {
-            console.log(blocMessages.length <= numero + 2)
-            console.log(tab.length >= 2)
+        console.log(numero, "numero")
+        console.log(blocMessages.length, "bloc message longueur")
+        console.log(blocMessages, "blocMessages")
+        // blocMessages.sort(sortDateConseils)
+        console.log(blocMessages, "blocMessages")
+        while (blocMessages.length >= i + 1 && tab.length < 2) {
             tab.push(blocMessages[i])
             i += 1
         }
-        // for (let i = numero; i < numero + 2; i++) {
-        //     tab.push(blocMessages[i])
-        // }
-        // console.log(tab)
+
         setMessages(messages.concat(tab))
         setNumero(numero + 2)
-        console.log("XXXXXXXXXXXXXX")
-        console.log(blocMessages.length)
-        console.log(numero)
-        console.log("FFFIIINN")
         if (blocMessages.length <= numero + 2) {
             setIsVisible(false)
         }
     }
-
-    // useEffect(() => {
-    //     console.log("numero", numero)
-    //     if (blocMessages.length <= numero) {
-    //         console.log("XXXXXXXXXXXXXX")
-    //         console.log(blocMessages.length)
-    //         console.log(numero)
-    //         console.log("FFFIIINN")
-    //         setIsVisible(false)
-    //     }
-    // }, [numero])
+    const sortDateConseils = (a, b) => {
+        var dateA = new Date(
+            a.DateCreation.replace(
+                /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/,
+                "$3-$1-$2T$4:$5:$6",
+            ),
+        )
+        var dateB = new Date(
+            b.DateCreation.replace(
+                /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/,
+                "$3-$1-$2T$4:$5:$6",
+            ),
+        )
+        return dateB - dateA
+    }
 
     const handleImageSelect = imageUri => {
         setSelectedImage(imageUri)
-        console.log("Image selected:", imageUri)
+        // console.log("Image selected:", imageUri)
     }
 
     return (
@@ -126,7 +126,7 @@ const AnnonceScreen = () => {
                 <Text style={styles.TextIndication}>Avez-vous des indications à transmettre ?</Text>
                 <TextZoneInfo messages={messages} setMessages={setMessages} />
                 {messages.length != 0 ? (
-                    messages.map((message, index) => (
+                    messages.sort(sortDateConseils).map((message, index) => (
                         <View key={index} style={styles.message}>
                             <View style={styles.infosMessage}>
                                 <View style={styles.avatarContainer}>
