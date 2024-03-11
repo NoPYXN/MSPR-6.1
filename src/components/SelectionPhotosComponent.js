@@ -3,22 +3,13 @@ import { View, Image, TouchableOpacity, Text, StyleSheet } from "react-native"
 import * as ImagePicker from "expo-image-picker"
 import { FontAwesome5 } from "@expo/vector-icons"
 import * as DocumentPicker from "expo-document-picker"
+import axios from "axios"
 
 import Galerie from "./GalerieComponent"
 
 const PhotoPicker = ({ onImageSelect, selectedImages, setSelectedImages, id }) => {
     const [selectedImage, setSelectedImage] = useState()
     const [isChangeUploadFile, setIsChangeUploadFile] = useState(false)
-
-    useEffect(() => {
-        console.log(selectedImages, "Selected Images")
-        // ;(async () => {
-        //     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-        //     if (status !== "granted") {
-        //         alert("Permission to access camera roll is required!")
-        //     }
-        // })()
-    }, [])
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -86,15 +77,19 @@ const PhotoPicker = ({ onImageSelect, selectedImages, setSelectedImages, id }) =
             body: formData,
         })
         const data = await response.json()
-        console.log(data, "DATA")
+
         if (data.upload) {
             setSelectedImages([...selectedImages, data.message.secure_url])
-            const response2 = await fetch(`http://localhost:8080/api/v1/annonces/51`, {
-                method: "PUT",
-                body: { EtatPlantes: [...selectedImages, data.message.secure_url] },
-            })
-            const data2 = await response2.json()
-            console.log("DATA2", data2)
+            await axios
+                .put(`http://localhost:8080/api/v1/annonces/51`, {
+                    EtatPlantes: [...selectedImages, data.message.secure_url],
+                })
+                .then(data => {
+                    console.log("resultat", data)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
         } else {
             console.log("")
         }
