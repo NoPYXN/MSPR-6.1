@@ -8,8 +8,9 @@ import { BsTrash } from "react-icons/bs"
 import axios from "axios"
 import { useRoute } from "@react-navigation/native"
 import UploadImage from "./UploadImage"
+// import * as ImagePicker from "react-native-image-picker"
 
-const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
+const AddPlantForm = ({ navigation, id, annonce, setAnnonce, router }) => {
     const [imageUri, setImageUri] = useState(null)
     const [isAddPlantFrom, setIsAddPlantFrom] = useState(true)
     const [searchVille, setSearchVille] = useState()
@@ -20,9 +21,33 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
     const [isChangeUploadFile, setIsChangeUploadFile] = useState(false)
     const [tabImages, setTabImages] = useState([])
     const [selectedFile, setSelectedFile] = useState(null)
+    // const [imageUri, setImageUri] = useState(null);
+    const [date, setDate] = useState(new Date())
+    const [show, setShow] = useState(false)
+    const [idd, setIdd] = useState(router.params?.id || undefined)
+
+    // const handleChoosePhoto = () => {
+    //     const options = {
+    //         noData: true,
+    //     }
+    //     ImagePicker.launchImageLibrary(options, response => {
+    //         if (response.uri) {
+    //             setImageUri(response.uri)
+    //         }
+    //     })
+    // }
+
+    const onChange = (event, selectedDate) => {
+        const currentDate = selectedDate || date
+        setShow(Platform.OS === "ios") // Only relevant for iOS, to keep the picker open
+        setDate(currentDate)
+    }
+
+    // const showDatepicker = () => {
+    //     setShow(true)
+    // }
 
     useEffect(() => {
-        console.log(id, "ID")
         if (id) {
             let tab = []
             annonce.Id_Plante.forEach(element => {
@@ -31,15 +56,10 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
                     api_key: element.split("/Arosaje/annonces/")[1].split(".")[0],
                 })
             })
-            console.log(tab, "TAB")
             setTabImages(tab)
         }
     }, [])
 
-    useEffect(() => {
-        console.log(tabImages, "IMAGETANB")
-    }, [tabImages])
-    ////
     const handleFileSelected = async () => {
         try {
             const result = await DocumentPicker.getDocumentAsync()
@@ -55,7 +75,7 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
                     setSelectedImage(file)
                 }
             } else {
-                console.log("Sélection de fichier annulée ou aucun fichier sélectionné")
+                // console.log("Sélection de fichier annulée ou aucun fichier sélectionné")
             }
         } catch (err) {
             console.log("Erreur lors de la sélection du fichier :", err)
@@ -94,7 +114,7 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
             body: formData,
         })
         const data = await response.json()
-        console.log(data, "DATA")
+        // console.log(data, "DATA")
         if (data.upload) {
             setTabImages([
                 ...tabImages,
@@ -123,7 +143,7 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
     /////////
 
     const ajouterAnnonce = async () => {
-        console.log(annonce, "annonce")
+        // console.log(annonce, "annonce")
         let tab = []
         tabImages.forEach(element => {
             tab.push(element.secure_url)
@@ -188,6 +208,12 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce }) => {
                 placeholder="Sélectionnez une date"
                 value={annonce?.DateFin || ""}
             />
+            {show && Platform.OS !== "web" && (
+                <DateTimePicker value={date} mode="date" display="default" onChange={onChange} />
+            )}
+            {show && Platform.OS === "web" && DatePicker && (
+                <DatePicker selected={date} onChange={newDate => setDate(newDate)} inline />
+            )}
             <Text style={styles.label}>Ville</Text>
             <ResearchBar
                 isAddPlantFrom={isAddPlantFrom}
@@ -345,5 +371,52 @@ const styles = StyleSheet.create({
     },
     //////////
 })
+
+//   const styles = StyleSheet.create({
+//     container: {
+//       flex: 1,
+//     },
+//     formContainer: {
+//       padding: 20,
+//     },
+//     image: {
+//       width: 100,
+//       height: 100,
+//       marginTop: 15,
+//     },
+//     label: {
+//       marginBottom: 5,
+//       fontWeight: 'bold',
+//     },
+//     input: {
+//       borderWidth: 1,
+//       borderColor: '#ccc',
+//       borderRadius: 10,
+//       padding: 10,
+//       marginBottom: 15,
+//       backgroundColor: '#fff',
+//     },
+//     uploadButton: {
+//       borderWidth: 1,
+//       borderColor: '#ccc',
+//       borderRadius: 10,
+//       borderStyle: 'dashed',
+//       padding: 20,
+//       marginBottom: 15,
+//       justifyContent: 'center',
+//       alignItems: 'center',
+//     },
+//     submitButton: {
+//       backgroundColor: 'green',
+//       borderRadius: 10,
+//       padding: 15,
+//       justifyContent: 'center',
+//       alignItems: 'center',
+//     },
+//     submitButtonText: {
+//       color: '#fff',
+//       fontWeight: 'bold',
+//     },
+//   });
 
 export default AddPlantForm

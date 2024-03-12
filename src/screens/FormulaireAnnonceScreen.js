@@ -20,15 +20,13 @@ import AddPlantForm from "../components/AddPlantForm"
 const FormulaireAnnonceScreen = () => {
     const navigation = useNavigation()
     const router = useRoute()
-    const [id, setId] = useState(router.params?.id || undefined)
-    const [images, setImages] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
+    const [id, setId] = useState(router.params?.id)
     const [isCreate, setIsCreate] = useState(false)
+    const [isLoading, setIsLoading] = useState(!router.params?.id)
 
     const [annonce, setAnnonce] = useState({})
 
     useEffect(() => {
-        console.log(router.params, "[router.params]")
         if (router.params?.id) {
             setIsLoading(true)
             axios
@@ -39,7 +37,6 @@ const FormulaireAnnonceScreen = () => {
                         data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                         setAnnonce(data.data.content)
                         setId(router.params.id)
-                        // setImages(data.data.content.Id_Plante)
                         setIsLoading(false)
                     }
                 })
@@ -49,11 +46,7 @@ const FormulaireAnnonceScreen = () => {
         } else {
             setIsCreate(true)
         }
-    }, [])
-
-    useEffect(() => {
-        console.log(annonce, "annonce")
-    }, [annonce])
+    }, [router.params])
 
     const convertirDate = dateString => {
         const date = new Date(dateString)
@@ -83,28 +76,29 @@ const FormulaireAnnonceScreen = () => {
                 </Pressable>
             </View>
             {id ? (
-                <Text style={styles.TextTitre}>Modifier une annonce</Text>
+                <Text style={styles.TextTitre}>
+                    Modifier une annonce-----{id ? id : "XXXXXXXXXXXX"}
+                </Text>
             ) : (
-                <Text style={styles.TextTitre}>Ajouter une annonce</Text>
+                <Text style={styles.TextTitre}>
+                    Ajouter une annonce----- {id ? id : "XXXXXXXXXXXX"}
+                </Text>
             )}
 
             {isLoading ? (
-                <Text></Text>
+                <AddPlantForm
+                    navigation={navigation}
+                    router={router}
+                    annonce={annonce}
+                    setAnnonce={setAnnonce}
+                />
             ) : (
-                // <AddPlantForm
-                //     navigation={navigation}
-                //     router={router}
-                //     annonce={annonce}
-                //     setAnnonce={setAnnonce}
-                // />
-
                 <AddPlantForm
                     navigation={navigation}
                     id={id}
                     router={router}
                     annonce={annonce}
                     setAnnonce={setAnnonce}
-                    // images={images}
                 />
             )}
         </SafeAreaView>
