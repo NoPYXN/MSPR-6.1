@@ -9,14 +9,23 @@ import axios from "axios"
 import { useRoute } from "@react-navigation/native"
 import UploadImage from "./UploadImage"
 // import * as ImagePicker from "react-native-image-picker"
+import DateTimePicker from "@react-native-community/datetimepicker"
+import { AiTwotoneCalendar } from "react-icons/ai"
+import { convertirDateCalendrier } from "../utils/ConvertirDateCalendrier"
+
+let DatePicker
+// if (Platform.OS === "web") {
+DatePicker = require("react-datepicker").default
+require("react-datepicker/dist/react-datepicker.css")
+// }
 
 const AddPlantForm = ({ navigation, id, annonce, setAnnonce, router }) => {
-    const [imageUri, setImageUri] = useState(null)
+    // const [imageUri, setImageUri] = useState(null)
     const [isAddPlantFrom, setIsAddPlantFrom] = useState(true)
     const [searchVille, setSearchVille] = useState()
     const [coordonnees, setCoordonnees] = useState()
     const [selected, setSelected] = useState()
-    const [annonce2, setAnnonce2] = useState({})
+    // const [annonce2, setAnnonce2] = useState({})
     const [selectedImage, setSelectedImage] = useState()
     const [isChangeUploadFile, setIsChangeUploadFile] = useState(false)
     const [tabImages, setTabImages] = useState([])
@@ -24,7 +33,7 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce, router }) => {
     // const [imageUri, setImageUri] = useState(null);
     const [date, setDate] = useState(new Date())
     const [show, setShow] = useState(false)
-    const [idd, setIdd] = useState(router.params?.id || undefined)
+    // const [idd, setIdd] = useState(router.params?.id || undefined)
 
     // const handleChoosePhoto = () => {
     //     const options = {
@@ -43,11 +52,19 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce, router }) => {
         setDate(currentDate)
     }
 
+    useEffect(() => {
+        console.log(date, "DATE")
+        let x = convertirDateCalendrier(date)
+        console.log(x, "X")
+    }, [date])
+
     // const showDatepicker = () => {
     //     setShow(true)
     // }
 
     useEffect(() => {
+        console.log(id, "IDDDDD")
+        console.log(annonce, "ANNONCE")
         if (id) {
             let tab = []
             annonce.Id_Plante.forEach(element => {
@@ -58,7 +75,7 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce, router }) => {
             })
             setTabImages(tab)
         }
-    }, [])
+    }, [router.params])
 
     const handleFileSelected = async () => {
         try {
@@ -202,16 +219,31 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce, router }) => {
                 value={annonce?.DateDebut || ""}
             />
             <Text style={styles.label}>Date de fin de gardiennage</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={text => setAnnonce({ ...annonce, DateFin: text })}
-                placeholder="Sélectionnez une date"
-                value={annonce?.DateFin || ""}
-            />
-            {show && Platform.OS !== "web" && (
+            <View style={styles.containerDate}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={text => setAnnonce({ ...annonce, DateFin: text })}
+                    placeholder="Sélectionnez une date"
+                    value={annonce?.DateFin || ""}
+                />
+                <Pressable
+                    onPress={() => {
+                        show ? setShow(false) : setShow(true)
+                    }}
+                >
+                    <View style={styles.sendButton}>
+                        <AiTwotoneCalendar style={styles.sendButtonContent} size={30} />
+                    </View>
+                </Pressable>
+            </View>
+
+            {/* {show && Platform.OS !== "web" && (
                 <DateTimePicker value={date} mode="date" display="default" onChange={onChange} />
-            )}
-            {show && Platform.OS === "web" && DatePicker && (
+            )} */}
+            {/* {show && Platform.OS === "web" && DatePicker && (
+                <DatePicker selected={date} onChange={newDate => setDate(newDate)} inline />
+            )} */}
+            {show && DatePicker && (
                 <DatePicker selected={date} onChange={newDate => setDate(newDate)} inline />
             )}
             <Text style={styles.label}>Ville</Text>
@@ -337,6 +369,10 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 15,
         backgroundColor: "#fff",
+        //ajouter
+        height: 50,
+        flex: 1,
+        //fin ajouter
     },
     ///////////
     uploadButton: {
@@ -370,6 +406,28 @@ const styles = StyleSheet.create({
         height: "100%",
     },
     //////////
+    containerDate: {
+        // // width: "100%",
+        // borderWidth: 1,
+        // borderColor: "gray",
+        // borderRadius: 5,
+        // // marginHorizontal: 20,
+        // marginTop: 10,
+        // marginBottom: 20,
+        flexDirection: "row",
+        // alignItems: "center",
+    },
+    sendButton: {
+        padding: 10,
+        borderRadius: 50,
+        backgroundColor: "green",
+        marginLeft: 10,
+        marginRight: 10,
+    },
+    sendButtonContent: {
+        // justifyContent: "center",
+        // alignItems: "center",
+    },
 })
 
 //   const styles = StyleSheet.create({

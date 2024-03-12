@@ -22,13 +22,14 @@ const FormulaireAnnonceScreen = () => {
     const router = useRoute()
     const [id, setId] = useState(router.params?.id)
     const [isCreate, setIsCreate] = useState(false)
-    const [isLoading, setIsLoading] = useState(!router.params?.id)
+    const [isLoading, setIsLoading] = useState(!router.params?.id) //useState(!router.params?.id)
 
     const [annonce, setAnnonce] = useState({})
 
     useEffect(() => {
         if (router.params?.id) {
-            setIsLoading(true)
+            console.log("KKKKKKKKKKKKKKKKKKKKK")
+
             axios
                 .get(`http://localhost:8080/api/v1/annonces/${router.params.id}`)
                 .then(data => {
@@ -37,14 +38,20 @@ const FormulaireAnnonceScreen = () => {
                         data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                         setAnnonce(data.data.content)
                         setId(router.params.id)
-                        setIsLoading(false)
+                        // setIsLoading(true)
+                        // setIsLoading(false)
+                        setIsLoading(true)
                     }
                 })
                 .catch(err => {
                     console.log(err)
                 })
+            // .finally(() => {
+            //     setIsLoading(false) // Fin du chargement, indépendamment du résultat de la requête
+            // })
         } else {
-            setIsCreate(true)
+            // setIsCreate(true)
+            setIsLoading(false)
         }
     }, [router.params])
 
@@ -76,26 +83,22 @@ const FormulaireAnnonceScreen = () => {
                 </Pressable>
             </View>
             {id ? (
-                <Text style={styles.TextTitre}>
-                    Modifier une annonce-----{id ? id : "XXXXXXXXXXXX"}
-                </Text>
+                <Text style={styles.TextTitre}>Modifier une annonce</Text>
             ) : (
-                <Text style={styles.TextTitre}>
-                    Ajouter une annonce----- {id ? id : "XXXXXXXXXXXX"}
-                </Text>
+                <Text style={styles.TextTitre}>Ajouter une annonce</Text>
             )}
 
             {isLoading ? (
                 <AddPlantForm
                     navigation={navigation}
                     router={router}
+                    id={id}
                     annonce={annonce}
                     setAnnonce={setAnnonce}
                 />
             ) : (
                 <AddPlantForm
                     navigation={navigation}
-                    id={id}
                     router={router}
                     annonce={annonce}
                     setAnnonce={setAnnonce}
