@@ -27,7 +27,7 @@ export default function MapScreen() {
             localization={{ lat: 48.801408, lng: 2.130122 }}
             // isVisible={isVisible}
             // setIsVisible={setIsVisible}
-            rayon={20}
+            rayon={11}
         />
     )
 }
@@ -35,6 +35,7 @@ export default function MapScreen() {
 function Map({ localization, rayon }) {
     const navigation = useNavigation()
     const [annonces, setAnnonces] = useState([])
+    const [visibleMarkers, setVisibleMarkers] = useState([])
     const [hoverInfo, setHoverInfo] = useState({
         show: false,
         x: 0,
@@ -43,6 +44,7 @@ function Map({ localization, rayon }) {
         DateDebut: "",
         DateFin: "",
         Image: "",
+        Id: 0,
     })
 
     useEffect(() => {
@@ -50,9 +52,6 @@ function Map({ localization, rayon }) {
             .get("http://localhost:8080/api/v1/annonces")
             .then(data => {
                 if (data.status == 200) {
-                    // console.log(data.data)
-                    // data.data.content.DateDebut = convertirDate(data.data.content.DateDebut)
-                    // data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                     setAnnonces(data.data.content)
                 }
             })
@@ -60,21 +59,53 @@ function Map({ localization, rayon }) {
     }, [])
 
     useEffect(() => {
-        console.log(annonces, "ANNONCES")
+        setVisibleMarkers(annonces.filter(annonce => isMarkerInRadius(annonce, rayon * 1000)))
     }, [annonces])
 
-    const handleMouseOver = (e, Titre, DateDebut, DateFin, Image) => {
-        const x = e.domEvent.x
-        const y = e.domEvent.y
-        setHoverInfo({
-            show: true,
-            x,
-            y,
-            Titre,
-            DateDebut,
-            DateFin,
-            Image,
-        })
+    useEffect(() => {
+        console.log(visibleMarkers)
+    }, [visibleMarkers])
+
+    const isMarkerInRadius = (annonce, radius) => {
+        const { lat: lat1, lng: lng1 } = localization
+        const { lat: lat2, lng: lng2 } = { lat: annonce.Latitude, lng: annonce.Longitude }
+
+        const earthRadius = 6371000 // Rayon moyen de la Terre en mètres
+
+        const latDiff = (lat2 - lat1) * (Math.PI / 180)
+        const lngDiff = (lng2 - lng1) * (Math.PI / 180)
+
+        const a =
+            Math.sin(latDiff / 2) * Math.sin(latDiff / 2) +
+            Math.cos(lat1 * (Math.PI / 180)) *
+                Math.cos(lat2 * (Math.PI / 180)) *
+                Math.sin(lngDiff / 2) *
+                Math.sin(lngDiff / 2)
+
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+
+        const distance = earthRadius * c
+
+        return distance <= radius
+    }
+
+    const handleMouseOver = (e, Titre, DateDebut, DateFin, Image, Id) => {
+        if (hoverInfo.show) {
+            setHoverInfo({ ...hoverInfo, show: false })
+        } else {
+            const x = e.domEvent.x
+            const y = e.domEvent.y
+            setHoverInfo({
+                show: true,
+                x,
+                y,
+                Titre,
+                DateDebut,
+                DateFin,
+                Image,
+                Id,
+            })
+        }
     }
 
     const handleMouseLeave = () => {
@@ -96,9 +127,8 @@ function Map({ localization, rayon }) {
                 >
                     {localization && <CircleF center={localization} radius={rayon * 1000} />}
                     {localization && <MarkerF position={localization} />}
-                    {localization && <MarkerF position={{ lat: 48.900002, lng: 2.08333 }} />}
-                    {annonces &&
-                        annonces.map((v, k) => (
+                    {visibleMarkers &&
+                        visibleMarkers.map((v, k) => (
                             <Marker
                                 key={v.Id_Annonce}
                                 position={{ lat: v.Latitude, lng: v.Longitude }}
@@ -113,60 +143,62 @@ function Map({ localization, rayon }) {
                                     style: styles.marker__label,
                                     // style: styles.marker__label,
                                 }}
-                                // onMouseUp={e => console.log(e)}
-
-                                onMouseOver={e =>
+                                onClick={e =>
                                     handleMouseOver(
                                         e,
                                         v.Titre,
                                         v.DateDebut,
                                         v.DateFin,
                                         v.Id_Plante[0],
+                                        v.Id_Annonce,
                                     )
-                                } //
-                                onMouseOut={handleMouseLeave}
+                                }
+                                //QUAND JE CLIQUE DE NOUVEAU CA RENTRE PLUS DANS LA FONCTION --> ¨PROBLEME A REGLER
                             />
                         ))}
                     {hoverInfo.show && (
-                        <View
-                        // style={{
-                        //     left: hoverInfo.x,
-                        //     top: hoverInfo.y,
-                        // }}
-                        // className={styles.overlay}
-                        >
+                        <View>
+                            {/* <Pressable
+                                onPress={() => {
+                                    navigation.navigate({
+                                        name: "AnnonceScreen",
+                                        params: { id: hoverInfo.Id },
+                                    })
+                                }}
+                            > */}
                             <View style={styles.hoverInfoView}>
                                 <Text style={styles.hoverInfoText}>{hoverInfo.Titre}</Text>
-                                <View
-                                    style={{
-                                        width: "100%",
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        alignContent: "space-between",
-                                    }}
-                                >
-                                    <Text>{convertirDate(hoverInfo.DateDebut)}</Text>
-                                    <Text>{convertirDate(hoverInfo.DateFin)}</Text>
-                                </View>
                                 <Image
                                     source={{
                                         uri: `${hoverInfo.Image}`,
                                     }}
-                                    // url="https://res.cloudinary.com/melly-lucas/image/uploa…9574976/Arosaje/annonces/gofappi0fi6jempcagqr.jpg"
                                     alt={`image ${hoverInfo.Titre}`}
-                                    style={{ width: "100px", height: "100px" }}
+                                    style={{
+                                        width: "100px",
+                                        height: "100px",
+                                        marginLeft: "auto",
+                                        marginRight: "auto",
+                                        marginTop: "10px",
+                                        marginBottom: "10px",
+                                    }}
                                 />
+                                <View
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                        width: "100%",
+                                    }}
+                                >
+                                    <Text style={{ textAlign: "center", fontSize: "8px" }}>
+                                        {convertirDate(hoverInfo.DateDebut)}
+                                    </Text>
+                                    <Text style={{ textAlign: "center", fontSize: "8px" }}>
+                                        {convertirDate(hoverInfo.DateFin)}
+                                    </Text>
+                                </View>
                             </View>
-                            {/* <div className={styles.overlay__container}>
-                                        <img
-                                            src={`https://openweathermap.org/img/wn/${hoverInfo.icon}@4x.png`}
-                                            alt="Green double couch with wooden legs"
-                                            width={60}
-                                            height={60}
-                                        />
-                                        <div className={styles.ovelay__temp}>{hoverInfo.temperature}°</div>
-                                    </div>
-                                    <div>{weatherDescription(hoverInfo.icon)}</div> */}
+                            {/* </Pressable> */}
                         </View>
                     )}
                 </GoogleMap>
@@ -199,10 +231,15 @@ const styles = StyleSheet.create({
         // padding: "0 0 30 100",
     },
     hoverInfoView: {
-        width: "200px",
-        height: "200px",
+        // width: "200px",
+        // height: "100px",
+        padding: "3%",
+        width: "150px",
         backgroundColor: "white",
         borderRadius: "5px",
+        borderColor: "#ccc",
+        borderWidth: 2,
+        marginTop: "80px",
     },
     hoverInfoText: {
         fontWeight: "bold",
