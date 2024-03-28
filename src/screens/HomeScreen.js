@@ -18,6 +18,8 @@ import { AiFillEdit, AiOutlineClose, AiFillDelete } from "react-icons/ai"
 
 import HeaderComponent from "../components/HeaderComponent"
 import ResearchBar from "../components/ResearchBar"
+import SeLocaliser from "../components/SeLocaliser"
+
 import { NumeroPage } from "../utils/NumeroPage"
 import { ConvertirDateHeure } from "../utils/ConvertirDateHeure"
 
@@ -35,6 +37,7 @@ const HomeScreen = ({ loaded }) => {
     const [numPage, setNumPage] = useState(0)
     const route = useRoute()
     const [message, setMessage] = useState(route.params?.popup || "")
+    const [isVisibleLocalisation, setIsVisibleLocalisation] = useState(false)
 
     const changeUrlPagination = pageNumber => {
         pageNumber += 1
@@ -185,163 +188,183 @@ const HomeScreen = ({ loaded }) => {
             ) : (
                 <View></View>
             )}
-            <View style={styles.ViewGlobale}>
-                <View style={styles.ViewLocalisation}>
-                    {!isVisible ? (
-                        <View style={styles.ViewSelocaliser}>
-                            <Text>Se localiser </Text>
-                            <View>
-                                <FaMapMarkerAlt />
-                            </View>
-                        </View>
-                    ) : (
-                        <View></View>
-                    )}
-
-                    {isVisible ? (
-                        <Pressable
-                            onPress={() => {
-                                window.history.pushState({}, "", "/")
-                                getAnnonces()
-                                setIsVisible(false)
-                            }}
-                        >
-                            <AiOutlineClose />
-                        </Pressable>
-                    ) : (
-                        <Pressable
-                            onPress={() => {
-                                window.history.pushState({}, "", "?isActions=true")
-                                getAnnonces()
-                                setIsVisible(true)
-                            }}
-                        >
-                            <AiFillEdit />
-                        </Pressable>
-                    )}
-                </View>
-                <View style={isVisible ? "" : styles.ViewSearchAnnonces}>
-                    {!isVisible ? (
-                        <View>
-                            <Text style={styles.SearchVille}>Chercher une ville</Text>
-
-                            <ResearchBar
-                                setCoordonnees={setCoordonnees}
-                                setSearchVille={setSearchVille}
-                                searchVille={searchVille}
-                                setSelected={setSelected}
-                                selected={selected}
-                                setCalculPage={setCalculPage}
-                                setAnnonces={setAnnonces}
-                                pageChoisie={pageChoisie}
-                            />
-                        </View>
-                    ) : (
-                        <View style={styles.BoutonAjouterAnnonce}>
+            <View style={{ position: "relative" }}>
+                {isVisibleLocalisation ? (
+                    <SeLocaliser
+                        setIsVisibleLocalisation={setIsVisibleLocalisation}
+                        navigation={navigation}
+                    />
+                ) : (
+                    <View></View>
+                )}
+                <View
+                    style={isVisibleLocalisation ? styles.ViewGlobaleOpacity : styles.ViewGlobale}
+                >
+                    <View style={styles.ViewLocalisation}>
+                        {!isVisible ? (
                             <Pressable
                                 onPress={() => {
-                                    window.history.pushState({}, "", "/FormulaireAnnonceScreen")
-                                    navigation.navigate("FormulaireAnnonceScreen")
+                                    setIsVisibleLocalisation(true)
                                 }}
                             >
-                                <Text style={styles.TextAjouterAnnonce}>Créer une annonce</Text>
+                                <View style={styles.ViewSelocaliser}>
+                                    <Text>Se localiser </Text>
+                                    <View>
+                                        <FaMapMarkerAlt />
+                                    </View>
+                                </View>
                             </Pressable>
-                        </View>
-                    )}
+                        ) : (
+                            <View></View>
+                        )}
 
-                    {annonces ? (
-                        <View style={styles.ViewAnnonces}>
-                            {annonces.map(item => (
-                                <View key={item.Id_Annonce} style={styles.ViewActions}>
-                                    <Pressable
-                                        onPress={() => {
-                                            navigation.navigate({
-                                                name: "AnnonceScreen",
-                                                params: { id: item.Id_Annonce },
-                                            })
-                                        }}
-                                        style={isVisible ? { width: "80%" } : { width: "100%" }}
-                                    >
-                                        <View
-                                            style={
-                                                isVisible
-                                                    ? styles.ViewAnnonceAvecActions
-                                                    : styles.ViewAnnonce
-                                            }
+                        {isVisible ? (
+                            <Pressable
+                                onPress={() => {
+                                    window.history.pushState({}, "", "/")
+                                    getAnnonces()
+                                    setIsVisible(false)
+                                }}
+                            >
+                                <AiOutlineClose />
+                            </Pressable>
+                        ) : (
+                            <Pressable
+                                onPress={() => {
+                                    window.history.pushState({}, "", "?isActions=true")
+                                    getAnnonces()
+                                    setIsVisible(true)
+                                }}
+                            >
+                                <AiFillEdit />
+                            </Pressable>
+                        )}
+                    </View>
+                    <View style={isVisible ? "" : styles.ViewSearchAnnonces}>
+                        {!isVisible ? (
+                            <View>
+                                <Text style={styles.SearchVille}>Chercher une ville</Text>
+
+                                <ResearchBar
+                                    setCoordonnees={setCoordonnees}
+                                    setSearchVille={setSearchVille}
+                                    searchVille={searchVille}
+                                    setSelected={setSelected}
+                                    selected={selected}
+                                    setCalculPage={setCalculPage}
+                                    setAnnonces={setAnnonces}
+                                    pageChoisie={pageChoisie}
+                                />
+                            </View>
+                        ) : (
+                            <View style={styles.BoutonAjouterAnnonce}>
+                                <Pressable
+                                    onPress={() => {
+                                        window.history.pushState({}, "", "/FormulaireAnnonceScreen")
+                                        navigation.navigate("FormulaireAnnonceScreen")
+                                    }}
+                                >
+                                    <Text style={styles.TextAjouterAnnonce}>Créer une annonce</Text>
+                                </Pressable>
+                            </View>
+                        )}
+
+                        {annonces ? (
+                            <View style={styles.ViewAnnonces}>
+                                {annonces.map(item => (
+                                    <View key={item.Id_Annonce} style={styles.ViewActions}>
+                                        <Pressable
+                                            onPress={() => {
+                                                navigation.navigate({
+                                                    name: "AnnonceScreen",
+                                                    params: { id: item.Id_Annonce },
+                                                })
+                                            }}
+                                            style={isVisible ? { width: "80%" } : { width: "100%" }}
                                         >
-                                            <Image
+                                            <View
                                                 style={
                                                     isVisible
-                                                        ? styles.imageAnnonceAvecActions
-                                                        : styles.imageAnnonce
+                                                        ? styles.ViewAnnonceAvecActions
+                                                        : styles.ViewAnnonce
                                                 }
-                                                source={{
-                                                    uri: item.Id_Plante[0],
-                                                }}
-                                            />
+                                            >
+                                                <Image
+                                                    style={
+                                                        isVisible
+                                                            ? styles.imageAnnonceAvecActions
+                                                            : styles.imageAnnonce
+                                                    }
+                                                    source={{
+                                                        uri: item.Id_Plante[0],
+                                                    }}
+                                                />
 
-                                            <View style={styles.infoAnnonce}>
-                                                <Text
-                                                    style={
-                                                        isVisible
-                                                            ? styles.titreAnnonceAvecActions
-                                                            : styles.titreAnnonce
-                                                    }
-                                                >
-                                                    {item.Titre.charAt(0).toUpperCase() +
-                                                        item.Titre.slice(1)}
-                                                </Text>
-                                                <Text
-                                                    style={
-                                                        isVisible
-                                                            ? styles.villeAnnonceAvecActions
-                                                            : styles.villeAnnonce
-                                                    }
-                                                >
-                                                    {item.Ville}
-                                                </Text>
-                                                {!isVisible ? (
-                                                    <View>
-                                                        <Text style={styles.dateAnnonce}>
-                                                            {ConvertirDateHeure(item.DateCreation)}
-                                                        </Text>
-                                                    </View>
-                                                ) : (
-                                                    <View></View>
-                                                )}
+                                                <View style={styles.infoAnnonce}>
+                                                    <Text
+                                                        style={
+                                                            isVisible
+                                                                ? styles.titreAnnonceAvecActions
+                                                                : styles.titreAnnonce
+                                                        }
+                                                    >
+                                                        {item.Titre.charAt(0).toUpperCase() +
+                                                            item.Titre.slice(1)}
+                                                    </Text>
+                                                    <Text
+                                                        style={
+                                                            isVisible
+                                                                ? styles.villeAnnonceAvecActions
+                                                                : styles.villeAnnonce
+                                                        }
+                                                    >
+                                                        {item.Ville}
+                                                    </Text>
+                                                    {!isVisible ? (
+                                                        <View>
+                                                            <Text style={styles.dateAnnonce}>
+                                                                {ConvertirDateHeure(
+                                                                    item.DateCreation,
+                                                                )}
+                                                            </Text>
+                                                        </View>
+                                                    ) : (
+                                                        <View></View>
+                                                    )}
+                                                </View>
                                             </View>
-                                        </View>
-                                    </Pressable>
-                                    {isVisible ? (
-                                        <View style={styles.BoutonsActions}>
-                                            <Pressable
-                                                onPress={() => {
-                                                    modifierAnnonce(item.Id_Annonce)
-                                                }}
-                                            >
-                                                <AiFillEdit size={20} />
-                                            </Pressable>
-                                            <Pressable
-                                                onPress={() => {
-                                                    supprimerAnnonce(item.Id_Annonce)
-                                                }}
-                                            >
-                                                <AiFillDelete size={20} />
-                                            </Pressable>
-                                        </View>
-                                    ) : (
-                                        <View></View>
-                                    )}
-                                </View>
-                            ))}
-                        </View>
-                    ) : (
-                        <View>Aucune annonce trouvée</View>
-                    )}
-                </View>
+                                        </Pressable>
+                                        {isVisible ? (
+                                            <View style={styles.BoutonsActions}>
+                                                <Pressable
+                                                    onPress={() => {
+                                                        modifierAnnonce(item.Id_Annonce)
+                                                    }}
+                                                >
+                                                    <AiFillEdit size={20} />
+                                                </Pressable>
+                                                <Pressable
+                                                    onPress={() => {
+                                                        supprimerAnnonce(item.Id_Annonce)
+                                                    }}
+                                                >
+                                                    <AiFillDelete size={20} />
+                                                </Pressable>
+                                            </View>
+                                        ) : (
+                                            <View></View>
+                                        )}
+                                    </View>
+                                ))}
+                            </View>
+                        ) : (
+                            <View>Aucune annonce trouvée</View>
+                        )}
+                    </View>
 
-                <View style={styles.ViewButtons}>
-                    {annonces && annonces.length > 0 ? boutons : <Text>Pas d'annonces</Text>}
+                    <View style={styles.ViewButtons}>
+                        {annonces && annonces.length > 0 ? boutons : <Text>Pas d'annonces</Text>}
+                    </View>
                 </View>
             </View>
         </SafeAreaView>
@@ -366,6 +389,10 @@ const styles = StyleSheet.create({
     },
     ViewGlobale: {
         margin: "5%",
+    },
+    ViewGlobaleOpacity: {
+        margin: "5%",
+        opacity: "0.2",
     },
     SearchVille: {
         textAlign: "center",
