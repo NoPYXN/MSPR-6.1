@@ -11,10 +11,28 @@ import {
 } from "react-native"
 import { AiOutlineClose } from "react-icons/ai"
 
-const SeLocaliser = ({ setIsVisibleLocalisation, coordonnees, radius, navigation }) => {
+import SearchSeLocaliser from "./SearchSeLocaliser"
+
+const SeLocaliser = ({
+    setIsVisibleLocalisation,
+    localization,
+    setLocalization,
+    navigation,
+    isLoaded,
+}) => {
+    const [radius, setRadius] = useState("")
     const handleSubmit = () => {
-        navigation.navigate("MapScreen", { lat: 1, lng: 1 })
+        navigation.navigate("MapScreen", {
+            lat: localization.localization.lat,
+            lng: localization.localization.lng,
+            radius: radius,
+            country: localization.country,
+        })
     }
+
+    useEffect(() => {
+        console.log(localization, "LOCALIZATION")
+    }, [localization])
 
     return (
         <View style={styles.viewGlobale}>
@@ -26,9 +44,20 @@ const SeLocaliser = ({ setIsVisibleLocalisation, coordonnees, radius, navigation
             </View>
             <View style={styles.ligne}></View>
             <Text>Choisissez une adresse à saisir</Text>
-            <TextInput style={styles.input} onChangeText={() => {}} />
+            <SearchSeLocaliser
+                setCoordonnees={setLocalization}
+                coordonnees={localization}
+                isLoaded={isLoaded}
+            />
+            {/* <TextInput style={styles.input} onChangeText={() => {}} /> */}
             <Text>Saisir un nombre de kilomètres</Text>
-            <TextInput style={styles.input} onChangeText={() => {}} />
+            <TextInput
+                style={styles.input}
+                onChangeText={text => {
+                    setRadius(text)
+                }}
+            />
+
             <Pressable
                 style={styles.bouton}
                 onPress={() => {

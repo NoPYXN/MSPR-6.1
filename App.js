@@ -6,14 +6,7 @@ import NavigationStack from "./src/navigation/NavigationStack"
 import AddPlantForm from "./src/components/AddPlantForm"
 
 const App = ({ Component }) => {
-    const { isLoaded } = useLoadScript({
-        googleMapsApiKey: "AIzaSyB8jSTHSpmqZDIl3wz5Nyz8FJfAL0bYvVE",
-        libraries: ["places"],
-    })
-
-    if (!isLoaded) return <div>Loading...</div>
-
-    return <NavigationStack isLoaded={isLoaded}></NavigationStack>
+    return <NavigationStack></NavigationStack>
 }
 
 export default App

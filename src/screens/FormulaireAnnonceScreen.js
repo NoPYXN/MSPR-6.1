@@ -20,39 +20,16 @@ import AddPlantForm from "../components/AddPlantForm"
 const FormulaireAnnonceScreen = () => {
     const navigation = useNavigation()
     const router = useRoute()
-    const [id, setId] = useState(router.params?.id)
+    const [id, setId] = useState()
     const [isCreate, setIsCreate] = useState(false)
-    const [isLoading, setIsLoading] = useState(!router.params?.id) //useState(!router.params?.id)
+    const [isLoading, setIsLoading] = useState(false) //useState(!router.params?.id)
 
     const [annonce, setAnnonce] = useState({})
 
     useEffect(() => {
-        if (router.params?.id) {
-            console.log("KKKKKKKKKKKKKKKKKKKKK")
-
-            axios
-                .get(`http://localhost:8080/api/v1/annonces/${router.params.id}`)
-                .then(data => {
-                    if (data.status == 200) {
-                        data.data.content.DateDebut = convertirDate(data.data.content.DateDebut)
-                        data.data.content.DateFin = convertirDate(data.data.content.DateFin)
-                        setAnnonce(data.data.content)
-                        setId(router.params.id)
-                        // setIsLoading(true)
-                        // setIsLoading(false)
-                        setIsLoading(true)
-                    }
-                })
-                .catch(err => {
-                    console.log(err)
-                })
-            // .finally(() => {
-            //     setIsLoading(false) // Fin du chargement, indépendamment du résultat de la requête
-            // })
-        } else {
-            // setIsCreate(true)
-            setIsLoading(false)
-        }
+        setIsLoading(true)
+        setId(router.params?.id)
+        console.log("FormulaireAnnonceScreen", router.param?.id)
     }, [router.params])
 
     const convertirDate = dateString => {
@@ -88,21 +65,10 @@ const FormulaireAnnonceScreen = () => {
                 <Text style={styles.TextTitre}>Ajouter une annonce</Text>
             )}
 
-            {isLoading ? (
-                <AddPlantForm
-                    navigation={navigation}
-                    router={router}
-                    id={id}
-                    annonce={annonce}
-                    setAnnonce={setAnnonce}
-                />
+            {isLoading == true ? (
+                <AddPlantForm navigation={navigation} router={router} id={id} />
             ) : (
-                <AddPlantForm
-                    navigation={navigation}
-                    router={router}
-                    annonce={annonce}
-                    setAnnonce={setAnnonce}
-                />
+                <View></View>
             )}
         </SafeAreaView>
     )

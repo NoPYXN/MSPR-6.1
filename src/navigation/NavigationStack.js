@@ -29,11 +29,6 @@ const NavigationStack = isLoaded => {
             <Stack.Navigator>
                 <Stack.Screen
                     options={{ headerShown: false }}
-                    name="MapScreen"
-                    component={MapScreen}
-                />
-                <Stack.Screen
-                    options={{ headerShown: false }}
                     name="HomeScreen"
                     component={HomeScreen}
                     isLoaded={isLoaded}
@@ -47,6 +42,11 @@ const NavigationStack = isLoaded => {
                     options={{ headerShown: false }}
                     name="AnnonceScreen"
                     component={AnnonceScreen}
+                />
+                <Stack.Screen
+                    options={{ headerShown: false }}
+                    name="MapScreen"
+                    component={MapScreen}
                 />
             </Stack.Navigator>
         </NavigationContainer>

@@ -30,12 +30,8 @@ export default function Index({
     isAddPlantFrom,
     annonces,
     valueVille,
+    isLoaded,
 }) {
-    const { isLoaded } = useLoadScript({
-        googleMapsApiKey: "AIzaSyB8jSTHSpmqZDIl3wz5Nyz8FJfAL0bYvVE",
-        libraries: ["places"],
-    })
-
     if (!isLoaded) return <div>Loading...</div>
 
     return (

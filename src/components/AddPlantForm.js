@@ -19,7 +19,7 @@ DatePicker = require("react-datepicker").default
 require("react-datepicker/dist/react-datepicker.css")
 // }
 
-const AddPlantForm = ({ navigation, id, annonce, setAnnonce, router }) => {
+const AddPlantForm = ({ navigation, id, router }) => {
     // const [imageUri, setImageUri] = useState(null)
     const [isAddPlantFrom, setIsAddPlantFrom] = useState(true)
     const [searchVille, setSearchVille] = useState()
@@ -33,6 +33,7 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce, router }) => {
     // const [imageUri, setImageUri] = useState(null);
     const [date, setDate] = useState(new Date())
     const [show, setShow] = useState(false)
+    const [annonce, setAnnonce] = useState({})
     // const [idd, setIdd] = useState(router.params?.id || undefined)
 
     // const handleChoosePhoto = () => {
@@ -52,10 +53,20 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce, router }) => {
         setDate(currentDate)
     }
 
+    const convertirDate = dateString => {
+        const date = new Date(dateString)
+
+        const jour = ("0" + date.getDate()).slice(-2)
+        const mois = ("0" + (date.getMonth() + 1)).slice(-2)
+        const annee = date.getFullYear()
+
+        const dateFormatee = `${jour}/${mois}/${annee}`
+
+        return dateFormatee
+    }
+
     useEffect(() => {
-        console.log(date, "DATE")
         let x = convertirDateCalendrier(date)
-        console.log(x, "X")
     }, [date])
 
     // const showDatepicker = () => {
@@ -63,17 +74,33 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce, router }) => {
     // }
 
     useEffect(() => {
-        console.log(id, "IDDDDD")
-        console.log(annonce, "ANNONCE")
+        console.log("AddPlantForm", id)
         if (id) {
-            let tab = []
-            annonce.Id_Plante.forEach(element => {
-                tab.push({
-                    secure_url: element,
-                    api_key: element.split("/Arosaje/annonces/")[1].split(".")[0],
-                })
-            })
-            setTabImages(tab)
+            async function test() {
+                await axios
+                    .get(`http://localhost:8080/api/v1/annonces/${id}`)
+                    .then(data => {
+                        if (data.status == 200) {
+                            data.data.content.DateDebut = convertirDate(data.data.content.DateDebut)
+                            data.data.content.DateFin = convertirDate(data.data.content.DateFin)
+                            setAnnonce(data.data.content)
+
+                            let tab = []
+                            data.data.content.Id_Plante.forEach(element => {
+                                tab.push({
+                                    secure_url: element,
+                                    api_key: element.split("/Arosaje/annonces/")[1].split(".")[0],
+                                })
+                            })
+                            setTabImages(tab)
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+            }
+
+            test()
         }
     }, [router.params])
 
@@ -212,12 +239,23 @@ const AddPlantForm = ({ navigation, id, annonce, setAnnonce, router }) => {
                 value={annonce?.Description || ""}
             />
             <Text style={styles.label}>Date de début de gardiennage</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={text => setAnnonce({ ...annonce, DateDebut: text })}
-                placeholder="Sélectionnez une date"
-                value={annonce?.DateDebut || ""}
-            />
+            <View style={styles.containerDate}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={text => setAnnonce({ ...annonce, DateDebut: text })}
+                    placeholder="Sélectionnez une date"
+                    value={annonce?.DateDebut || ""}
+                />
+                <Pressable
+                    onPress={() => {
+                        show ? setShow(false) : setShow(true)
+                    }}
+                >
+                    <View style={styles.sendButton}>
+                        <AiTwotoneCalendar style={styles.sendButtonContent} size={30} />
+                    </View>
+                </Pressable>
+            </View>
             <Text style={styles.label}>Date de fin de gardiennage</Text>
             <View style={styles.containerDate}>
                 <TextInput

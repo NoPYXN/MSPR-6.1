@@ -14,25 +14,31 @@ import { useNavigation, useParams, useRoute } from "@react-navigation/native"
 import axios from "axios"
 
 import HeaderComponent from "../components/HeaderComponent"
+
 import { convertirDate } from "../utils/ConvertiDate"
+import OPTIONS from "../utils/Option"
 
 export default function MapScreen() {
+    const router = useRoute()
+    const [infoRoute, setInfoRoute] = useState({})
+    useEffect(() => {
+        setInfoRoute({ lat: router.lat, lng: router.lng, radius: router.radius })
+    }, [])
     const { isLoaded } = useLoadScript({
-        googleMapsApiKey: "AIzaSyB8jSTHSpmqZDIl3wz5Nyz8FJfAL0bYvVE",
+        googleMapsApiKey: "AIzaSyBnyp6JiXQAqF0VIfj9-cIt-OPjehWhY9E", //"AIzaSyB8jSTHSpmqZDIl3wz5Nyz8FJfAL0bYvVE",
     })
 
     if (!isLoaded) return <div>Loading...</div>
     return (
         <Map
-            localization={{ lat: 48.801408, lng: 2.130122 }}
-            // isVisible={isVisible}
-            // setIsVisible={setIsVisible}
-            rayon={11}
+        // localization={{ lat: router.lat, lng: router.lng }}
+        // rayon={router.radius}
         />
     )
 }
 
-function Map({ localization, rayon }) {
+function Map() {
+    //localization, rayon
     const navigation = useNavigation()
     const [annonces, setAnnonces] = useState([])
     const [visibleMarkers, setVisibleMarkers] = useState([])
@@ -46,8 +52,15 @@ function Map({ localization, rayon }) {
         Image: "",
         Id: 0,
     })
+    const router = useRoute()
+    const [localization, setLocalization] = useState({})
+    const [rayon, setRayon] = useState()
+    const [country, setCountry] = useState("")
 
     useEffect(() => {
+        setLocalization({ lat: parseFloat(router.params.lat), lng: parseFloat(router.params.lng) })
+        setRayon(router.params.radius)
+        setCountry(router.params.country)
         axios
             .get("http://localhost:8080/api/v1/annonces")
             .then(data => {
@@ -112,18 +125,24 @@ function Map({ localization, rayon }) {
         setHoverInfo({ ...hoverInfo, show: false })
     }
 
+    useEffect(() => {
+        console.log("LOCATIONS", localization)
+    }, [localization])
+
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
             <View>
                 <Text style={styles.titre}>
-                    Retrouvez les différentes annonces dans un rayon de ?? kilomètres
+                    Retrouvez les différentes annonces dans un rayon de {rayon} kilomètres de{" "}
+                    {country}
                 </Text>
 
                 <GoogleMap
                     zoom={Math.log2((40075016.686 * 50) / (360 * rayon)) - 8}
                     center={localization}
                     mapContainerStyle={styles.mapcontainer}
+                    options={OPTIONS}
                 >
                     {localization && <CircleF center={localization} radius={rayon * 1000} />}
                     {localization && <MarkerF position={localization} />}
@@ -133,16 +152,16 @@ function Map({ localization, rayon }) {
                                 key={v.Id_Annonce}
                                 position={{ lat: v.Latitude, lng: v.Longitude }}
                                 icon={{
-                                    url: `https://openweathermap.org/img/wn/01n@2x.png`,
+                                    url: `https://res.cloudinary.com/melly-lucas/image/upload/v1704971723/Arosaje/annonces/PlantMarkerMap_hyxvrt.png`,
                                     scaledSize: new window.google.maps.Size(30, 30),
                                     anchor: new window.google.maps.Point(15, 15),
                                 }}
-                                label={{
-                                    text: `${v.Titre}`,
-                                    fontWeight: "500",
-                                    style: styles.marker__label,
-                                    // style: styles.marker__label,
-                                }}
+                                // label={{
+                                //     text: `${v.Titre}`,
+                                //     fontWeight: "500",
+                                //     style: styles.marker__label,
+                                //     // style: styles.marker__label,
+                                // }}
                                 onClick={e =>
                                     handleMouseOver(
                                         e,

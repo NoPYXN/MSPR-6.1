@@ -15,6 +15,7 @@ import { fr } from "date-fns/locale"
 import { FaMapMarkerAlt } from "react-icons/fa"
 import { useNavigation, useParams, useRoute } from "@react-navigation/native"
 import { AiFillEdit, AiOutlineClose, AiFillDelete } from "react-icons/ai"
+import { useLoadScript } from "@react-google-maps/api"
 
 import HeaderComponent from "../components/HeaderComponent"
 import ResearchBar from "../components/ResearchBar"
@@ -23,13 +24,24 @@ import SeLocaliser from "../components/SeLocaliser"
 import { NumeroPage } from "../utils/NumeroPage"
 import { ConvertirDateHeure } from "../utils/ConvertirDateHeure"
 
-const HomeScreen = ({ loaded }) => {
+export default function HomeScreen() {
+    const { isLoaded } = useLoadScript({
+        googleMapsApiKey: "AIzaSyBnyp6JiXQAqF0VIfj9-cIt-OPjehWhY9E", //"AIzaSyDbr6FgqPsctO5kXmIFoYL7X7TuaXAGX_o",
+        libraries: ["places"],
+    })
+
+    if (!isLoaded) return <div>Loading...</div>
+    return <ListeAnnonces isLoaded={isLoaded} />
+}
+
+const ListeAnnonces = ({ isLoaded }) => {
     const [annonces, setAnnonces] = useState([])
     const [showFirstView, setShowFirstView] = useState(true)
     const [calculPage, setCalculPage] = useState(0)
     const [pageChoisie, setPageChoisie] = useState()
     const [searchVille, setSearchVille] = useState()
     const [coordonnees, setCoordonnees] = useState()
+    const [localization, setLocalization] = useState()
     const [selected, setSelected] = useState()
     const [isVisible, setIsVisible] = useState()
     const [isDelete, setIsDelete] = useState()
@@ -53,7 +65,7 @@ const HomeScreen = ({ loaded }) => {
     }
 
     useEffect(() => {
-        console.log(loaded, "LOADED")
+        // console.log(loaded, "LOADED")
         let urlParam = ""
         let nombrePage = 1
         let separerFiltre = ""
@@ -193,6 +205,9 @@ const HomeScreen = ({ loaded }) => {
                     <SeLocaliser
                         setIsVisibleLocalisation={setIsVisibleLocalisation}
                         navigation={navigation}
+                        localization={localization}
+                        setLocalization={setLocalization}
+                        isLoaded={isLoaded}
                     />
                 ) : (
                     <View></View>
@@ -254,6 +269,7 @@ const HomeScreen = ({ loaded }) => {
                                     setCalculPage={setCalculPage}
                                     setAnnonces={setAnnonces}
                                     pageChoisie={pageChoisie}
+                                    isLoaded={isLoaded}
                                 />
                             </View>
                         ) : (
@@ -528,5 +544,3 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
 })
-
-export default HomeScreen

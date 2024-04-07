@@ -90,7 +90,7 @@ const AnnonceScreen = () => {
                     ? annonce.Titre.charAt(0).toUpperCase() + annonce.Titre.slice(1)
                     : "Pas de titre"}
             </Text>
-            <Carousel images={images} imageHeight={200} />
+            <Carousel images={images} imageHeight={100} />
             <View style={styles.blocInfo}>
                 <Text style={styles.descriptionText}>
                     {annonce.Description && annonce.Description.length > 0
