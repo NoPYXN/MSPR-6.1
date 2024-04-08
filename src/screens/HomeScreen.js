@@ -10,8 +10,6 @@ import {
     Pressable,
 } from "react-native"
 import axios from "axios"
-import { format, parseISO } from "date-fns"
-import { fr } from "date-fns/locale"
 import { FaMapMarkerAlt } from "react-icons/fa"
 import { useNavigation, useParams, useRoute } from "@react-navigation/native"
 import { AiFillEdit, AiOutlineClose, AiFillDelete } from "react-icons/ai"
@@ -26,7 +24,7 @@ import { ConvertirDateHeure } from "../utils/ConvertirDateHeure"
 
 export default function HomeScreen() {
     const { isLoaded } = useLoadScript({
-        googleMapsApiKey: "AIzaSyBnyp6JiXQAqF0VIfj9-cIt-OPjehWhY9E", //"AIzaSyDbr6FgqPsctO5kXmIFoYL7X7TuaXAGX_o",
+        googleMapsApiKey: "AIzaSyBnyp6JiXQAqF0VIfj9-cIt-OPjehWhY9E",
         libraries: ["places"],
     })
 
@@ -65,7 +63,6 @@ const ListeAnnonces = ({ isLoaded }) => {
     }
 
     useEffect(() => {
-        // console.log(loaded, "LOADED")
         let urlParam = ""
         let nombrePage = 1
         let separerFiltre = ""
@@ -168,7 +165,6 @@ const ListeAnnonces = ({ isLoaded }) => {
     }, [showFirstView])
 
     const changePage = index => {
-        console.log(searchVille, "searchville")
         let requete = `http://localhost:8080/api/v1/annonces?page=${index}`
         if (searchVille) {
             requete += `&Ville=${searchVille}`

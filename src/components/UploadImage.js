@@ -1,12 +1,7 @@
-import React, { useState, useEffect } from "react"
-import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView } from "react-native"
-import * as ImagePicker from "expo-image-picker"
-import ResearchBar from "./ResearchBar"
-import * as Permissions from "expo-permissions"
+import React, { useEffect } from "react"
+import { View, Text, Pressable, StyleSheet, Image } from "react-native"
 import * as DocumentPicker from "expo-document-picker"
 import { BsTrash } from "react-icons/bs"
-import axios from "axios"
-import { useRoute } from "@react-navigation/native"
 
 const UploadImage = ({
     selectedImage,
@@ -71,7 +66,6 @@ const UploadImage = ({
             body: formData,
         })
         const data = await response.json()
-        console.log(data, "DATA")
         if (data.upload) {
             setTabImages([
                 ...tabImages,

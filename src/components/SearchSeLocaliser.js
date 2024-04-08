@@ -1,16 +1,6 @@
-import React, { useState, useEffect, useMemo } from "react"
-import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api"
+import React, { useState, useEffect } from "react"
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete"
-import {
-    StyleSheet,
-    Text,
-    View,
-    Image,
-    FlatList,
-    SafeAreaView,
-    TextInput,
-    Pressable,
-} from "react-native"
+import { StyleSheet, Text, View, FlatList, TextInput, Pressable } from "react-native"
 
 export default function Index({ setCoordonnees, coordonnees, isLoaded }) {
     if (!isLoaded) return <div>Loading...</div>
@@ -50,16 +40,12 @@ const PlacesAutocomplete = ({ setSelected, setCoordonnees, coordonnees }) => {
         setCoordonnees({ ...coordonnees, localization: { lat, lng }, country: address })
     }
 
-    useEffect(() => {
-        console.log(data, "data")
-    }, [data])
-
     return (
         <View style={styles.container}>
             <View>
                 <View>
                     <TextInput
-                        // value={value}
+                        value={value || ""}
                         onChangeText={text => setValue(text)}
                         editable={ready}
                         style={styles.input}
@@ -142,8 +128,6 @@ const styles = StyleSheet.create({
     },
     ViewXX: {
         width: "55%",
-        // marginLeft: "auto",
-        // marginRight: "auto",
         zIndex: 1,
     },
     ViewXXIdAddPlantForm: {

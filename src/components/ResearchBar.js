@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from "react"
-
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete"
-import { useLoadScript } from "@react-google-maps/api"
-
-import {
-    StyleSheet,
-    Text,
-    View,
-    Image,
-    FlatList,
-    SafeAreaView,
-    TextInput,
-    Pressable,
-} from "react-native"
+import { StyleSheet, Text, View, FlatList, TextInput, Pressable } from "react-native"
 import { FaSearch } from "react-icons/fa"
 import axios from "axios"
 
@@ -113,18 +101,11 @@ const PlacesAutocomplete = ({
 
     useEffect(() => {
         if (valueVille) {
-            console.log(valueVille, "valueVille")
             setValue(valueVille)
-            // setSelected(true)
         }
     }, [])
 
-    useEffect(() => {
-        console.log(searchVille, "searchVille")
-    }, [searchVille])
-
     const handleSelect = async address => {
-        console.log(address)
         setValue(address, false)
         clearSuggestions()
         const results = await getGeocode({ address })
@@ -225,7 +206,6 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        // paddingRight: 40,
         width: "50%",
         padding: 8,
         borderWidth: 2,

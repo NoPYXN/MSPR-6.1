@@ -7,9 +7,7 @@ const TextZoneInfo = ({ setMessages, messages }) => {
     const [inputValue, setInputValue] = useState("")
 
     const handleSubmit = async () => {
-        console.log("dans fonction")
         if (inputValue.trim() !== "") {
-            console.log("dans if")
             await axios
                 .post(`http://localhost:8080/api/v1/conseils`, {
                     Message: inputValue,
@@ -17,7 +15,6 @@ const TextZoneInfo = ({ setMessages, messages }) => {
                 })
                 .then(data => {
                     if (data.status == 201) {
-                        console.log(data)
                         setMessages([...messages, data.data.content])
                         setInputValue("")
                     }
@@ -49,11 +46,9 @@ const TextZoneInfo = ({ setMessages, messages }) => {
 
 const styles = StyleSheet.create({
     container: {
-        // width: "100%",
         borderWidth: 1,
         borderColor: "gray",
         borderRadius: 5,
-        // marginHorizontal: 20,
         marginTop: 10,
         marginBottom: 20,
         flexDirection: "row",

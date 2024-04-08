@@ -26,12 +26,10 @@ const CreateAccountForm = () => (
             prenom: "",
             email: "",
             password: "",
-            // confirmPassword: '',
             phoneNumber: "",
             adresse: "",
         }}
         validationSchema={SignupSchema}
-        onSubmit={values => console.log(values)}
     >
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
             <View style={styles.formContainer}>

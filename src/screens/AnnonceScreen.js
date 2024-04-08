@@ -18,14 +18,11 @@ const AnnonceScreen = () => {
     const navigation = useNavigation()
     const router = useRoute()
     const [images, setImages] = useState([])
-    // const [selectedImage, setSelectedImage] = useState(null)
     const [messages, setMessages] = useState([])
     const [blocMessages, setBlocMessages] = useState([])
     const [numero, setNumero] = useState(0)
     const [isVisible, setIsVisible] = useState(false)
-    const [selectedImages, setSelectedImages] = useState([
-        // "https://res.cloudinary.com/melly-lucas/image/upload/v1704971723/Arosaje/annonces/cf2n96vnymuxuogwarmr.webp",
-    ])
+    const [selectedImages, setSelectedImages] = useState([])
 
     useEffect(() => {
         axios
@@ -38,11 +35,6 @@ const AnnonceScreen = () => {
                     setImages(data.data.content.Id_Plante)
                     setBlocMessages(data.data.content.Conseils.sort(sortDateConseils))
                     setSelectedImages(data.data.content.EtatPlantes)
-                    console.log(
-                        data.data.content.EtatPlantes,
-                        "SELETEDED IMAGE DANS ANNONCE SCREEN",
-                    )
-                    console.log(data.data.content, "SELETEDED IMAGE DANS ANNONCE SCREEN")
 
                     if (data.data.content.Conseils.length <= 2) {
                         setMessages(data.data.content.Conseils)
@@ -77,11 +69,6 @@ const AnnonceScreen = () => {
         }
     }
 
-    // const handleImageSelect = imageUri => {
-    //     // setSelectedImage(imageUri)
-    //     // console.log("Image selected:", imageUri)
-    // }
-
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
@@ -98,7 +85,6 @@ const AnnonceScreen = () => {
                         : "Pas de description"}
                 </Text>
                 <Text style={styles.descriptionText}>{annonce.Ville}</Text>
-                {/* <Text style={styles.infosTitreText}>Date de gardiennage</Text> */}
                 <View style={styles.descriptionContainer}>
                     <View style={styles.description}>
                         <Text style={styles.infosText}>Début : {annonce.DateDebut}</Text>
@@ -110,11 +96,7 @@ const AnnonceScreen = () => {
             </View>
             <View style={styles.separateur}></View>
 
-            <PhotoPicker
-                // onImageSelect={handleImageSelect}
-                setSelectedImages={setSelectedImages}
-                selectedImages={selectedImages}
-            />
+            <PhotoPicker setSelectedImages={setSelectedImages} selectedImages={selectedImages} />
 
             <View style={styles.separateur}></View>
 
@@ -218,7 +200,6 @@ const styles = StyleSheet.create({
     separateur: {
         height: "1px",
         backgroundColor: "black",
-        // padding: 1,
         marginHorizontal: "6%",
     },
     TextModule: {
@@ -228,10 +209,6 @@ const styles = StyleSheet.create({
         paddingVertical: 70,
     },
     messageContainer: {
-        // paddingHorizontal: 20,
-        // paddingVertical: 10,
-        // marginHorizontal: 20,
-        // marginTop: 10,
         paddingHorizontal: "3%",
         paddingVertical: "2%",
         marginHorizontal: "3%",
@@ -271,7 +248,6 @@ const styles = StyleSheet.create({
     },
     infosMessage: {
         flexDirection: "row",
-        // marginBottom: 10,
         justifyContent: "space-between",
     },
 })

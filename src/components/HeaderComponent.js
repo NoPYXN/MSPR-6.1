@@ -9,7 +9,7 @@ const HeaderComponent = ({ navigation }) => {
 
     return (
         <View style={styles.headerContainer}>
-            <Pressable onPress={() => console.log("Menu clicked")}>
+            <Pressable onPress={() => {}}>
                 <View>
                     <Image source={require("../assets/menu.png")} style={styles.icon} />
                 </View>
@@ -19,7 +19,7 @@ const HeaderComponent = ({ navigation }) => {
                     <Image source={require("../assets/logo.png")} style={styles.logo} />
                 </View>
             </Pressable>
-            <Pressable onPress={() => console.log("Profil clicked")}>
+            <Pressable onPress={() => {}}>
                 <View>
                     <Image source={require("../assets/profil.png")} style={styles.icon} />
                 </View>

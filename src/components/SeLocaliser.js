@@ -1,14 +1,5 @@
 import React, { useState, useEffect, useRef } from "react"
-import {
-    StyleSheet,
-    Text,
-    View,
-    Image,
-    SafeAreaView,
-    Linking,
-    TextInput,
-    Pressable,
-} from "react-native"
+import { StyleSheet, Text, View, TextInput, Pressable } from "react-native"
 import { AiOutlineClose } from "react-icons/ai"
 
 import SearchSeLocaliser from "./SearchSeLocaliser"
@@ -30,10 +21,6 @@ const SeLocaliser = ({
         })
     }
 
-    useEffect(() => {
-        console.log(localization, "LOCALIZATION")
-    }, [localization])
-
     return (
         <View style={styles.viewGlobale}>
             <View style={styles.view}>
@@ -49,7 +36,6 @@ const SeLocaliser = ({
                 coordonnees={localization}
                 isLoaded={isLoaded}
             />
-            {/* <TextInput style={styles.input} onChangeText={() => {}} /> */}
             <Text>Saisir un nombre de kilomètres</Text>
             <TextInput
                 style={styles.input}
@@ -79,7 +65,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         width: "70%",
-        // height: "20%",
         padding: "5%",
         backgroundColor: "white",
         borderRadius: "5px",
@@ -108,7 +93,6 @@ const styles = StyleSheet.create({
     titre: {
         fontSize: "20px",
         fontWeight: "bold",
-        // padding: "2%",
     },
     ligne: {
         marginBottom: "8%",
@@ -136,7 +120,6 @@ const styles = StyleSheet.create({
         width: "100%",
     },
     close: {
-        // alignItems: "center",
         display: "flex",
         alignContent: "center",
         justifyContent: "center",
