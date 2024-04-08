@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react"
+import React, { useState, useEffect } from "react"
 
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete"
 import { useLoadScript } from "@react-google-maps/api"
@@ -11,11 +11,12 @@ import {
     FlatList,
     SafeAreaView,
     TextInput,
-    TouchableOpacity,
+    Pressable,
 } from "react-native"
 import { FaSearch } from "react-icons/fa"
-
 import axios from "axios"
+
+import { NumeroPage } from "../utils/NumeroPage"
 
 export default function Index({
     setSearchVille,
@@ -26,12 +27,11 @@ export default function Index({
     setAnnonces,
     pageChoisie,
     selected,
+    isAddPlantFrom,
+    annonces,
+    valueVille,
+    isLoaded,
 }) {
-    const { isLoaded } = useLoadScript({
-        googleMapsApiKey: "AIzaSyB8jSTHSpmqZDIl3wz5Nyz8FJfAL0bYvVE",
-        libraries: ["places"],
-    })
-
     if (!isLoaded) return <div>Loading...</div>
 
     return (
@@ -44,6 +44,9 @@ export default function Index({
             setAnnonces={setAnnonces}
             pageChoisie={pageChoisie}
             selected={selected}
+            isAddPlantFrom={isAddPlantFrom}
+            annonces={annonces}
+            valueVille={valueVille}
         />
     )
 }
@@ -56,6 +59,9 @@ function Map({
     setCalculPage,
     pageChoisie,
     selected,
+    isAddPlantFrom,
+    annonces,
+    valueVille,
 }) {
     return (
         <div>
@@ -69,6 +75,9 @@ function Map({
                     setAnnonces={setAnnonces}
                     pageChoisie={pageChoisie}
                     selected={selected}
+                    isAddPlantFrom={isAddPlantFrom}
+                    annonces={annonces}
+                    valueVille={valueVille}
                 />
             </div>
         </div>
@@ -84,6 +93,9 @@ const PlacesAutocomplete = ({
     setAnnonces,
     pageChoisie,
     selected,
+    isAddPlantFrom,
+    annonces,
+    valueVille,
 }) => {
     const {
         ready,
@@ -99,6 +111,18 @@ const PlacesAutocomplete = ({
 
     const [countryChoice, setCountryChoice] = useState("")
 
+    useEffect(() => {
+        if (valueVille) {
+            console.log(valueVille, "valueVille")
+            setValue(valueVille)
+            // setSelected(true)
+        }
+    }, [])
+
+    useEffect(() => {
+        console.log(searchVille, "searchVille")
+    }, [searchVille])
+
     const handleSelect = async address => {
         console.log(address)
         setValue(address, false)
@@ -109,20 +133,35 @@ const PlacesAutocomplete = ({
         setCoordonnees({ lat: lat, lng: lng })
         setSelected(true)
         setCountryChoice(address.split(",")[0])
+        if (isAddPlantFrom) {
+            setAnnonces({
+                ...annonces,
+                Ville: address.split(",")[0],
+                Latitude: lat,
+                Longitude: lng,
+            })
+        }
+    }
+
+    const changeUrlVille = ville => {
+        window.history.pushState({ page: ville }, "", "?page=1&ville=" + ville)
     }
 
     const search = () => {
+        NumeroPage(countryChoice).then(numero => {
+            setCalculPage(numero)
+        })
         if (selected) {
             axios
                 .get(
-                    `http://localhost:8080/api/v1/annonces?page=${pageChoisie}&Ville=${countryChoice}`,
+                    `http://localhost:8080/api/v1/annonces?page=${
+                        pageChoisie ? pageChoisie : 0
+                    }&Ville=${countryChoice}`,
                 )
                 .then(data => {
                     if (data.status == 200) {
-                        console.log(data.data.content)
-
-                        setCalculPage(Math.ceil(data.data.content.length / 4))
                         setAnnonces(data.data.content)
+                        changeUrlVille(countryChoice)
                     }
                 })
                 .catch(err => console.log(err))
@@ -132,46 +171,42 @@ const PlacesAutocomplete = ({
     return (
         <View>
             <View style={styles.container}>
-                <View style={styles.divInput}>
+                <View style={isAddPlantFrom ? styles.divInputIdAddPlantForm : styles.divInput}>
                     <TextInput
                         value={value ?? ""}
                         onChangeText={text => setValue(text)}
                         editable={ready}
-                        style={{
-                            flex: 1,
-                            // paddingRight: 40,
-                            width: "50%",
-                            padding: 8,
-                            borderWidth: 2,
-                            borderColor: "#ccc",
-                            borderRadius: 5,
-                            fontSize: 16,
-                        }}
+                        style={isAddPlantFrom ? styles.inputIsAddPlantForm : styles.input}
+                        placeholder={isAddPlantFrom ? "Sélectionnez la ville" : searchVille}
                     />
-
-                    <TouchableOpacity
-                        style={styles.iconSearch}
-                        onPress={() => {
-                            search()
-                        }}
-                    >
-                        <FaSearch />
-                    </TouchableOpacity>
+                    {isAddPlantFrom ? (
+                        <View></View>
+                    ) : (
+                        <Pressable
+                            style={styles.iconSearch}
+                            onPress={() => {
+                                search()
+                            }}
+                        >
+                            <FaSearch />
+                        </Pressable>
+                    )}
                 </View>
             </View>
-            <View style={styles.ViewXX}>
+
+            <View style={isAddPlantFrom ? styles.ViewXXIdAddPlantForm : styles.ViewXX}>
                 {status === "OK" && (
                     <FlatList
                         data={data}
                         keyExtractor={item => item.place_id}
                         renderItem={({ item }) => (
                             <View style={styles.ViewFlatList}>
-                                <TouchableOpacity
+                                <Pressable
                                     onPress={() => handleSelect(item.description)}
                                     style={styles.listItem}
                                 >
                                     <Text>{item.description}</Text>
-                                </TouchableOpacity>
+                                </Pressable>
                             </View>
                         )}
                         style={styles.list}
@@ -190,7 +225,9 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        padding: 5,
+        // paddingRight: 40,
+        width: "50%",
+        padding: 8,
         borderWidth: 2,
         borderColor: "#ccc",
         borderRadius: 5,
@@ -201,6 +238,17 @@ const styles = StyleSheet.create({
         alignItems: "center",
         width: "60%",
         position: "relative",
+    },
+    divInputIdAddPlantForm: {
+        width: "100%",
+    },
+    inputIsAddPlantForm: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 10,
+        padding: 10,
+        marginBottom: 15,
+        backgroundColor: "#fff",
     },
     iconSearch: {
         position: "absolute",
@@ -218,5 +266,8 @@ const styles = StyleSheet.create({
         marginLeft: "auto",
         marginRight: "auto",
         zIndex: 1,
+    },
+    ViewXXIdAddPlantForm: {
+        marginLeft: "2%",
     },
 })
