@@ -23,6 +23,7 @@ const AnnonceScreen = () => {
     const [numero, setNumero] = useState(0)
     const [isVisible, setIsVisible] = useState(false)
     const [selectedImages, setSelectedImages] = useState([])
+    const [id, setId] = useState()
 
     useEffect(() => {
         axios
@@ -36,6 +37,7 @@ const AnnonceScreen = () => {
                     setBlocMessages(data.data.content.Conseils.sort(sortDateConseils))
                     setSelectedImages(data.data.content.EtatPlantes)
 
+                    setId(router.params.id)
                     if (data.data.content.Conseils.length <= 2) {
                         setMessages(data.data.content.Conseils)
                         setIsVisible(false)
@@ -96,7 +98,11 @@ const AnnonceScreen = () => {
             </View>
             <View style={styles.separateur}></View>
 
-            <PhotoPicker setSelectedImages={setSelectedImages} selectedImages={selectedImages} />
+            <PhotoPicker
+                setSelectedImages={setSelectedImages}
+                selectedImages={selectedImages}
+                id={id}
+            />
 
             <View style={styles.separateur}></View>
 
