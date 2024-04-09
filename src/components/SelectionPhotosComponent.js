@@ -77,11 +77,12 @@ const PhotoPicker = ({ onImageSelect, selectedImages, setSelectedImages, id }) =
             body: formData,
         })
         const data = await response.json()
-
+        console.log(data, "DATA")
         if (data.upload) {
             setSelectedImages([...selectedImages, data.message.secure_url])
+            console.log(id, "id")
             await axios
-                .put(`http://localhost:8080/api/v1/annonces/51`, {
+                .put(`http://localhost:8080/api/v1/annonces/${id}`, {
                     EtatPlantes: [...selectedImages, data.message.secure_url],
                 })
                 .then(data => {

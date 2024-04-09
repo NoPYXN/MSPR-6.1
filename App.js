@@ -3,9 +3,8 @@ import { View, Text } from "react-native"
 import { useLoadScript } from "@react-google-maps/api"
 
 import NavigationStack from "./src/navigation/NavigationStack"
-import AddPlantForm from "./src/components/AddPlantForm"
 
-const App = ({ Component }) => {
+const App = () => {
     return <NavigationStack></NavigationStack>
 }
 
