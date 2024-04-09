@@ -3,6 +3,7 @@ import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocom
 import { StyleSheet, Text, View, FlatList, TextInput, Pressable } from "react-native"
 import { FaSearch } from "react-icons/fa"
 import axios from "axios"
+import { useLoadScript } from "@react-google-maps/api"
 
 import { NumeroPage } from "../utils/NumeroPage"
 
@@ -18,10 +19,14 @@ export default function Index({
     isAddPlantFrom,
     annonces,
     valueVille,
-    isLoaded,
+    // isLoaded,
 }) {
-    if (!isLoaded) return <div>Loading...</div>
+    const { isLoaded } = useLoadScript({
+        googleMapsApiKey: "AIzaSyBnyp6JiXQAqF0VIfj9-cIt-OPjehWhY9E",
+        libraries: ["places"],
+    })
 
+    if (!isLoaded) return <div>Loading...</div>
     return (
         <Map
             setSearchVille={setSearchVille}
@@ -52,8 +57,8 @@ function Map({
     valueVille,
 }) {
     return (
-        <div>
-            <div>
+        <View>
+            <View>
                 <PlacesAutocomplete
                     setSearchVille={setSearchVille}
                     setSelected={setSelected}
@@ -67,8 +72,8 @@ function Map({
                     annonces={annonces}
                     valueVille={valueVille}
                 />
-            </div>
-        </div>
+            </View>
+        </View>
     )
 }
 
