@@ -22,14 +22,19 @@ const AddPlantForm = ({ navigation, id, router }) => {
     const [isChangeUploadFile, setIsChangeUploadFile] = useState(false)
     const [tabImages, setTabImages] = useState([])
     const [selectedFile, setSelectedFile] = useState(null)
-    const [date, setDate] = useState(new Date())
-    const [show, setShow] = useState(false)
+    const [date1, setDate1] = useState(new Date())
+    const [date2, setDate2] = useState(new Date())
+    const [show1, setShow1] = useState(false)
+    const [show2, setShow2] = useState(false)
     const [annonce, setAnnonce] = useState({})
+    const [newDate1, setNewDate1] = useState("")
+    const [newDate2, setNewDate2] = useState("")
+    const [message, setMessage] = useState("")
 
     const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate || date
-        setShow(Platform.OS === "ios") // Only relevant for iOS, to keep the picker open
-        setDate(currentDate)
+        const currentDate = selectedDate || date1
+        setShow1(Platform.OS === "ios") // Only relevant for iOS, to keep the picker open
+        setDate1(currentDate)
     }
 
     const convertirDate = dateString => {
@@ -45,8 +50,21 @@ const AddPlantForm = ({ navigation, id, router }) => {
     }
 
     useEffect(() => {
-        let x = convertirDateCalendrier(date)
-    }, [date])
+        let x = convertirDateCalendrier(date1)
+        let y = convertirDateCalendrier(date2)
+        setNewDate1(x)
+        setNewDate2(y)
+        setAnnonce({ ...annonce, DateDebut: x, DateFin: y })
+        // console.log("fffffffff")
+        // setAnnonce({ ...annonce, })
+    }, [date1, date2])
+    useEffect(() => {
+        let x = convertirDateCalendrier(date2)
+    }, [date2])
+
+    useEffect(() => {
+        console.log(annonce)
+    }, [annonce])
 
     useEffect(() => {
         if (id) {
@@ -154,6 +172,7 @@ const AddPlantForm = ({ navigation, id, router }) => {
     }
 
     const ajouterAnnonce = async () => {
+        console.log("dans fonction ajouter annonce")
         let tab = []
         tabImages.forEach(element => {
             tab.push(element.secure_url)
@@ -161,8 +180,12 @@ const AddPlantForm = ({ navigation, id, router }) => {
         await axios
             .post(`http://localhost:8080/api/v1/annonces`, { ...annonce, Id_Plante: tab })
             .then(data => {
+                console.log(data)
                 if (data.status == 201) {
                     navigation.replace("HomeScreen", { popup: "Votre annonce a bien été ajoutée" })
+                }
+                if (data.status == 200) {
+                    setMessage(data.data.message)
                 }
             })
             .catch(err => {
@@ -210,11 +233,11 @@ const AddPlantForm = ({ navigation, id, router }) => {
                     style={styles.input}
                     onChangeText={text => setAnnonce({ ...annonce, DateDebut: text })}
                     placeholder="Sélectionnez une date"
-                    value={annonce?.DateDebut || ""}
+                    value={newDate1 || annonce?.DateDebut || ""}
                 />
                 <Pressable
                     onPress={() => {
-                        show ? setShow(false) : setShow(true)
+                        show1 ? setShow1(false) : setShow1(true)
                     }}
                 >
                     <View style={styles.sendButton}>
@@ -222,17 +245,20 @@ const AddPlantForm = ({ navigation, id, router }) => {
                     </View>
                 </Pressable>
             </View>
+            {show1 && DatePicker && (
+                <DatePicker selected={date1} onChange={newDate => setDate1(newDate)} inline />
+            )}
             <Text style={styles.label}>Date de fin de gardiennage</Text>
             <View style={styles.containerDate}>
                 <TextInput
                     style={styles.input}
                     onChangeText={text => setAnnonce({ ...annonce, DateFin: text })}
                     placeholder="Sélectionnez une date"
-                    value={annonce?.DateFin || ""}
+                    value={newDate2 || annonce?.DateFin || ""}
                 />
                 <Pressable
                     onPress={() => {
-                        show ? setShow(false) : setShow(true)
+                        show2 ? setShow2(false) : setShow2(true)
                     }}
                 >
                     <View style={styles.sendButton}>
@@ -247,8 +273,9 @@ const AddPlantForm = ({ navigation, id, router }) => {
             {/* {show && Platform.OS === "web" && DatePicker && (
                 <DatePicker selected={date} onChange={newDate => setDate(newDate)} inline />
             )} */}
-            {show && DatePicker && (
-                <DatePicker selected={date} onChange={newDate => setDate(newDate)} inline />
+
+            {show2 && DatePicker && (
+                <DatePicker selected={date2} onChange={newDate => setDate2(newDate)} inline />
             )}
             <Text style={styles.label}>Ville</Text>
             <ResearchBar
@@ -261,6 +288,7 @@ const AddPlantForm = ({ navigation, id, router }) => {
                 annonces={annonce}
                 setAnnonces={setAnnonce}
                 valueVille={annonce?.Ville || ""}
+                // isLoaded={isLoaded}
             />
 
             <Text style={styles.label}>Télécharger des images</Text>
@@ -309,6 +337,13 @@ const AddPlantForm = ({ navigation, id, router }) => {
                 >
                     <Text style={styles.submitButtonText}>Valider</Text>
                 </Pressable>
+            )}
+            {message ? (
+                <View>
+                    <Text style={{ color: "red" }}>{message}</Text>
+                </View>
+            ) : (
+                <View></View>
             )}
         </View>
     )
