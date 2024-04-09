@@ -55,16 +55,7 @@ const AddPlantForm = ({ navigation, id, router }) => {
         setNewDate1(x)
         setNewDate2(y)
         setAnnonce({ ...annonce, DateDebut: x, DateFin: y })
-        // console.log("fffffffff")
-        // setAnnonce({ ...annonce, })
     }, [date1, date2])
-    useEffect(() => {
-        let x = convertirDateCalendrier(date2)
-    }, [date2])
-
-    useEffect(() => {
-        console.log(annonce)
-    }, [annonce])
 
     useEffect(() => {
         if (id) {
@@ -76,7 +67,8 @@ const AddPlantForm = ({ navigation, id, router }) => {
                             data.data.content.DateDebut = convertirDate(data.data.content.DateDebut)
                             data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                             setAnnonce(data.data.content)
-
+                            setNewDate1(data.data.content.DateDebut)
+                            setNewDate2(data.data.content.DateFin)
                             let tab = []
                             data.data.content.Id_Plante.forEach(element => {
                                 tab.push({
