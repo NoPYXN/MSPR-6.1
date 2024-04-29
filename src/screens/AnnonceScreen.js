@@ -108,7 +108,11 @@ const AnnonceScreen = () => {
 
             <View style={styles.messageContainer}>
                 <Text style={styles.TextIndication}>Avez-vous des indications à transmettre ?</Text>
-                <TextZoneInfo messages={messages} setMessages={setMessages} />
+                {id ? (
+                    <TextZoneInfo messages={messages} setMessages={setMessages} id={id} />
+                ) : (
+                    <View></View>
+                )}
                 {messages.length != 0 ? (
                     messages.sort(sortDateConseils).map((message, index) => (
                         <View key={index} style={styles.message}>
