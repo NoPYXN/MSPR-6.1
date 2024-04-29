@@ -3,7 +3,7 @@ import { View, TextInput, StyleSheet, Pressable } from "react-native"
 import { FontAwesome } from "@expo/vector-icons"
 import axios from "axios"
 
-const TextZoneInfo = ({ setMessages, messages }) => {
+const TextZoneInfo = ({ setMessages, messages, id }) => {
     const [inputValue, setInputValue] = useState("")
 
     const handleSubmit = async () => {
@@ -11,7 +11,7 @@ const TextZoneInfo = ({ setMessages, messages }) => {
             await axios
                 .post(`http://localhost:8080/api/v1/conseils`, {
                     Message: inputValue,
-                    ConseilId: 51,
+                    ConseilId: id,
                 })
                 .then(data => {
                     if (data.status == 201) {

@@ -56,7 +56,12 @@ const PlacesAutocomplete = ({ setSelected, setCoordonnees, coordonnees }) => {
             <View style={styles.ViewXX}>
                 {status === "OK" && (
                     <FlatList
-                        data={data}
+                        data={data
+                            .filter(({ types }) => types.includes("locality"))
+
+                            .filter(
+                                ({ terms }) => terms.some(obj => obj.value === "France") == true,
+                            )}
                         keyExtractor={item => item.place_id}
                         renderItem={({ item }) => (
                             <View style={styles.ViewFlatList}>
@@ -88,13 +93,13 @@ const styles = StyleSheet.create({
         padding: 5,
         marginTop: 10,
         marginBottom: 20,
-        shadowColor: "#000",
-        shadowOffset: {
+        boxShadowColor: "#000",
+        boxShadowOffset: {
             width: 0,
             height: 2,
         },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
+        boxShadowOpacity: 0.25,
+        boxShadowRadius: 3.84,
         elevation: 5,
         width: "100%",
     },

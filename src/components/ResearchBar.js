@@ -107,7 +107,9 @@ const PlacesAutocomplete = ({
     useEffect(() => {
         if (valueVille) {
             setValue(valueVille)
+            console.log("value", value)
         }
+        console.log("111111111", valueVille)
     }, [])
 
     const handleSelect = async address => {
@@ -161,6 +163,7 @@ const PlacesAutocomplete = ({
                     <TextInput
                         value={value ?? ""}
                         onChangeText={text => setValue(text)}
+                        // readOnly={ready}
                         editable={ready}
                         style={isAddPlantFrom ? styles.inputIsAddPlantForm : styles.input}
                         placeholder={isAddPlantFrom ? "Sélectionnez la ville" : searchVille}
@@ -183,7 +186,12 @@ const PlacesAutocomplete = ({
             <View style={isAddPlantFrom ? styles.ViewXXIdAddPlantForm : styles.ViewXX}>
                 {status === "OK" && (
                     <FlatList
-                        data={data}
+                        data={data
+                            .filter(({ types }) => types.includes("locality"))
+
+                            .filter(
+                                ({ terms }) => terms.some(obj => obj.value === "France") == true,
+                            )}
                         keyExtractor={item => item.place_id}
                         renderItem={({ item }) => (
                             <View style={styles.ViewFlatList}>

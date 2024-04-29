@@ -40,12 +40,14 @@ const styles = StyleSheet.create({
     icon: {
         width: 25,
         height: 25,
-        resizeMode: "contain",
+        // resizeMode: "contain",
+        objectFit: "contain",
     },
     logo: {
         width: 50,
         height: 50,
-        resizeMode: "contain",
+        // resizeMode: "contain",
+        objectFit: "contain",
     },
 })
 

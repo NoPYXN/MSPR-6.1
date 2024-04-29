@@ -118,13 +118,13 @@ const styles = StyleSheet.create({
         borderRadius: 10, // Coins arrondis pour les champs de texte
         padding: 15,
         marginBottom: 20,
-        shadowColor: "#000",
-        shadowOffset: {
+        boxShadowColor: "#000",
+        boxShadowOffset: {
             width: 0,
             height: 2,
         },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
+        boxShadowOpacity: 0.25,
+        boxShadowRadius: 3.84,
         elevation: 5, // pour Android
     },
     button: {

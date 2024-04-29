@@ -30,6 +30,7 @@ const AddPlantForm = ({ navigation, id, router }) => {
     const [newDate1, setNewDate1] = useState("")
     const [newDate2, setNewDate2] = useState("")
     const [message, setMessage] = useState("")
+    const [valueVille, setValueVille] = useState("")
 
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || date1
@@ -69,6 +70,7 @@ const AddPlantForm = ({ navigation, id, router }) => {
                             setAnnonce(data.data.content)
                             setNewDate1(data.data.content.DateDebut)
                             setNewDate2(data.data.content.DateFin)
+                            setValueVille(data.data.content.Ville)
                             let tab = []
                             data.data.content.Id_Plante.forEach(element => {
                                 tab.push({
@@ -107,6 +109,9 @@ const AddPlantForm = ({ navigation, id, router }) => {
         }
     }
 
+    useEffect(() => {
+        console.log(annonce, "DDDDDDD")
+    }, [annonce])
     const fetchMetadata = async fileUri => {
         try {
             const response = await fetch(fileUri)
@@ -279,7 +284,8 @@ const AddPlantForm = ({ navigation, id, router }) => {
                 setCoordonnees={setCoordonnees}
                 annonces={annonce}
                 setAnnonces={setAnnonce}
-                valueVille={annonce?.Ville || ""}
+                // valueVille={annonce ? annonce.Ville : "xxx"}
+                valueVille={valueVille ? valueVille : ""}
                 // isLoaded={isLoaded}
             />
 

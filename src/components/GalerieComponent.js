@@ -22,7 +22,8 @@ const styles = StyleSheet.create({
         width: windowWidth * 0.3, // 25% de la largeur de l'écran
         height: windowWidth * 0.3, // Même hauteur que la largeur pour une image carrée
         margin: windowWidth * 0.01, // Marge de 1% de la largeur de l'écran entre les images
-        resizeMode: "cover",
+        // resizeMode: "cover",
+        objectFit: "cover",
     },
 })
 
