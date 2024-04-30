@@ -5,6 +5,8 @@ import { useNavigation, useRoute } from "@react-navigation/native"
 import axios from "axios"
 import { AiOutlineClose } from "react-icons/ai"
 
+import emplacement from "../assets/emplacement.png"
+
 import HeaderComponent from "../components/HeaderComponent"
 
 import { convertirDate } from "../utils/ConvertiDate"
@@ -60,6 +62,10 @@ function Map() {
     useEffect(() => {
         setVisibleMarkers(annonces.filter(annonce => isMarkerInRadius(annonce, rayon * 1000)))
     }, [annonces])
+
+    useEffect(() => {
+        console.log("hoverInfo", hoverInfo)
+    }, [hoverInfo])
 
     const isMarkerInRadius = (annonce, radius) => {
         const { lat: lat1, lng: lng1 } = localization
@@ -122,8 +128,29 @@ function Map() {
                     mapContainerStyle={styles.mapcontainer}
                     options={OPTIONS}
                 >
-                    {localization && <CircleF center={localization} radius={rayon * 1000} />}
-                    {localization && <MarkerF position={localization} />}
+                    {localization && (
+                        <CircleF
+                            center={localization}
+                            radius={rayon * 1000}
+                            options={{
+                                fillColor: "transparent",
+                                strokeColor: "gray",
+                                strokeOpacity: 1,
+                                strokeWeight: 2,
+                            }}
+                        />
+                    )}
+                    {localization && (
+                        <MarkerF
+                            position={localization}
+                            icon={{
+                                url: emplacement,
+                                scaledSize: new window.google.maps.Size(30, 30),
+                                origin: new window.google.maps.Point(0, 0),
+                                anchor: new window.google.maps.Point(15, 15),
+                            }}
+                        />
+                    )}
                     {visibleMarkers &&
                         visibleMarkers.map((v, k) => (
                             <Marker
@@ -146,7 +173,7 @@ function Map() {
                                 }
                             />
                         ))}
-                    {hoverInfo.show && (
+                    {hoverInfo.show ? (
                         <View style={styles.containerHover}>
                             <View style={styles.hoverInfoView}>
                                 <View>
@@ -154,7 +181,6 @@ function Map() {
                                         onPress={() => {
                                             setHoverInfo({ ...hoverInfo, show: false })
                                         }}
-                                        style={{ right: "0px", position: "absolute" }}
                                     >
                                         <AiOutlineClose />
                                     </Pressable>
@@ -193,7 +219,7 @@ function Map() {
                                 </View>
                             </View>
                         </View>
-                    )}
+                    ) : null}
                 </GoogleMap>
             </View>
         </SafeAreaView>
