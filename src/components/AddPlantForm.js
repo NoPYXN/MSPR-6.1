@@ -31,7 +31,7 @@ const AddPlantForm = ({ navigation, id, router }) => {
     const [newDate2, setNewDate2] = useState("")
     const [message, setMessage] = useState("")
     const [valueVille, setValueVille] = useState("")
-
+    const [isCharged, setIsCharged] = useState(false)
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || date1
         setShow1(Platform.OS === "ios") // Only relevant for iOS, to keep the picker open
@@ -86,6 +86,7 @@ const AddPlantForm = ({ navigation, id, router }) => {
 
             test()
         }
+        setIsCharged(true)
     }, [router.params])
 
     const handleFileSelected = async () => {
@@ -263,41 +264,41 @@ const AddPlantForm = ({ navigation, id, router }) => {
                     </View>
                 </Pressable>
             </View>
-
             {/* {show && Platform.OS !== "web" && (
                 <DateTimePicker value={date} mode="date" display="default" onChange={onChange} />
             )} */}
             {/* {show && Platform.OS === "web" && DatePicker && (
                 <DatePicker selected={date} onChange={newDate => setDate(newDate)} inline />
             )} */}
-
             {show2 && DatePicker && (
                 <DatePicker selected={date2} onChange={newDate => setDate2(newDate)} inline />
             )}
             <Text style={styles.label}>Ville</Text>
-            <ResearchBar
-                isAddPlantFrom={isAddPlantFrom}
-                selected={selected}
-                setSelected={setSelected}
-                searchVille={searchVille}
-                setSearchVille={setSearchVille}
-                setCoordonnees={setCoordonnees}
-                annonces={annonce}
-                setAnnonces={setAnnonce}
-                // valueVille={annonce ? annonce.Ville : "xxx"}
-                valueVille={valueVille ? valueVille : ""}
-                // isLoaded={isLoaded}
-            />
-
+            {/* {valueVille ? ( */}
+            {isCharged && (
+                <ResearchBar
+                    isAddPlantFrom={isAddPlantFrom}
+                    selected={selected}
+                    setSelected={setSelected}
+                    searchVille={searchVille}
+                    setSearchVille={setSearchVille}
+                    setCoordonnees={setCoordonnees}
+                    annonces={annonce}
+                    setAnnonces={setAnnonce}
+                    // valueVille={annonce ? annonce.Ville : "xxx"}
+                    valueVille={valueVille}
+                    // isLoaded={isLoaded}
+                />
+            )}
+            {/* ) : ( <View></View>
+             )} */}
             <Text style={styles.label}>Télécharger des images</Text>
-
             <View style={styles.uploadButton}>
                 <Pressable onPress={handleFileSelected}>
                     <Text style={styles.labelUploadButton}>Sélectionner un fichier</Text>
                 </Pressable>
                 {selectedFile && <Text>Fichier sélectionné : {selectedFile.name}</Text>}
             </View>
-
             <View style={styles.viewTabImage}>
                 {tabImages
                     ? tabImages.map((image, index) => (
