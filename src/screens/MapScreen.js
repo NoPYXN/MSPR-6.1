@@ -1,17 +1,11 @@
-import React, { useState, useEffect, useRef } from "react"
-import {
-    StyleSheet,
-    Text,
-    View,
-    Image,
-    SafeAreaView,
-    Linking,
-    TextInput,
-    Pressable,
-} from "react-native"
+import React, { useState, useEffect } from "react"
+import { StyleSheet, Text, View, Image, SafeAreaView, Pressable } from "react-native"
 import { GoogleMap, useLoadScript, Marker, CircleF, MarkerF } from "@react-google-maps/api"
-import { useNavigation, useParams, useRoute } from "@react-navigation/native"
+import { useNavigation, useRoute } from "@react-navigation/native"
 import axios from "axios"
+import { AiOutlineClose } from "react-icons/ai"
+
+import emplacement from "../assets/emplacement.png"
 
 import HeaderComponent from "../components/HeaderComponent"
 
@@ -25,20 +19,14 @@ export default function MapScreen() {
         setInfoRoute({ lat: router.lat, lng: router.lng, radius: router.radius })
     }, [])
     const { isLoaded } = useLoadScript({
-        googleMapsApiKey: "AIzaSyBnyp6JiXQAqF0VIfj9-cIt-OPjehWhY9E", //"AIzaSyB8jSTHSpmqZDIl3wz5Nyz8FJfAL0bYvVE",
+        googleMapsApiKey: "AIzaSyBnyp6JiXQAqF0VIfj9-cIt-OPjehWhY9E",
     })
 
     if (!isLoaded) return <div>Loading...</div>
-    return (
-        <Map
-        // localization={{ lat: router.lat, lng: router.lng }}
-        // rayon={router.radius}
-        />
-    )
+    return <Map />
 }
 
 function Map() {
-    //localization, rayon
     const navigation = useNavigation()
     const [annonces, setAnnonces] = useState([])
     const [visibleMarkers, setVisibleMarkers] = useState([])
@@ -76,8 +64,8 @@ function Map() {
     }, [annonces])
 
     useEffect(() => {
-        console.log(visibleMarkers)
-    }, [visibleMarkers])
+        console.log("hoverInfo", hoverInfo)
+    }, [hoverInfo])
 
     const isMarkerInRadius = (annonce, radius) => {
         const { lat: lat1, lng: lng1 } = localization
@@ -125,10 +113,6 @@ function Map() {
         setHoverInfo({ ...hoverInfo, show: false })
     }
 
-    useEffect(() => {
-        console.log("LOCATIONS", localization)
-    }, [localization])
-
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
@@ -144,8 +128,29 @@ function Map() {
                     mapContainerStyle={styles.mapcontainer}
                     options={OPTIONS}
                 >
-                    {localization && <CircleF center={localization} radius={rayon * 1000} />}
-                    {localization && <MarkerF position={localization} />}
+                    {localization && (
+                        <CircleF
+                            center={localization}
+                            radius={rayon * 1000}
+                            options={{
+                                fillColor: "transparent",
+                                strokeColor: "gray",
+                                strokeOpacity: 1,
+                                strokeWeight: 2,
+                            }}
+                        />
+                    )}
+                    {localization && (
+                        <MarkerF
+                            position={localization}
+                            icon={{
+                                url: emplacement,
+                                scaledSize: new window.google.maps.Size(30, 30),
+                                origin: new window.google.maps.Point(0, 0),
+                                anchor: new window.google.maps.Point(15, 15),
+                            }}
+                        />
+                    )}
                     {visibleMarkers &&
                         visibleMarkers.map((v, k) => (
                             <Marker
@@ -156,12 +161,6 @@ function Map() {
                                     scaledSize: new window.google.maps.Size(30, 30),
                                     anchor: new window.google.maps.Point(15, 15),
                                 }}
-                                // label={{
-                                //     text: `${v.Titre}`,
-                                //     fontWeight: "500",
-                                //     style: styles.marker__label,
-                                //     // style: styles.marker__label,
-                                // }}
                                 onClick={e =>
                                     handleMouseOver(
                                         e,
@@ -172,54 +171,55 @@ function Map() {
                                         v.Id_Annonce,
                                     )
                                 }
-                                //QUAND JE CLIQUE DE NOUVEAU CA RENTRE PLUS DANS LA FONCTION --> ¨PROBLEME A REGLER
                             />
                         ))}
-                    {hoverInfo.show && (
-                        <View>
-                            {/* <Pressable
-                                onPress={() => {
-                                    navigation.navigate({
-                                        name: "AnnonceScreen",
-                                        params: { id: hoverInfo.Id },
-                                    })
-                                }}
-                            > */}
+                    {hoverInfo.show ? (
+                        <View style={styles.containerHover}>
                             <View style={styles.hoverInfoView}>
-                                <Text style={styles.hoverInfoText}>{hoverInfo.Titre}</Text>
-                                <Image
-                                    source={{
-                                        uri: `${hoverInfo.Image}`,
-                                    }}
-                                    alt={`image ${hoverInfo.Titre}`}
-                                    style={{
-                                        width: "100px",
-                                        height: "100px",
-                                        marginLeft: "auto",
-                                        marginRight: "auto",
-                                        marginTop: "10px",
-                                        marginBottom: "10px",
-                                    }}
-                                />
-                                <View
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                        width: "100%",
-                                    }}
-                                >
-                                    <Text style={{ textAlign: "center", fontSize: "8px" }}>
-                                        {convertirDate(hoverInfo.DateDebut)}
-                                    </Text>
-                                    <Text style={{ textAlign: "center", fontSize: "8px" }}>
-                                        {convertirDate(hoverInfo.DateFin)}
-                                    </Text>
+                                <View>
+                                    <Pressable
+                                        onPress={() => {
+                                            setHoverInfo({ ...hoverInfo, show: false })
+                                        }}
+                                    >
+                                        <AiOutlineClose />
+                                    </Pressable>
+
+                                    <Text style={styles.hoverInfoText}>{hoverInfo.Titre}</Text>
+                                    <Image
+                                        source={{
+                                            uri: `${hoverInfo.Image}`,
+                                        }}
+                                        alt={`image ${hoverInfo.Titre}`}
+                                        style={{
+                                            width: "200px",
+                                            height: "200px",
+                                            marginLeft: "auto",
+                                            marginRight: "auto",
+                                            marginTop: "10px",
+                                            marginBottom: "10px",
+                                        }}
+                                    />
+                                    <View
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            justifyContent: "space-between",
+                                            width: "100%",
+                                            padding: "5%",
+                                        }}
+                                    >
+                                        <Text style={{ textAlign: "center", fontSize: "14px" }}>
+                                            {convertirDate(hoverInfo.DateDebut)}
+                                        </Text>
+                                        <Text style={{ textAlign: "center", fontSize: "14px" }}>
+                                            {convertirDate(hoverInfo.DateFin)}
+                                        </Text>
+                                    </View>
                                 </View>
                             </View>
-                            {/* </Pressable> */}
                         </View>
-                    )}
+                    ) : null}
                 </GoogleMap>
             </View>
         </SafeAreaView>
@@ -247,22 +247,25 @@ const styles = StyleSheet.create({
         paddingRight: "100px",
         paddingBottom: "30px",
         paddingLeft: "0px",
-        // padding: "0 0 30 100",
+    },
+    containerHover: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+        height: "100%",
     },
     hoverInfoView: {
-        // width: "200px",
-        // height: "100px",
-        padding: "3%",
-        width: "150px",
+        padding: "5%",
+        width: "300px",
         backgroundColor: "white",
         borderRadius: "5px",
         borderColor: "#ccc",
         borderWidth: 2,
-        marginTop: "80px",
     },
     hoverInfoText: {
         fontWeight: "bold",
-        fontSize: "16px",
+        fontSize: "24px",
         textAlign: "center",
     },
 })

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { View, Image, TouchableOpacity, Text, StyleSheet } from "react-native"
+import { View, Image, Text, StyleSheet, Pressable } from "react-native"
 import * as ImagePicker from "expo-image-picker"
 import { FontAwesome5 } from "@expo/vector-icons"
 import * as DocumentPicker from "expo-document-picker"
@@ -77,11 +77,12 @@ const PhotoPicker = ({ onImageSelect, selectedImages, setSelectedImages, id }) =
             body: formData,
         })
         const data = await response.json()
-
+        console.log(data, "DATA")
         if (data.upload) {
             setSelectedImages([...selectedImages, data.message.secure_url])
+            console.log(id, "id")
             await axios
-                .put(`http://localhost:8080/api/v1/annonces/51`, {
+                .put(`http://localhost:8080/api/v1/annonces/${id}`, {
                     EtatPlantes: [...selectedImages, data.message.secure_url],
                 })
                 .then(data => {
@@ -97,11 +98,11 @@ const PhotoPicker = ({ onImageSelect, selectedImages, setSelectedImages, id }) =
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.button} onPress={() => handleFileSelected()}>
+            <Pressable style={styles.button} onPress={() => handleFileSelected()}>
                 <FontAwesome5 name="upload" size={25} color="black" />
                 {/* size={50} */}
                 {/* <Text style={styles.text}>Ajouter des photos</Text> */}
-            </TouchableOpacity>
+            </Pressable>
             {selectedImages.length > 0 ? (
                 <Galerie images={selectedImages} />
             ) : (

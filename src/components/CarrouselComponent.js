@@ -4,10 +4,6 @@ import { View, ScrollView, Image, Dimensions, StyleSheet } from "react-native"
 const Carousel = ({ images }) => {
     const [activeIndex, setActiveIndex] = useState(0)
 
-    useEffect(() => {
-        console.log(images[activeIndex]) // Affiche l'image active dans la console
-    }, [activeIndex, images]) // S'exécute à chaque changement de activeIndex ou de images
-
     const handleScroll = event => {
         const slideSize = event.nativeEvent.layoutMeasurement.width
         const index = event.nativeEvent.contentOffset.x / slideSize
@@ -60,7 +56,8 @@ const styles = StyleSheet.create({
     image: {
         width: "100%",
         height: "100%",
-        resizeMode: "cover",
+        // resizeMode: "cover",
+        objectFit: "cover",
         alignContent: "center",
     },
     pagination: {

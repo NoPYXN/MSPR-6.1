@@ -1,16 +1,6 @@
-import React, { useState, useEffect, useMemo } from "react"
-import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api"
+import React, { useState, useEffect } from "react"
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete"
-import {
-    StyleSheet,
-    Text,
-    View,
-    Image,
-    FlatList,
-    SafeAreaView,
-    TextInput,
-    Pressable,
-} from "react-native"
+import { StyleSheet, Text, View, FlatList, TextInput, Pressable } from "react-native"
 
 export default function Index({ setCoordonnees, coordonnees, isLoaded }) {
     if (!isLoaded) return <div>Loading...</div>
@@ -50,16 +40,12 @@ const PlacesAutocomplete = ({ setSelected, setCoordonnees, coordonnees }) => {
         setCoordonnees({ ...coordonnees, localization: { lat, lng }, country: address })
     }
 
-    useEffect(() => {
-        console.log(data, "data")
-    }, [data])
-
     return (
         <View style={styles.container}>
             <View>
                 <View>
                     <TextInput
-                        // value={value}
+                        value={value || ""}
                         onChangeText={text => setValue(text)}
                         editable={ready}
                         style={styles.input}
@@ -70,7 +56,12 @@ const PlacesAutocomplete = ({ setSelected, setCoordonnees, coordonnees }) => {
             <View style={styles.ViewXX}>
                 {status === "OK" && (
                     <FlatList
-                        data={data}
+                        data={data
+                            .filter(({ types }) => types.includes("locality"))
+
+                            .filter(
+                                ({ terms }) => terms.some(obj => obj.value === "France") == true,
+                            )}
                         keyExtractor={item => item.place_id}
                         renderItem={({ item }) => (
                             <View style={styles.ViewFlatList}>
@@ -102,13 +93,13 @@ const styles = StyleSheet.create({
         padding: 5,
         marginTop: 10,
         marginBottom: 20,
-        shadowColor: "#000",
-        shadowOffset: {
+        boxShadowColor: "#000",
+        boxShadowOffset: {
             width: 0,
             height: 2,
         },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
+        boxShadowOpacity: 0.25,
+        boxShadowRadius: 3.84,
         elevation: 5,
         width: "100%",
     },
@@ -142,8 +133,6 @@ const styles = StyleSheet.create({
     },
     ViewXX: {
         width: "55%",
-        // marginLeft: "auto",
-        // marginRight: "auto",
         zIndex: 1,
     },
     ViewXXIdAddPlantForm: {

@@ -1,18 +1,8 @@
 import React, { useState, useEffect } from "react"
-import {
-    StyleSheet,
-    Text,
-    View,
-    Image,
-    SafeAreaView,
-    Linking,
-    TextInput,
-    Touchable,
-    Pressable,
-} from "react-native"
-import axios from "axios"
-import { useNavigation, useParams, useRoute } from "@react-navigation/native"
+import { StyleSheet, Text, View, SafeAreaView, Pressable } from "react-native"
+import { useNavigation, useRoute } from "@react-navigation/native"
 import { AiOutlineClose } from "react-icons/ai"
+import { useLoadScript } from "@react-google-maps/api"
 
 import HeaderComponent from "../components/HeaderComponent"
 import AddPlantForm from "../components/AddPlantForm"
@@ -21,28 +11,12 @@ const FormulaireAnnonceScreen = () => {
     const navigation = useNavigation()
     const router = useRoute()
     const [id, setId] = useState()
-    const [isCreate, setIsCreate] = useState(false)
-    const [isLoading, setIsLoading] = useState(false) //useState(!router.params?.id)
-
-    const [annonce, setAnnonce] = useState({})
+    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
         setIsLoading(true)
         setId(router.params?.id)
-        console.log("FormulaireAnnonceScreen", router.param?.id)
     }, [router.params])
-
-    const convertirDate = dateString => {
-        const date = new Date(dateString)
-
-        const jour = ("0" + date.getDate()).slice(-2)
-        const mois = ("0" + (date.getMonth() + 1)).slice(-2)
-        const annee = date.getFullYear()
-
-        const dateFormatee = `${jour}/${mois}/${annee}`
-
-        return dateFormatee
-    }
 
     return (
         <SafeAreaView style={styles.SafeAreaView}>
