@@ -31,12 +31,17 @@ const CreateAccountForm = () => {
         console.log(user);
     }, [user]);
 
+    const handleSubmitForm = () => {
+        console.log("Informations de l'utilisateur :", user);
+    };
+
     return (
         <Formik
             initialValues={user}
             validationSchema={SignupSchema}
             onSubmit={(values) => {
                 // Logique de soumission du formulaire
+                handleSubmitForm();
             }}
         >
             {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
