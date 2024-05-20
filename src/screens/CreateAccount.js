@@ -20,10 +20,7 @@ const CreateAccount = () => {
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation}/>
-
-            {/* <CreateAccountForm/> */}
-            <LoginComponent/>
-            
+            <CreateAccountForm/>
         </SafeAreaView>
     )
 

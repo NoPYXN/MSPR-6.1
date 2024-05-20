@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -16,6 +16,15 @@ const SignupSchema = Yup.object().shape({
     adresse: Yup.string().required("Champ obligatoire"),
 });
 
+const Checkbox = ({ label, value, onPress }) => {
+    return (
+        <TouchableOpacity style={styles.checkboxContainer} onPress={onPress}>
+            <View style={[styles.checkbox, { backgroundColor: value ? "#5cb85c" : "#fff" }]} />
+            <Text style={styles.checkboxLabel}>{label}</Text>
+        </TouchableOpacity>
+    );
+};
+
 const CreateAccountForm = () => {
     const [user, setUser] = useState({
         Civilite: "",
@@ -26,13 +35,8 @@ const CreateAccountForm = () => {
         Adresse: "",
     });
 
-    // Effet secondaire pour afficher les valeurs de user dans la console lorsque user est modifié
-    useEffect(() => {
-        console.log(user);
-    }, [user]);
-
-    const handleSubmitForm = () => {
-        console.log("Informations de l'utilisateur :", user);
+    const selectGender = (gender) => {
+        setUser({ ...user, Civilite: gender });
     };
 
     return (
@@ -41,36 +45,17 @@ const CreateAccountForm = () => {
             validationSchema={SignupSchema}
             onSubmit={(values) => {
                 // Logique de soumission du formulaire
-                handleSubmitForm();
+                console.log(values);
             }}
         >
             {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                 <View style={styles.formContainer}>
 
-                    {/* Civilité */}
                     <Text style={styles.label}>Civilité</Text>
-                    <View style={styles.radioContainer}>
-                        <TouchableOpacity
-                            style={styles.radioButton}
-                            onPress={() => setUser({ ...user, Civilite: "homme" })}
-                        >
-                            <View style={[styles.radioCircle, { backgroundColor: values.Civilite === "homme" ? "#5cb85c" : "#ccc" }]} />
-                            <Text style={styles.radioText}>Homme</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.radioButton}
-                            onPress={() => setUser({ ...user, Civilite: "femme" })}
-                        >
-                            <View style={[styles.radioCircle, { backgroundColor: values.Civilite === "femme" ? "#5cb85c" : "#ccc" }]} />
-                            <Text style={styles.radioText}>Femme</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.radioButton}
-                            onPress={() => setUser({ ...user, Civilite: "autre" })}
-                        >
-                            <View style={[styles.radioCircle, { backgroundColor: values.Civilite === "autre" ? "#5cb85c" : "#ccc" }]} />
-                            <Text style={styles.radioText}>Autre</Text>
-                        </TouchableOpacity>
+                    <View style={styles.checkboxGroup}>
+                        <Checkbox label="Homme" value={user.Civilite === "homme"} onPress={() => selectGender("homme")} />
+                        <Checkbox label="Femme" value={user.Civilite === "femme"} onPress={() => selectGender("femme")} />
+                        <Checkbox label="Autre" value={user.Civilite === "autre"} onPress={() => selectGender("autre")} />
                     </View>
 
                     {/* Nom */}
@@ -196,6 +181,32 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     radioText: {
+        fontSize: 16,
+    },
+    checkboxGroup: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 20,
+    },
+    checkboxContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    checkbox: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: "#5cb85c",
+        justifyContent: "center",
+        alignItems: "center",
+        marginRight: 5,
+    },
+    checkboxText: {
+        color: "#fff",
+        fontSize: 16,
+    },
+    checkboxLabel: {
         fontSize: 16,
     },
 });

@@ -19,9 +19,7 @@ const LoginScreen = () => {
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation}/>
-
             <LoginComponent/>
-            
         </SafeAreaView>
     )
 
