@@ -19,7 +19,7 @@ const HeaderComponent = ({ navigation }) => {
                     <Image source={require("../assets/logo.png")} style={styles.logo} />
                 </View>
             </Pressable>
-            <Pressable onPress={() => navigation.navigate({name: "CreateAccount",})}>
+            <Pressable onPress={() => navigation.navigate({name: "LoginScreen",})}>
                 <View>
                     <Image source={require("../assets/profil.png")} style={styles.icon} />
                 </View>
