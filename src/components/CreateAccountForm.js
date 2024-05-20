@@ -139,7 +139,9 @@ const CreateAccountForm = () => {
                     {touched.Adresse && errors.Adresse && <Text>{errors.Adresse}</Text>}
                     
                     {/* Bouton de soumission */}
-                    <Button onPress={handleSubmit} title="Valider" color="#5cb85c" />
+                    <View style={styles.buttonContainer}>
+                        <Button onPress={handleSubmit} title="Valider" color="#5cb85c" />
+                    </View>
                 </View>
             )}
         </Formik>
@@ -173,10 +175,8 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     button: {
-        borderRadius: 20,
-        padding: 15,
-        backgroundColor: "#5cb85c",
-        alignItems: "center",
+        alignItems: 'center',
+        padding: 20,
     },
     radioContainer: {
         flexDirection: "row",
