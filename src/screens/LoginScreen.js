@@ -3,10 +3,9 @@ import { StyleSheet, Text, View, SafeAreaView, Pressable } from "react-native"
 import { useNavigation, useRoute } from "@react-navigation/native"
 
 import HeaderComponent from "../components/HeaderComponent"
-import CreateAccountForm from "../components/CreateAccountForm"
 import LoginComponent from "../components/LoginComponent"
 
-const CreateAccount = () => {
+const LoginScreen = () => {
     const navigation = useNavigation()
     const router = useRoute()
     const [id, setId] = useState()
@@ -21,7 +20,6 @@ const CreateAccount = () => {
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation}/>
 
-            {/* <CreateAccountForm/> */}
             <LoginComponent/>
             
         </SafeAreaView>
@@ -44,4 +42,4 @@ const styles = StyleSheet.create({
         fontSize: "20px;",
     },
 })
-export default CreateAccount
+export default LoginScreen
