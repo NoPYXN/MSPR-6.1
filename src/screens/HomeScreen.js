@@ -189,6 +189,7 @@ const ListeAnnonces = ({ isLoaded }) => {
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
 
+
             {isDelete && showFirstView ? (
                 <View style={styles.ViewMessage}>
                     <Text style={styles.textMessage}>{message}</Text>
