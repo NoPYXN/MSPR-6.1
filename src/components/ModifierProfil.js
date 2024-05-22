@@ -10,9 +10,15 @@ import {
     Pressable,
 } from "react-native"
 import { AiOutlineClose } from "react-icons/ai"
+import axios from "axios"
 
 const ModifierProfil = ({ user, setUser, setIsVisible }) => {
-    const validModifierProfil = async () => {}
+    const validModifierProfil = async () => {
+        await axios
+            .put("http://localhost:8080/api/v1/users/" + localStorage.getItem("id"), user)
+            .then(data => setIsVisible(false))
+            .catch(err => console.log(err))
+    }
     return (
         <View style={styles.viewGlobale}>
             <Pressable
@@ -58,7 +64,6 @@ const ModifierProfil = ({ user, setUser, setIsVisible }) => {
                 }}
                 style={styles.bottomContainer}
             >
-                {" "}
                 <Text style={styles.signupText}>Modifier Profil</Text>
             </Pressable>
         </View>
@@ -70,6 +75,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         paddingHorizontal: 20,
         paddingBottom: 20,
+        border: "1px solid black",
     },
     inputField: {
         backgroundColor: "#fff",
