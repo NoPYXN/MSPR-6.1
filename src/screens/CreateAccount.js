@@ -19,11 +19,10 @@ const CreateAccount = () => {
 
     return (
         <SafeAreaView style={styles.SafeAreaView}>
-            <HeaderComponent navigation={navigation}/>
-            <CreateAccountForm/>
+            <HeaderComponent navigation={navigation} />
+            <CreateAccountForm navigation={navigation} />
         </SafeAreaView>
     )
-
 }
 
 const styles = StyleSheet.create({

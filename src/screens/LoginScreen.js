@@ -10,19 +10,51 @@ const LoginScreen = () => {
     const router = useRoute()
     const [id, setId] = useState()
     const [isLoading, setIsLoading] = useState(false)
+    const [isDelete, setIsDelete] = useState()
+    const [showFirstView, setShowFirstView] = useState(true)
+    const [message, setMessage] = useState(router.params?.popup || "")
 
     useEffect(() => {
+        console.log("11111111111")
         setIsLoading(true)
         setId(router.params?.id)
+        console.log(router, "router")
+        if (router.params?.popup) {
+            setIsDelete(true)
+            delete router.params.popup
+
+            navigation.navigate({
+                name: "LoginScreen",
+            })
+            const timer = setTimeout(() => {
+                setShowFirstView(false)
+            }, 2000)
+
+            return () => clearTimeout(timer)
+        }
     }, [router.params])
+
+    useEffect(() => {
+        console.log("33333333")
+        if (!showFirstView) {
+            setIsDelete(false)
+            setShowFirstView(true)
+        }
+    }, [showFirstView])
 
     return (
         <SafeAreaView style={styles.SafeAreaView}>
-            <HeaderComponent navigation={navigation}/>
-            <LoginComponent/>
+            <HeaderComponent navigation={navigation} />
+            {isDelete && showFirstView ? (
+                <View style={styles.ViewMessage}>
+                    <Text style={styles.textMessage}>{message}</Text>
+                </View>
+            ) : (
+                <View></View>
+            )}
+            <LoginComponent />
         </SafeAreaView>
     )
-
 }
 
 const styles = StyleSheet.create({
@@ -38,6 +70,17 @@ const styles = StyleSheet.create({
     TextTitre: {
         textAlign: "center",
         fontSize: "20px;",
+    },
+    ViewMessage: {
+        width: "100%",
+        height: "30px",
+        backgroundColor: "black",
+    },
+    textMessage: {
+        color: "green",
+        textAlign: "center",
+        marginTop: "auto",
+        marginBottom: "auto",
     },
 })
 export default LoginScreen
