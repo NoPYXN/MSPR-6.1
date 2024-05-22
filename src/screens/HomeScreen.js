@@ -63,6 +63,8 @@ const ListeAnnonces = ({ isLoaded }) => {
     }
 
     useEffect(() => {
+        ///que je fasse le verifytoken et si ok aller chercher le pseudo de la personne
+
         let urlParam = ""
         let nombrePage = 1
         let separerFiltre = ""
@@ -188,7 +190,6 @@ const ListeAnnonces = ({ isLoaded }) => {
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
-
 
             {isDelete && showFirstView ? (
                 <View style={styles.ViewMessage}>

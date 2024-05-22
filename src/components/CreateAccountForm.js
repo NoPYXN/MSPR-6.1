@@ -106,13 +106,6 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
         }
     }
 
-    useEffect(() => {
-        console.log(coordonnees, "coordonnees")
-    }, [coordonnees])
-    useEffect(() => {
-        console.log(user, "user")
-    }, [user])
-
     return (
         <Formik
             initialValues={user}

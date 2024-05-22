@@ -15,7 +15,6 @@ const LoginScreen = () => {
     const [message, setMessage] = useState(router.params?.popup || "")
 
     useEffect(() => {
-        console.log("11111111111")
         setIsLoading(true)
         setId(router.params?.id)
         console.log(router, "router")
@@ -32,10 +31,9 @@ const LoginScreen = () => {
 
             return () => clearTimeout(timer)
         }
-    }, [router.params])
+    }, []) //router.params
 
     useEffect(() => {
-        console.log("33333333")
         if (!showFirstView) {
             setIsDelete(false)
             setShowFirstView(true)
@@ -52,7 +50,11 @@ const LoginScreen = () => {
             ) : (
                 <View></View>
             )}
-            <LoginComponent />
+            <View
+                style={{ display: "flex", justifyContent: "center", width: "100%", height: "50%" }}
+            >
+                <LoginComponent />
+            </View>
         </SafeAreaView>
     )
 }
@@ -60,6 +62,7 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
     SafeAreaView: {
         width: "100%",
+        height: "100%",
         backgroundColor: "white",
     },
     ViewGoBack: {
