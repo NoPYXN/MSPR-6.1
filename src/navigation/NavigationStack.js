@@ -10,6 +10,7 @@ import AnnonceScreen from "../screens/AnnonceScreen"
 import MapScreen from "../screens/MapScreen"
 import CreateAccount from "../screens/CreateAccount"
 import LoginScreen from "../screens/LoginScreen"
+import ProfilScreen from "../screens/ProfilScreen"
 
 const Stack = createNativeStackNavigator()
 
@@ -59,6 +60,11 @@ const NavigationStack = isLoaded => {
                     options={{ headerShown: false }}
                     name="LoginScreen"
                     component={LoginScreen}
+                />
+                <Stack.Screen
+                    options={{ headerShown: false }}
+                    name="ProfilScreen"
+                    component={ProfilScreen}
                 />
             </Stack.Navigator>
         </NavigationContainer>

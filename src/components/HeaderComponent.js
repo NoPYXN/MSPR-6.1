@@ -7,6 +7,14 @@ const HeaderComponent = ({ navigation }) => {
         navigation.replace("HomeScreen") // Redirige vers la même page pour la recharger
     }
 
+    const directionLoginOrProfil = () => {
+        if (localStorage.getItem("token")) {
+            navigation.navigate({ name: "ProfilScreen" })
+        } else {
+            navigation.navigate({ name: "LoginScreen" })
+        }
+    }
+
     return (
         <View style={styles.headerContainer}>
             <Pressable onPress={() => {}}>
@@ -19,8 +27,14 @@ const HeaderComponent = ({ navigation }) => {
                     <Image source={require("../assets/logo.png")} style={styles.logo} />
                 </View>
             </Pressable>
-            <Pressable onPress={() => navigation.navigate({name: "LoginScreen",})}>
-                <View>
+
+            <Pressable onPress={() => directionLoginOrProfil()}>
+                <View style={{ display: "flex", flexDirection: "row" }}>
+                    <Text style={{ textAlign: "center" }}>
+                        {localStorage.getItem("pseudo")
+                            ? `Bienvenue ${localStorage?.getItem("pseudo")}`
+                            : ""}
+                    </Text>
                     <Image source={require("../assets/profil.png")} style={styles.icon} />
                 </View>
             </Pressable>
