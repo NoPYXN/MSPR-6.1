@@ -119,7 +119,12 @@ const ProfilScreen = () => {
             <HeaderComponent navigation={navigation} />
             <View style={isVisible ? styles.ViewGlobaleOpacity : styles.ViewGlobale}>
                 <View style={{ display: "flex", alignItems: "center" }}>
-                    <Image source={require("../assets/profil.png")} style={styles.icon} />
+                    {user.Image ? (
+                        <Image source={user.Image} style={styles.icon} />
+                    ) : (
+                        <Image source={require("../assets/profil.png")} style={styles.icon} />
+                    )}
+
                     <Pressable onPress={() => handleFileSelected()}>
                         <Text style={styles.labelUploadButton}>Changer photo profil</Text>
                     </Pressable>
@@ -188,6 +193,7 @@ const styles = StyleSheet.create({
         height: 50,
         // resizeMode: "contain",
         objectFit: "contain",
+        borderRadius: "50%",
     },
     SafeAreaView: {
         width: "100%",
