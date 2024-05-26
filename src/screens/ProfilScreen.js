@@ -118,57 +118,40 @@ const ProfilScreen = () => {
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
             <View style={isVisible ? styles.ViewGlobaleOpacity : styles.ViewGlobale}>
-                <View style={{ display: "flex", alignItems: "center" }}>
+                <View style={styles.profileContainer}>
                     {user.Image ? (
-                        <Image source={user.Image} style={styles.icon} />
+                        <Image source={{ uri: user.Image }} style={styles.icon} />
                     ) : (
                         <Image source={require("../assets/profil.png")} style={styles.icon} />
                     )}
-
                     <Pressable onPress={() => handleFileSelected()}>
                         <Text style={styles.labelUploadButton}>Changer photo profil</Text>
                     </Pressable>
                 </View>
-                <View
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        width: "100%",
-                        marginLeft: "5%",
-                        marginRight: "5%",
-                    }}
-                >
-                    <View style={{ width: "80%" }}>
-                        <Text>{user.Civilite}</Text>
-                        <Text>{user.Nom}</Text>
-                        <Text>{user.Prenom}</Text>
-                        <Text>{user.Pseudo}</Text>
-                        <Text>{user.Email}</Text>
-                        <Text>{user.Ville}</Text>
-                        {user.Botanniste ? (
-                            <View>
-                                <Text>Botanniste </Text>
-                                <BsCheck color={green} />
-                            </View>
-                        ) : (
-                            <Text></Text>
-                        )}
-                    </View>
-                    <View>
-                        <Pressable
-                            onPress={() => {
-                                setIsVisible(true)
-                            }}
-                        >
-                            <AiFillEdit />
-                        </Pressable>
-                    </View>
+                <View style={styles.userInfoContainer}>
+                    <Text style={styles.userInfoText}>{user.Civilite}</Text>
+                    <Text style={styles.userInfoText}>{user.Nom}</Text>
+                    <Text style={styles.userInfoText}>{user.Prenom}</Text>
+                    <Text style={styles.userInfoText}>{user.Pseudo}</Text>
+                    <Text style={styles.userInfoText}>{user.Email}</Text>
+                    <Text style={styles.userInfoText}>{user.Ville}</Text>
+                    {user.Botanniste ? (
+                        <View style={styles.botanistContainer}>
+                            <Text style={styles.userInfoText}>Botanniste </Text>
+                            <BsCheck color="green" />
+                        </View>
+                    ) : (
+                        <Text style={styles.userInfoText}></Text>
+                    )}
                 </View>
+                <Pressable style={styles.editButton} onPress={() => setIsVisible(true)}>
+                    <AiFillEdit size={24} />
+                </Pressable>
             </View>
             <View style={{ height: "5%" }}></View>
-            <View>
-                <Text>Liste des annonces</Text>
-                <Text>Vous n'avez pas d'annonce</Text>
+            <View style={styles.announcementsContainer}>
+                <Text style={styles.announcementsHeader}>Liste des annonces</Text>
+                <Text style={styles.noAnnouncementsText}>Vous n'avez pas d'annonce</Text>
                 {/* {
                     user.Annonces.Lenght == 0 ? (
                         <Text>Vous n'avez pas d'annonce</Text>
@@ -188,72 +171,70 @@ const ProfilScreen = () => {
 }
 
 const styles = StyleSheet.create({
-    icon: {
-        width: 50,
-        height: 50,
-        // resizeMode: "contain",
-        objectFit: "contain",
-        borderRadius: "50%",
-    },
     SafeAreaView: {
         width: "100%",
         height: "100%",
         backgroundColor: "white",
+        paddingHorizontal: 16,
     },
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-    },
-    formContainer: {
-        flex: 1,
-        justifyContent: "center",
-        paddingHorizontal: 20,
-    },
-    label: {
-        fontWeight: "bold",
-        marginBottom: 5,
-        textAlign: "center",
-    },
-    inputField: {
-        backgroundColor: "#fff",
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 10,
-        padding: 15,
+    profileContainer: {
+        display: "flex",
+        alignItems: "center",
         marginBottom: 20,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-        textAlign: "center",
     },
-    errorText: {
-        color: "red",
-        marginBottom: 20,
-        textAlign: "center",
+    icon: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        marginBottom: 10,
     },
-    bottomContainer: {
-        justifyContent: "flex-end",
-        paddingHorizontal: 20,
-        paddingBottom: 20,
-    },
-    signupText: {
-        marginTop: 20,
-        color: "#5cb85c",
-        textAlign: "center",
+    labelUploadButton: {
+        color: "#007BFF",
+        fontSize: 16,
         textDecorationLine: "underline",
     },
+    userInfoContainer: {
+        marginBottom: 20,
+    },
+    userInfoText: {
+        fontSize: 18,
+        marginBottom: 8,
+        textAlign: "center",
+    },
+    botanistContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: 8,
+    },
+    editButton: {
+        alignSelf: "center",
+        padding: 10,
+        borderRadius: 50,
+        backgroundColor: "#f0f0f0",
+        marginBottom: 20,
+    },
+    announcementsContainer: {
+        alignItems: "center",
+        marginBottom: 20,
+    },
+    announcementsHeader: {
+        fontSize: 20,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    noAnnouncementsText: {
+        fontSize: 16,
+        color: "#888",
+    },
     ViewGlobale: {
-        margin: "5%",
+        paddingHorizontal: "5%",
+        marginTop: 20,
     },
     ViewGlobaleOpacity: {
-        margin: "5%",
-        opacity: "0.2",
+        paddingHorizontal: "5%",
+        marginTop: 20,
+        opacity: 0.2,
     },
 })
-
 export default ProfilScreen
