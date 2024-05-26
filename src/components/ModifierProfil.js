@@ -20,62 +20,80 @@ const ModifierProfil = ({ user, setUser, setIsVisible }) => {
             .catch(err => console.log(err))
     }
     return (
-        <View style={styles.viewGlobale}>
-            <Pressable
-                onPress={() => {
-                    setIsVisible(false)
-                }}
-            >
-                <AiOutlineClose />
-            </Pressable>
-            <Text>Civilite</Text>
-            <TextInput
-                style={styles.inputField}
-                onChangeText={text => setUser({ ...user, Civilite: text })}
-                value={user.Civilite}
-            />
-            <Text>Nom</Text>
-            <TextInput
-                style={styles.inputField}
-                onChangeText={text => setUser({ ...user, Nom: text })}
-                value={user.Nom}
-            />
-            <Text>Prenom</Text>
-            <TextInput
-                style={styles.inputField}
-                onChangeText={text => setUser({ ...user, Prenom: text })}
-                value={user.Prenom}
-            />
-            <Text>Pseudo</Text>
-            <TextInput
-                style={styles.inputField}
-                onChangeText={text => setUser({ ...user, Pseudo: text })}
-                value={user.Pseudo}
-            />
-            <Text>Email</Text>
-            <TextInput
-                style={styles.inputField}
-                onChangeText={text => setUser({ ...user, Email: text })}
-                value={user.Email}
-            />
-            <Pressable
-                onPress={() => {
-                    validModifierProfil()
-                }}
-                style={styles.bottomContainer}
-            >
-                <Text style={styles.signupText}>Modifier Profil</Text>
-            </Pressable>
+        <View style={styles.overlay}>
+            <View style={styles.viewGlobale}>
+                <Pressable
+                    onPress={() => {
+                        setIsVisible(false)
+                    }}
+                    style={styles.closeButton}
+                >
+                    <AiOutlineClose size={24} />
+                </Pressable>
+                <Text style={styles.label}>Civilite</Text>
+                <TextInput
+                    style={styles.inputField}
+                    onChangeText={text => setUser({ ...user, Civilite: text })}
+                    value={user.Civilite}
+                />
+                <Text style={styles.label}>Nom</Text>
+                <TextInput
+                    style={styles.inputField}
+                    onChangeText={text => setUser({ ...user, Nom: text })}
+                    value={user.Nom}
+                />
+                <Text style={styles.label}>Prenom</Text>
+                <TextInput
+                    style={styles.inputField}
+                    onChangeText={text => setUser({ ...user, Prenom: text })}
+                    value={user.Prenom}
+                />
+                <Text style={styles.label}>Pseudo</Text>
+                <TextInput
+                    style={styles.inputField}
+                    onChangeText={text => setUser({ ...user, Pseudo: text })}
+                    value={user.Pseudo}
+                />
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                    style={styles.inputField}
+                    onChangeText={text => setUser({ ...user, Email: text })}
+                    value={user.Email}
+                />
+                <Pressable
+                    onPress={() => {
+                        validModifierProfil()
+                    }}
+                    style={styles.modifyButton}
+                >
+                    <Text style={styles.modifyButtonText}>Modifier Profil</Text>
+                </Pressable>
+            </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    bottomContainer: {
-        justifyContent: "flex-end",
-        paddingHorizontal: 20,
-        paddingBottom: 20,
-        border: "1px solid black",
+    overlay: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        zIndex: 1,
+    },
+    closeButton: {
+        alignSelf: "flex-end",
+        marginBottom: 10,
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: "bold",
+        marginBottom: 5,
+        color: "#333",
     },
     inputField: {
         backgroundColor: "#fff",
@@ -93,27 +111,45 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
         textAlign: "center",
+        fontSize: 16,
+        width: "100%",
     },
-    signupText: {
+    modifyButton: {
+        backgroundColor: "#5cb85c",
+        borderRadius: 10,
+        padding: 15,
         marginTop: 20,
-        color: "#5cb85c",
-        textAlign: "center",
-        textDecorationLine: "underline",
+        width: "100%",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    modifyButtonText: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "bold",
     },
     viewGlobale: {
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "70%",
-        padding: "5%",
+        width: "80%",
+        padding: 20,
         backgroundColor: "white",
-        borderRadius: "5px",
-        borderColor: "black",
-        borderWidth: 2,
-        zIndex: 1,
+        borderRadius: 10,
+        borderColor: "#ddd",
+        borderWidth: 1,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 6.27,
+        elevation: 10,
     },
 })
 
