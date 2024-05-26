@@ -30,11 +30,6 @@ const HeaderComponent = ({ navigation }) => {
 
             <Pressable onPress={() => directionLoginOrProfil()}>
                 <View style={{ display: "flex", flexDirection: "row" }}>
-                    <Text style={{ textAlign: "center" }}>
-                        {localStorage.getItem("pseudo")
-                            ? `Bienvenue ${localStorage?.getItem("pseudo")}`
-                            : ""}
-                    </Text>
                     <Image source={require("../assets/profil.png")} style={styles.icon} />
                 </View>
             </Pressable>

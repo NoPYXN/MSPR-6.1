@@ -12,7 +12,7 @@ import {
 import axios from "axios"
 import { FaMapMarkerAlt } from "react-icons/fa"
 import { useNavigation, useParams, useRoute } from "@react-navigation/native"
-import { AiFillEdit, AiOutlineClose, AiFillDelete } from "react-icons/ai"
+import { AiFillEdit, AiOutlineClose, AiFillDelete, AiOutlinePlus } from "react-icons/ai"
 import { useLoadScript } from "@react-google-maps/api"
 
 import HeaderComponent from "../components/HeaderComponent"
@@ -55,9 +55,9 @@ const ListeAnnonces = ({ isLoaded }) => {
         if (searchVille) {
             url += "&ville=" + searchVille
         }
-        if (isVisible) {
-            url += "&isActions=true"
-        }
+        // if (isVisible) {
+        //     url += "&isActions=true"
+        // }
 
         window.history.pushState({ page: pageNumber }, "", url)
     }
@@ -82,9 +82,9 @@ const ListeAnnonces = ({ isLoaded }) => {
                     ville = separerFiltre[i].split("=")[1]
                     setSearchVille(ville)
                 }
-                if (separerFiltre[i].split("=")[0] == "isActions") {
-                    isActions = true
-                }
+                // if (separerFiltre[i].split("=")[0] == "isActions") {
+                //     isActions = true
+                // }
             }
         }
 
@@ -187,6 +187,14 @@ const ListeAnnonces = ({ isLoaded }) => {
         navigation.navigate("FormulaireAnnonceScreen", { id: id })
     }
 
+    const goFormulaireAnnonceScreen = () => {
+        if (localStorage.getItem("token")) {
+            navigation.navigate("FormulaireAnnonceScreen")
+        } else {
+            navigation.navigate({ name: "LoginScreen" })
+        }
+    }
+
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
@@ -234,9 +242,10 @@ const ListeAnnonces = ({ isLoaded }) => {
                         {isVisible ? (
                             <Pressable
                                 onPress={() => {
-                                    window.history.pushState({}, "", "/")
-                                    getAnnonces()
-                                    setIsVisible(false)
+                                    navigation.navigate("HomeScreen")
+                                    // window.history.pushState({}, "", "/")
+                                    // getAnnonces()
+                                    // setIsVisible(false)
                                 }}
                             >
                                 <AiOutlineClose />
@@ -244,12 +253,27 @@ const ListeAnnonces = ({ isLoaded }) => {
                         ) : (
                             <Pressable
                                 onPress={() => {
-                                    window.history.pushState({}, "", "?isActions=true")
-                                    getAnnonces()
-                                    setIsVisible(true)
+                                    goFormulaireAnnonceScreen()
+
+                                    // window.history.pushState({}, "", "?isActions=true")
+                                    // getAnnonces()
+                                    // setIsVisible(true)
                                 }}
                             >
-                                <AiFillEdit />
+                                <View
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "flex-end",
+                                    }}
+                                >
+                                    <AiOutlinePlus
+                                        style={{
+                                            display: "flex",
+                                        }}
+                                    />
+                                    <Text>Ajouter une annonce</Text>
+                                </View>
                             </Pressable>
                         )}
                     </View>
@@ -348,7 +372,7 @@ const ListeAnnonces = ({ isLoaded }) => {
                                                 </View>
                                             </View>
                                         </Pressable>
-                                        {isVisible ? (
+                                        {/* {isVisible ? (
                                             <View style={styles.BoutonsActions}>
                                                 <Pressable
                                                     onPress={() => {
@@ -367,7 +391,7 @@ const ListeAnnonces = ({ isLoaded }) => {
                                             </View>
                                         ) : (
                                             <View></View>
-                                        )}
+                                        )} */}
                                     </View>
                                 ))}
                             </View>

@@ -110,9 +110,6 @@ const AddPlantForm = ({ navigation, id, router }) => {
         }
     }
 
-    useEffect(() => {
-        console.log(annonce, "DDDDDDD")
-    }, [annonce])
     const fetchMetadata = async fileUri => {
         try {
             const response = await fetch(fileUri)
@@ -176,7 +173,11 @@ const AddPlantForm = ({ navigation, id, router }) => {
             tab.push(element.secure_url)
         })
         await axios
-            .post(`http://localhost:8080/api/v1/annonces`, { ...annonce, Id_Plante: tab })
+            .post(`http://localhost:8080/api/v1/annonces`, {
+                ...annonce,
+                Id_Plante: tab,
+                AnnonceUser: localStorage.getItem("id"),
+            })
             .then(data => {
                 console.log(data)
                 if (data.status == 201) {

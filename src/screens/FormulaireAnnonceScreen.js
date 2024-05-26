@@ -6,6 +6,7 @@ import { useLoadScript } from "@react-google-maps/api"
 
 import HeaderComponent from "../components/HeaderComponent"
 import AddPlantForm from "../components/AddPlantForm"
+import axios from "axios"
 
 const FormulaireAnnonceScreen = () => {
     const navigation = useNavigation()
@@ -14,8 +15,22 @@ const FormulaireAnnonceScreen = () => {
     const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
+        console.log("DDDDDDD")
         setIsLoading(true)
         setId(router.params?.id)
+        axios({
+            method: "get",
+            url: "http://localhost:8080/api/v1/users/" + localStorage.getItem("id"),
+            headers: { Authorization: localStorage.getItem("token") },
+        })
+            .then(data => {
+                // setUser(data.data.content)
+            })
+            .catch(err => {
+                console.log(err, "err")
+                navigation.navigate({ name: "LoginScreen" })
+            })
+        //il ne repasse pas dedans je ne sais pas pourquoi
     }, [router.params])
 
     return (
