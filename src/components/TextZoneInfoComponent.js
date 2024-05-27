@@ -7,14 +7,17 @@ const TextZoneInfo = ({ setMessages, messages, id }) => {
     const [inputValue, setInputValue] = useState("")
 
     const handleSubmit = async () => {
+        console.log(id, "id")
         if (inputValue.trim() !== "") {
             await axios
                 .post(`http://localhost:8080/api/v1/conseils`, {
                     Message: inputValue,
                     ConseilId: id,
+                    Username: localStorage.getItem("pseudo"),
                 })
                 .then(data => {
                     if (data.status == 201) {
+                        console.log(data)
                         setMessages([...messages, data.data.content])
                         setInputValue("")
                     }

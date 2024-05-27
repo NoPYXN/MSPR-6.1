@@ -172,11 +172,12 @@ const AddPlantForm = ({ navigation, id, router }) => {
         tabImages.forEach(element => {
             tab.push(element.secure_url)
         })
+
         await axios
             .post(`http://localhost:8080/api/v1/annonces`, {
                 ...annonce,
                 Id_Plante: tab,
-                AnnonceUser: localStorage.getItem("id"),
+                AnnonceUser: parseInt(localStorage.getItem("id")),
             })
             .then(data => {
                 console.log(data)
