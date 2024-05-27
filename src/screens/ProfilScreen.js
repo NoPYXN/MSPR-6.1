@@ -12,8 +12,8 @@ import {
 import { useNavigation, useParams, useRoute } from "@react-navigation/native"
 import axios from "axios"
 import { BsCheck } from "react-icons/bs"
-import { AiFillEdit } from "react-icons/ai"
 import * as DocumentPicker from "expo-document-picker"
+import { AiFillEdit, AiOutlineClose, AiFillDelete, AiOutlinePlus } from "react-icons/ai"
 
 import HeaderComponent from "../components/HeaderComponent"
 import ModifierProfil from "../components/ModifierProfil"
@@ -29,6 +29,8 @@ const ProfilScreen = () => {
     const [tabImages, setTabImages] = useState([])
     const [selectedFile, setSelectedFile] = useState(null)
     const [newImage, setNewImage] = useState("")
+    const [isDelete, setIsDelete] = useState(false)
+    const [isVisibleGardiennage, setIsVisibleGardiennage] = useState(false)
 
     useEffect(() => {
         axios({
@@ -38,6 +40,7 @@ const ProfilScreen = () => {
         })
             .then(data => {
                 setUser(data.data.content)
+                console.log(data.data.content)
             })
             .catch(err => {
                 console.log(err, "err")
@@ -98,14 +101,15 @@ const ProfilScreen = () => {
             body: formData,
         })
         const data = await response.json()
-        console.log(data, "DATA")
         if (data.upload) {
-            console.log({ Image: data.message.secure_url }, "FFF")
             await axios
                 .put("http://localhost:8080/api/v1/users/" + localStorage.getItem("id"), {
                     Image: data.message.secure_url,
                 })
-                .then(data => console.log(data))
+                .then(data => {
+                    setUser({ ...user, Image: data.data.user.Image })
+                    localStorage.setItem("image", data.data.user.Image)
+                })
                 .catch(err => {
                     console.log(err)
                 })
@@ -114,27 +118,84 @@ const ProfilScreen = () => {
         }
     }
 
+    const supprimerAnnonce = id => {
+        axios
+            .delete(`http://localhost:8080/api/v1/annonces/${id}`)
+            .then(data => {
+                if (data.status == 200) {
+                    setIsDelete(true)
+                    navigation.replace("HomeScreen", { popup: "Votre annonce a été supprimée" })
+                }
+            })
+            .catch(err => console.log(err))
+    }
+    const modifierAnnonce = id => {
+        navigation.navigate("FormulaireAnnonceScreen", { id: id })
+    }
+
+    const showAnnoncePubliee = () => {
+        setIsVisibleGardiennage(false)
+    }
+
+    const showGardiennage = () => {
+        setIsVisibleGardiennage(true)
+    }
+
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
             <View style={isVisible ? styles.ViewGlobaleOpacity : styles.ViewGlobale}>
                 <View style={styles.profileContainer}>
-                    {user.Image ? (
-                        <Image source={{ uri: user.Image }} style={styles.icon} />
-                    ) : (
-                        <Image source={require("../assets/profil.png")} style={styles.icon} />
-                    )}
                     <Pressable onPress={() => handleFileSelected()}>
-                        <Text style={styles.labelUploadButton}>Changer photo profil</Text>
+                        {user.Image ? (
+                            <Image source={{ uri: user.Image }} style={styles.icon} />
+                        ) : (
+                            <Image source={require("../assets/profil.png")} style={styles.icon} />
+                        )}
+                        {/* <Pressable onPress={() => handleFileSelected()}>
+                        <Text style={styles.labelUploadButton}>Changer photo profil</Text> */}
                     </Pressable>
                 </View>
                 <View style={styles.userInfoContainer}>
-                    <Text style={styles.userInfoText}>{user.Civilite}</Text>
-                    <Text style={styles.userInfoText}>{user.Nom}</Text>
-                    <Text style={styles.userInfoText}>{user.Prenom}</Text>
-                    <Text style={styles.userInfoText}>{user.Pseudo}</Text>
+                    {user && user.Civilite ? (
+                        <Text style={styles.userInfoText}>
+                            {user.Civilite.substr(0, 1).toUpperCase() + user.Civilite.slice(1)}
+                        </Text>
+                    ) : (
+                        <Text></Text>
+                    )}
+
+                    {user && user.Nom ? (
+                        <Text style={styles.userInfoText}>
+                            {user.Nom.substr(0, 1).toUpperCase() + user.Nom.slice(1)}
+                        </Text>
+                    ) : (
+                        <Text></Text>
+                    )}
+
+                    {user && user.Prenom ? (
+                        <Text style={styles.userInfoText}>
+                            {user.Prenom.substr(0, 1).toUpperCase() + user.Prenom.slice(1)}
+                        </Text>
+                    ) : (
+                        <Text></Text>
+                    )}
+                    {user && user.Pseudo ? (
+                        <Text style={styles.userInfoText}>
+                            {user.Pseudo.substr(0, 1).toUpperCase() + user.Pseudo.slice(1)}
+                        </Text>
+                    ) : (
+                        <Text></Text>
+                    )}
                     <Text style={styles.userInfoText}>{user.Email}</Text>
-                    <Text style={styles.userInfoText}>{user.Ville}</Text>
+                    {user && user.Ville ? (
+                        <Text style={styles.userInfoText}>
+                            {user.Ville.substr(0, 1).toUpperCase() + user.Ville.slice(1)}
+                        </Text>
+                    ) : (
+                        <Text></Text>
+                    )}
+
                     {user.Botanniste ? (
                         <View style={styles.botanistContainer}>
                             <Text style={styles.userInfoText}>Botanniste </Text>
@@ -149,18 +210,133 @@ const ProfilScreen = () => {
                 </Pressable>
             </View>
             <View style={{ height: "5%" }}></View>
-            <View style={styles.announcementsContainer}>
-                <Text style={styles.announcementsHeader}>Liste des annonces</Text>
-                <Text style={styles.noAnnouncementsText}>Vous n'avez pas d'annonce</Text>
-                {/* {
-                    user.Annonces.Lenght == 0 ? (
-                        <Text>Vous n'avez pas d'annonce</Text>
+            <View style={{ width: "90%", marginRight: "5%", marginLeft: "5%" }}>
+                <View style={{ display: "flex", flexDirection: "row", width: "100%" }}>
+                    <Pressable
+                        style={
+                            isVisibleGardiennage
+                                ? { width: "50%", backgroundColor: "#f0f0f0", padding: "5%" }
+                                : { width: "50%", backgroundColor: "green", padding: "5%" }
+                        }
+                        onPress={() => {
+                            showAnnoncePubliee()
+                        }}
+                    >
+                        <Text
+                            style={
+                                isVisibleGardiennage
+                                    ? {
+                                          textAlign: "center",
+                                          fontSize: "16px",
+                                          color: "black",
+                                      }
+                                    : {
+                                          textAlign: "center",
+                                          fontSize: "16px",
+                                          color: "white",
+                                      }
+                            }
+                        >
+                            Annonces publiées
+                        </Text>
+                    </Pressable>
+                    <Pressable
+                        style={
+                            isVisibleGardiennage
+                                ? {
+                                      width: "50%",
+                                      backgroundColor: "green",
+                                      padding: "5%",
+                                  }
+                                : {
+                                      width: "50%",
+                                      backgroundColor: "#f0f0f0",
+                                      padding: "5%",
+                                  }
+                        }
+                        onPress={() => {
+                            showGardiennage()
+                        }}
+                    >
+                        <Text
+                            style={
+                                isVisibleGardiennage
+                                    ? {
+                                          fontSize: "16px",
+                                          textAlign: "center",
+                                          color: "white",
+                                      }
+                                    : { textAlign: "center", fontSize: "16px", color: "black" }
+                            }
+                        >
+                            Gardiennage
+                        </Text>
+                    </Pressable>
+                </View>
+                {!isVisibleGardiennage ? (
+                    user && user.Annonces ? (
+                        <View style={styles.ViewAnnonces}>
+                            {user.Annonces.map(item => (
+                                <View key={item.Id_Annonce} style={styles.ViewActions}>
+                                    <Pressable
+                                        onPress={() => {
+                                            navigation.navigate({
+                                                name: "AnnonceScreen",
+                                                params: { id: item.Id_Annonce },
+                                            })
+                                        }}
+                                        style={{ width: "80%" }}
+                                    >
+                                        <View style={styles.ViewAnnonceAvecActions}>
+                                            <Image
+                                                style={styles.imageAnnonceAvecActions}
+                                                source={{
+                                                    uri: item.Id_Plante[0],
+                                                }}
+                                            />
+
+                                            <View style={styles.infoAnnonce}>
+                                                <Text style={styles.titreAnnonceAvecActions}>
+                                                    {item.Titre.charAt(0).toUpperCase() +
+                                                        item.Titre.slice(1)}
+                                                </Text>
+                                                <Text style={styles.villeAnnonceAvecActions}>
+                                                    {item.Ville}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </Pressable>
+                                    <View style={styles.BoutonsActions}>
+                                        <Pressable
+                                            onPress={() => {
+                                                modifierAnnonce(item.Id_Annonce)
+                                            }}
+                                        >
+                                            <AiFillEdit size={20} />
+                                        </Pressable>
+                                        <Pressable
+                                            onPress={() => {
+                                                supprimerAnnonce(item.Id_Annonce)
+                                            }}
+                                        >
+                                            <AiFillDelete size={20} />
+                                        </Pressable>
+                                    </View>
+                                </View>
+                            ))}
+                        </View>
                     ) : (
-                        <Text>Afficher les annonces </Text>
+                        <View>
+                            <Text style={styles.noAnnouncementsText}>Vous avez aucune annonce</Text>
+                        </View>
                     )
-                    //user.Annonces.map((key))
-                } */}
+                ) : (
+                    <View>
+                        <Text>bbb</Text>
+                    </View>
+                )}
             </View>
+
             {isVisible ? (
                 <ModifierProfil user={user} setUser={setUser} setIsVisible={setIsVisible} />
             ) : (
@@ -235,6 +411,54 @@ const styles = StyleSheet.create({
         paddingHorizontal: "5%",
         marginTop: 20,
         opacity: 0.2,
+    },
+    ViewAnnonces: {
+        flexDirection: "column",
+        width: "100%",
+        // marginLeft: "5%",
+        // marginRight: "5%",
+        marginTop: "7%",
+    },
+    ViewActions: {
+        display: "flex",
+        flexDirection: "row",
+    },
+    BoutonsActions: {
+        width: "15%",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    ViewAnnonceAvecActions: {
+        flexDirection: "row",
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: "#E0E0E0",
+        width: "100%",
+    },
+    imageAnnonceAvecActions: {
+        width: 80,
+        height: 80,
+        borderRadius: 100,
+        marginBottom: 10,
+    },
+    infoAnnonce: {
+        flexDirection: "column",
+        justifyContent: "center",
+        marginLeft: "5%",
+        flex: 1,
+    },
+    titreAnnonceAvecActions: {
+        fontSize: 14,
+        fontWeight: "bold",
+        marginBottom: 5,
+    },
+    villeAnnonceAvecActions: {
+        fontSize: 12,
+        color: "#29771D",
+        fontWeight: "bold",
+        marginBottom: 5,
     },
 })
 export default ProfilScreen

@@ -189,7 +189,7 @@ const ListeAnnonces = ({ isLoaded }) => {
 
     const goFormulaireAnnonceScreen = () => {
         if (localStorage.getItem("token")) {
-            navigation.navigate("FormulaireAnnonceScreen")
+            navigation.navigate({ name: "FormulaireAnnonceScreen" })
         } else {
             navigation.navigate({ name: "LoginScreen" })
         }

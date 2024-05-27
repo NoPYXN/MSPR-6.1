@@ -15,7 +15,7 @@ const FormulaireAnnonceScreen = () => {
     const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
-        console.log("DDDDDDD")
+        console.log("dans le useEffect")
         setIsLoading(true)
         setId(router.params?.id)
         axios({
@@ -24,6 +24,11 @@ const FormulaireAnnonceScreen = () => {
             headers: { Authorization: localStorage.getItem("token") },
         })
             .then(data => {
+                // if (!data.content) {
+                //     console.log("dans le if")
+                // navigation.navigate({ name: "LoginScreen" })
+                // }
+                console.log(data)
                 // setUser(data.data.content)
             })
             .catch(err => {
@@ -33,18 +38,23 @@ const FormulaireAnnonceScreen = () => {
         //il ne repasse pas dedans je ne sais pas pourquoi
     }, [router.params])
 
+    const goRetour = () => {
+        if (id) {
+            navigation.navigate({
+                name: "ProfilScreen",
+            })
+        } else {
+            navigation.navigate({
+                name: "HomeScreen",
+            })
+        }
+    }
+
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
             <View style={styles.ViewGoBack}>
-                <Pressable
-                    onPress={() =>
-                        navigation.navigate({
-                            name: "HomeScreen",
-                            params: { isActions: "true" },
-                        })
-                    }
-                >
+                <Pressable onPress={() => goRetour()}>
                     <AiOutlineClose />
                 </Pressable>
             </View>

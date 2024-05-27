@@ -3,8 +3,8 @@ import { View, Text, Pressable, StyleSheet, Image } from "react-native"
 
 const HeaderComponent = ({ navigation }) => {
     const handleReload = () => {
-        window.history.pushState({}, "", "/")
-        navigation.replace("HomeScreen") // Redirige vers la même page pour la recharger
+        // window.history.pushState({}, "", "/")
+        navigation.navigate({ name: "HomeScreen" }) // Redirige vers la même page pour la recharger
     }
 
     const directionLoginOrProfil = () => {
@@ -30,7 +30,14 @@ const HeaderComponent = ({ navigation }) => {
 
             <Pressable onPress={() => directionLoginOrProfil()}>
                 <View style={{ display: "flex", flexDirection: "row" }}>
-                    <Image source={require("../assets/profil.png")} style={styles.icon} />
+                    {localStorage.getItem("image") ? (
+                        <Image
+                            source={{ uri: localStorage.getItem("image") }}
+                            style={styles.iconImage}
+                        />
+                    ) : (
+                        <Image source={require("../assets/profil.png")} style={styles.icon} />
+                    )}
                 </View>
             </Pressable>
         </View>
@@ -49,6 +56,14 @@ const styles = StyleSheet.create({
     icon: {
         width: 25,
         height: 25,
+        // resizeMode: "contain",
+        objectFit: "contain",
+        borderRadius: "50%",
+    },
+    iconImage: {
+        width: 30,
+        height: 30,
+        borderRadius: "50%",
         // resizeMode: "contain",
         objectFit: "contain",
     },
