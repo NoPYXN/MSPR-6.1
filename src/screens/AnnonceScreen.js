@@ -24,7 +24,6 @@ const AnnonceScreen = () => {
     const [isVisible, setIsVisible] = useState(false)
     const [selectedImages, setSelectedImages] = useState([])
     const [id, setId] = useState()
-    const [isClicked, setIsClicked] = useState(false)
 
     useEffect(() => {
         axios
@@ -73,41 +72,21 @@ const AnnonceScreen = () => {
         }
     }
 
-    const demandeGardePlante = async () => {
-        // let x = []
+    const demandeGardiennage = async () => {
         await axios
-            .post(`http://localhost:8080/api/v1/gardePlantes`, {
-                UtilisateurProprietaire: annonce.AnnonceUser,
-                UtilisateurGardien: parseInt(localStorage.getItem("id")),
-                Annonces: annonce.Id_Annonce,
+            .put(`http://localhost:8080/api/v1/annonces/${id}`, {
+                AnnonceUserGard: parseInt(localStorage.getItem("id")),
+                Etat: true,
             })
             .then(data => {
-                console.log(data, "GARDEPLANTES POST")
+                if (data.status == 200) {
+                    console.log(data)
+                    window.location.reload() //à garder car recharge la page mais retourne sur la home
+                }
             })
-            .catch(err => console.log(err))
-        //axios.put(`http://localhost:8080/api/v1/annonces/${router.params.id}`, { Etat: true })
-    }
-
-    const demandeGardiennage = async () => {
-        if (isClicked) {
-            setIsClicked(false)
-            await axios
-                .put(`http://localhost:8080/api/v1/annonces/${id}`, {
-                    AnnonceUserGard: parseInt(localStorage.getItem("id")),
-                    Etat: true,
-                })
-                .then(data => {
-                    if (data.status == 200) {
-                        console.log(data)
-                        window.location.reload() //à garder car recharge la page mais retourne sur la home
-                    }
-                })
-                .catch(err => {
-                    console.log(err)
-                })
-        } else {
-            setIsClicked(true)
-        }
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     return (
@@ -119,51 +98,38 @@ const AnnonceScreen = () => {
                     : "Pas de titre"}
             </Text>
             <Carousel images={images} imageHeight={100} />
-            {annonce && annonce.AnnonceUserGard ? (
-                <View>
-                    <Text>Annonce gardé par</Text>
-                    {annonce.AnnonceGardien.Image ? (
-                        <Image
-                            source={{ uri: annonce.AnnonceGardien.Image }}
-                            style={styles.iconImage}
-                        />
-                    ) : (
-                        <Image source={require("../assets/profil.png")} style={styles.icon} />
-                    )}
-                    <Text>{annonce.AnnonceGardien.Pseudo}</Text>
+            {annonce.Annonce ? (
+                <View style={{ marginTop: "5%", marginBottom: "5%" }}>
+                    <Text style={{ fontSize: 16, textAlign: "center" }}>
+                        Contacter le propriétaire
+                    </Text>
+                    <View
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginTop: "3%",
+                        }}
+                    >
+                        {annonce.Annonce.Image ? (
+                            <Image
+                                source={{ uri: annonce.Annonce.Image }}
+                                style={styles.iconImage}
+                            />
+                        ) : (
+                            <Image source={require("../assets/profil.png")} style={styles.icon} />
+                        )}
+                        <Text style={{ fontSize: 16, marginLeft: "2%" }}>
+                            {annonce.Annonce.Pseudo.substr(0, 1).toUpperCase() +
+                                annonce.Annonce.Pseudo.slice(1)}
+                        </Text>
+                    </View>
                 </View>
             ) : (
-                <Pressable
-                    style={
-                        isClicked
-                            ? {
-                                  marginLeft: "auto",
-                                  marginRight: "auto",
-                                  width: "50%",
-                                  borderRadius: "5px",
-                                  padding: "5%",
-                                  backgroundColor: "green",
-                                  marginTop: "5%",
-                              }
-                            : {
-                                  marginLeft: "auto",
-                                  marginRight: "auto",
-                                  width: "50%",
-                                  borderRadius: "5px",
-                                  padding: "5%",
-                                  backgroundColor: "grey",
-                                  marginTop: "5%",
-                              }
-                    }
-                    onPress={() => {
-                        demandeGardiennage()
-                    }}
-                >
-                    <Text style={{ color: "white", textAlign: "center" }}>
-                        Demande de gardiennage
-                    </Text>
-                </Pressable>
+                <View></View>
             )}
+            <View style={styles.separateur}></View>
 
             <View style={styles.blocInfo}>
                 <Text style={styles.descriptionText}>
@@ -181,75 +147,144 @@ const AnnonceScreen = () => {
                     </View>
                 </View>
             </View>
+
+            {/* {annonce && annonce.AnnonceUserGard ? ( */}
             <View style={styles.separateur}></View>
-            {annonce.Annonce ? (
+            {/* ) : (
+                <View></View>
+            )} */}
+            {annonce && annonce.AnnonceUserGard ? (
                 <View>
-                    <Text>Contacter le propriétaire</Text>
-                    {annonce.Annonce.Image ? (
-                        <Image source={{ uri: annonce.Annonce.Image }} style={styles.iconImage} />
-                    ) : (
-                        <Image source={require("../assets/profil.png")} style={styles.icon} />
-                    )}
-                    <Text>{annonce.Annonce.Pseudo}</Text>
+                    <View
+                        style={{
+                            marginTop: "5%",
+                            // marginBottom: "5%",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginTop: "3%",
+                        }}
+                    >
+                        <Text style={{ fontSize: 16, textAlign: "center" }}>
+                            Annonce gardée par
+                        </Text>
+                        <View style={{ marginLeft: "2%" }}>
+                            {annonce.AnnonceGardien.Image ? (
+                                <Image
+                                    source={{ uri: annonce.AnnonceGardien.Image }}
+                                    style={styles.iconImage}
+                                />
+                            ) : (
+                                <Image
+                                    source={require("../assets/profil.png")}
+                                    style={styles.icon}
+                                />
+                            )}
+                        </View>
+                        <Text style={{ fontSize: 16, marginLeft: "1%" }}>
+                            {annonce.AnnonceGardien.Pseudo.substr(0, 1).toUpperCase() +
+                                annonce.AnnonceGardien.Pseudo.slice(1)}
+                        </Text>
+                    </View>
+                </View>
+            ) : (
+                <Pressable
+                    style={{
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        width: "50%",
+                        borderRadius: "5px",
+                        marginBottom: "1%",
+                        backgroundColor: "green",
+                        padding: "3%",
+                        marginTop: "5%",
+                    }}
+                    onPress={() => {
+                        demandeGardiennage()
+                    }}
+                >
+                    <Text
+                        style={{
+                            color: "white",
+                            textAlign: "center",
+                        }}
+                    >
+                        Demande de gardiennage
+                    </Text>
+                </Pressable>
+            )}
+            {annonce && annonce.AnnonceUserGard ? (
+                <PhotoPicker
+                    setSelectedImages={setSelectedImages}
+                    selectedImages={selectedImages}
+                    id={id}
+                    annonceUserGard={annonce.AnnonceUserGard}
+                />
+            ) : (
+                <View></View>
+            )}
+
+            {annonce && annonce.Etat ? (
+                <View>
+                    <View style={styles.separateur}></View>
+                    <View style={styles.messageContainer}>
+                        <Text style={styles.TextIndication}>
+                            Avez-vous des indications à transmettre ?
+                        </Text>
+                        {id ? (
+                            <TextZoneInfo messages={messages} setMessages={setMessages} id={id} />
+                        ) : (
+                            <View></View>
+                        )}
+                        {messages.length != 0 ? (
+                            messages.sort(sortDateConseils).map((message, index) => (
+                                <View key={index} style={styles.message}>
+                                    <View style={styles.infosMessage}>
+                                        <View style={styles.avatarContainer}>
+                                            <Ionicons
+                                                name="person-circle-outline"
+                                                size={24}
+                                                color="black"
+                                            />
+                                            <Text style={styles.pseudo}>{message.Username}</Text>
+                                        </View>
+                                        <Text style={styles.messageTime}>
+                                            {ConvertirDateHeure(message.DateCreation)}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.messageContent}>
+                                        <Text style={styles.messageText}>{message.Message}</Text>
+                                    </View>
+                                </View>
+                            ))
+                        ) : (
+                            <View></View>
+                        )}
+                        {isVisible ? (
+                            <Pressable
+                                onPress={() => {
+                                    afficherPlus()
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        textAlign: "center",
+                                        marginTop: "2%",
+                                        marginBottom: "2%",
+                                    }}
+                                >
+                                    Afficher plus
+                                </Text>
+                            </Pressable>
+                        ) : (
+                            <View></View>
+                        )}
+                    </View>
                 </View>
             ) : (
                 <View></View>
             )}
-            <View style={styles.separateur}></View>
-
-            <PhotoPicker
-                setSelectedImages={setSelectedImages}
-                selectedImages={selectedImages}
-                id={id}
-            />
-
-            <View style={styles.separateur}></View>
-
-            <View style={styles.messageContainer}>
-                <Text style={styles.TextIndication}>Avez-vous des indications à transmettre ?</Text>
-                {id ? (
-                    <TextZoneInfo messages={messages} setMessages={setMessages} id={id} />
-                ) : (
-                    <View></View>
-                )}
-                {messages.length != 0 ? (
-                    messages.sort(sortDateConseils).map((message, index) => (
-                        <View key={index} style={styles.message}>
-                            <View style={styles.infosMessage}>
-                                <View style={styles.avatarContainer}>
-                                    <Ionicons
-                                        name="person-circle-outline"
-                                        size={24}
-                                        color="black"
-                                    />
-                                    <Text style={styles.pseudo}>{message.Username}</Text>
-                                </View>
-                                <Text style={styles.messageTime}>
-                                    {ConvertirDateHeure(message.DateCreation)}
-                                </Text>
-                            </View>
-                            <View style={styles.messageContent}>
-                                <Text style={styles.messageText}>{message.Message}</Text>
-                            </View>
-                        </View>
-                    ))
-                ) : (
-                    <View></View>
-                )}
-                {isVisible ? (
-                    <Pressable
-                        onPress={() => {
-                            afficherPlus()
-                        }}
-                    >
-                        <Text style={{ textAlign: "center", marginTop: "2%", marginBottom: "2%" }}>
-                            Afficher plus
-                        </Text>
-                    </Pressable>
-                ) : (
-                    <View></View>
-                )}
-            </View>
         </SafeAreaView>
     )
 }
