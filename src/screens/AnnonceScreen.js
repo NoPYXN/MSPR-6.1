@@ -24,12 +24,14 @@ const AnnonceScreen = () => {
     const [isVisible, setIsVisible] = useState(false)
     const [selectedImages, setSelectedImages] = useState([])
     const [id, setId] = useState()
+    const [isClicked, setIsClicked] = useState(false)
 
     useEffect(() => {
         axios
             .get(`http://localhost:8080/api/v1/annonces/${router.params.id}`)
             .then(data => {
                 if (data.status == 200) {
+                    console.log("data getif annonce", data)
                     data.data.content.DateDebut = convertirDate(data.data.content.DateDebut)
                     data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                     setAnnonce(data.data.content)
@@ -71,6 +73,46 @@ const AnnonceScreen = () => {
         }
     }
 
+    const demandeGardePlante = async () => {
+        // let x = []
+        await axios
+            .post(`http://localhost:8080/api/v1/gardePlantes`, {
+                UtilisateurProprietaire: annonce.AnnonceUser,
+                UtilisateurGardien: parseInt(localStorage.getItem("id")),
+                Annonces: annonce.Id_Annonce,
+            })
+            .then(data => {
+                console.log(data, "GARDEPLANTES POST")
+            })
+            .catch(err => console.log(err))
+        //axios.put(`http://localhost:8080/api/v1/annonces/${router.params.id}`, { Etat: true })
+    }
+
+    const demandeGardiennage = async () => {
+        if (isClicked) {
+            setIsClicked(false)
+            await axios
+                .put(`http://localhost:8080/api/v1/annonces/${id}`, {
+                    AnnonceUserGard: parseInt(localStorage.getItem("id")),
+                })
+                .then(data => {
+                    // console.log(data)
+                    // if (data.status == 201) {
+                    //     navigation.replace("HomeScreen", { popup: "Votre annonce a bien été ajoutée" })
+                    // }
+                    if (data.status == 200) {
+                        console.log(data)
+                        // setMessage(data.data.message)
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        } else {
+            setIsClicked(true)
+        }
+    }
+
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
@@ -80,6 +122,34 @@ const AnnonceScreen = () => {
                     : "Pas de titre"}
             </Text>
             <Carousel images={images} imageHeight={100} />
+            <Pressable
+                style={
+                    isClicked
+                        ? {
+                              marginLeft: "auto",
+                              marginRight: "auto",
+                              width: "50%",
+                              borderRadius: "5px",
+                              padding: "5%",
+                              backgroundColor: "green",
+                              marginTop: "5%",
+                          }
+                        : {
+                              marginLeft: "auto",
+                              marginRight: "auto",
+                              width: "50%",
+                              borderRadius: "5px",
+                              padding: "5%",
+                              backgroundColor: "grey",
+                              marginTop: "5%",
+                          }
+                }
+                onPress={() => {
+                    demandeGardiennage()
+                }}
+            >
+                <Text style={{ color: "white", textAlign: "center" }}>Demande de gardiennage</Text>
+            </Pressable>
             <View style={styles.blocInfo}>
                 <Text style={styles.descriptionText}>
                     {annonce.Description && annonce.Description.length > 0
@@ -97,13 +167,36 @@ const AnnonceScreen = () => {
                 </View>
             </View>
             <View style={styles.separateur}></View>
+            {annonce.Annonce ? (
+                <View>
+                    <Text>Contacter le propriétaire</Text>
+                    {annonce.Annonce.Image ? (
+                        <Image source={{ uri: annonce.Annonce.Image }} style={styles.iconImage} />
+                    ) : (
+                        <Image source={require("../assets/profil.png")} style={styles.icon} />
+                    )}
+                    <Text>{annonce.Annonce.Pseudo}</Text>
+                </View>
+            ) : (
+                <View></View>
+            )}
+            <View style={styles.separateur}></View>
 
             <PhotoPicker
                 setSelectedImages={setSelectedImages}
                 selectedImages={selectedImages}
                 id={id}
             />
-
+            {
+                //à enlever
+                <Pressable
+                    onPress={() => {
+                        demandeGardePlante()
+                    }}
+                >
+                    <Text>DEMANDER A GARDER LA PLANTE</Text>
+                </Pressable>
+            }
             <View style={styles.separateur}></View>
 
             <View style={styles.messageContainer}>
@@ -259,6 +352,20 @@ const styles = StyleSheet.create({
     infosMessage: {
         flexDirection: "row",
         justifyContent: "space-between",
+    },
+    icon: {
+        width: 25,
+        height: 25,
+        // resizeMode: "contain",
+        objectFit: "contain",
+        borderRadius: "50%",
+    },
+    iconImage: {
+        width: 30,
+        height: 30,
+        borderRadius: "50%",
+        // resizeMode: "contain",
+        objectFit: "contain",
     },
 })
 export default AnnonceScreen

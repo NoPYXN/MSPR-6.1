@@ -30,8 +30,9 @@ const ProfilScreen = () => {
     const [selectedFile, setSelectedFile] = useState(null)
     const [newImage, setNewImage] = useState("")
     const [isDelete, setIsDelete] = useState(false)
+    const [isVisiblePublication, setIsVisiblePublication] = useState(true)
     const [isVisibleGardiennage, setIsVisibleGardiennage] = useState(false)
-
+    const [isVisibleNotification, setIsVisibleNotification] = useState(false)
     useEffect(() => {
         axios({
             method: "get",
@@ -135,10 +136,20 @@ const ProfilScreen = () => {
 
     const showAnnoncePubliee = () => {
         setIsVisibleGardiennage(false)
+        setIsVisibleNotification(false)
+        setIsVisiblePublication(true)
     }
 
     const showGardiennage = () => {
         setIsVisibleGardiennage(true)
+        setIsVisibleNotification(false)
+        setIsVisiblePublication(false)
+    }
+
+    const showNotification = () => {
+        setIsVisibleNotification(true)
+        setIsVisibleGardiennage(false)
+        setIsVisiblePublication(false)
     }
 
     return (
@@ -202,7 +213,7 @@ const ProfilScreen = () => {
                             <BsCheck color="green" />
                         </View>
                     ) : (
-                        <Text style={styles.userInfoText}></Text>
+                        <Text style={styles.userInfoText2}>Devenir Botanniste ?</Text>
                     )}
                 </View>
                 <Pressable style={styles.editButton} onPress={() => setIsVisible(true)}>
@@ -214,9 +225,9 @@ const ProfilScreen = () => {
                 <View style={{ display: "flex", flexDirection: "row", width: "100%" }}>
                     <Pressable
                         style={
-                            isVisibleGardiennage
-                                ? { width: "50%", backgroundColor: "#f0f0f0", padding: "5%" }
-                                : { width: "50%", backgroundColor: "green", padding: "5%" }
+                            !isVisiblePublication
+                                ? { width: "33%", backgroundColor: "#f0f0f0", padding: "5%" }
+                                : { width: "33%", backgroundColor: "green", padding: "5%" }
                         }
                         onPress={() => {
                             showAnnoncePubliee()
@@ -224,7 +235,7 @@ const ProfilScreen = () => {
                     >
                         <Text
                             style={
-                                isVisibleGardiennage
+                                !isVisiblePublication
                                     ? {
                                           textAlign: "center",
                                           fontSize: "16px",
@@ -237,19 +248,19 @@ const ProfilScreen = () => {
                                       }
                             }
                         >
-                            Annonces publiées
+                            Publication
                         </Text>
                     </Pressable>
                     <Pressable
                         style={
                             isVisibleGardiennage
                                 ? {
-                                      width: "50%",
+                                      width: "33%",
                                       backgroundColor: "green",
                                       padding: "5%",
                                   }
                                 : {
-                                      width: "50%",
+                                      width: "33%",
                                       backgroundColor: "#f0f0f0",
                                       padding: "5%",
                                   }
@@ -272,8 +283,40 @@ const ProfilScreen = () => {
                             Gardiennage
                         </Text>
                     </Pressable>
+                    <Pressable
+                        style={
+                            isVisibleNotification
+                                ? {
+                                      width: "33%",
+                                      backgroundColor: "green",
+                                      padding: "5%",
+                                  }
+                                : {
+                                      width: "33%",
+                                      backgroundColor: "#f0f0f0",
+                                      padding: "5%",
+                                  }
+                        }
+                        onPress={() => {
+                            showNotification()
+                        }}
+                    >
+                        <Text
+                            style={
+                                isVisibleNotification
+                                    ? {
+                                          fontSize: "16px",
+                                          textAlign: "center",
+                                          color: "white",
+                                      }
+                                    : { textAlign: "center", fontSize: "16px", color: "black" }
+                            }
+                        >
+                            Notification
+                        </Text>
+                    </Pressable>
                 </View>
-                {!isVisibleGardiennage ? (
+                {isVisiblePublication ? (
                     user && user.Annonces ? (
                         <View style={styles.ViewAnnonces}>
                             {user.Annonces.map(item => (
@@ -331,9 +374,99 @@ const ProfilScreen = () => {
                         </View>
                     )
                 ) : (
-                    <View>
-                        <Text>bbb</Text>
-                    </View>
+                    <View>{/* <Text>bbb</Text> */}</View>
+                )}
+                {isVisibleGardiennage ? (
+                    user && user.Annonces ? (
+                        <View style={styles.ViewAnnonces}>
+                            {user.Annonces.map(item => (
+                                <View key={item.Id_Annonce} style={styles.ViewActions}>
+                                    <Pressable
+                                        onPress={() => {
+                                            navigation.navigate({
+                                                name: "AnnonceScreen",
+                                                params: { id: item.Id_Annonce },
+                                            })
+                                        }}
+                                        style={{ width: "80%" }}
+                                    >
+                                        <View style={styles.ViewAnnonceAvecActions}>
+                                            <Image
+                                                style={styles.imageAnnonceAvecActions}
+                                                source={{
+                                                    uri: item.Id_Plante[0],
+                                                }}
+                                            />
+
+                                            <View style={styles.infoAnnonce}>
+                                                <Text style={styles.titreAnnonceAvecActions}>
+                                                    {item.Titre.charAt(0).toUpperCase() +
+                                                        item.Titre.slice(1)}
+                                                </Text>
+                                                <Text style={styles.villeAnnonceAvecActions}>
+                                                    {item.Ville}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </Pressable>
+                                </View>
+                            ))}
+                        </View>
+                    ) : (
+                        <View>
+                            <Text style={styles.noAnnouncementsText}>
+                                Vous avez aucune plante à garder
+                            </Text>
+                        </View>
+                    )
+                ) : (
+                    <View>{/* <Text>bbb</Text> */}</View>
+                )}
+                {isVisibleNotification ? (
+                    user && user.Annonces ? (
+                        <View style={styles.ViewAnnonces}>
+                            {user.Annonces.map(item => (
+                                <View key={item.Id_Annonce} style={styles.ViewActions}>
+                                    <Pressable
+                                        onPress={() => {
+                                            navigation.navigate({
+                                                name: "AnnonceScreen",
+                                                params: { id: item.Id_Annonce },
+                                            })
+                                        }}
+                                        style={{ width: "80%" }}
+                                    >
+                                        <View style={styles.ViewAnnonceAvecActions}>
+                                            <Image
+                                                style={styles.imageAnnonceAvecActions}
+                                                source={{
+                                                    uri: item.Id_Plante[0],
+                                                }}
+                                            />
+
+                                            <View style={styles.infoAnnonce}>
+                                                <Text style={styles.titreAnnonceAvecActions}>
+                                                    {item.Titre.charAt(0).toUpperCase() +
+                                                        item.Titre.slice(1)}
+                                                </Text>
+                                                <Text style={styles.villeAnnonceAvecActions}>
+                                                    {item.Ville}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </Pressable>
+                                </View>
+                            ))}
+                        </View>
+                    ) : (
+                        <View>
+                            <Text style={styles.noAnnouncementsText}>
+                                Vous avez aucune notification
+                            </Text>
+                        </View>
+                    )
+                ) : (
+                    <View>{/* <Text>bbb</Text> */}</View>
                 )}
             </View>
 
@@ -376,6 +509,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginBottom: 8,
         textAlign: "center",
+    },
+    userInfoText2: {
+        fontSize: 16,
+        marginBottom: 8,
+        textAlign: "center",
+        textDecorationLine: "underline",
+        fontStyle: "italic",
     },
     botanistContainer: {
         flexDirection: "row",
