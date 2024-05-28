@@ -19,6 +19,11 @@ import HeaderComponent from "../components/HeaderComponent"
 import ModifierProfil from "../components/ModifierProfil"
 
 const ProfilScreen = () => {
+    //ce qu'il reste à faire
+    //quand l'utilisateur supprime son annonce elle est supprimée aussi dans l'utilisateur qui la garde
+    //quand on clique sur devenir botanniste
+    //modifier les droits du botanniste, il a le droit d'écrire des messages sinon les autres les voient juste
+    //pagination fonctionne mal
     const [user, setUser] = useState({})
     const navigation = useNavigation()
     const route = useRoute()
@@ -234,9 +239,16 @@ const ProfilScreen = () => {
                     onPress={() => {
                         seDeconnecter()
                     }}
-                    style={{ backgroundColor: "grey", padding: "2%", borderRadius: "5px" }}
+                    style={{
+                        backgroundColor: "grey",
+                        padding: "2%",
+                        borderRadius: "5px",
+                        width: "40%",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                    }}
                 >
-                    <Text>Se déconnecter</Text>
+                    <Text style={{ textAlign: "center", color: "white" }}>Se déconnecter</Text>
                 </Pressable>
             </View>
             <View style={{ height: "5%" }}></View>
@@ -305,106 +317,116 @@ const ProfilScreen = () => {
                 </View>
                 {isVisiblePublication ? (
                     user && user.Annonces ? (
-                        <View style={styles.ViewAnnonces}>
-                            {user.Annonces.map(item => (
-                                <View key={item.Id_Annonce} style={styles.ViewActions}>
-                                    <Pressable
-                                        onPress={() => {
-                                            navigation.navigate({
-                                                name: "AnnonceScreen",
-                                                params: { id: item.Id_Annonce },
-                                            })
-                                        }}
-                                        style={{ width: "80%" }}
-                                    >
-                                        <View style={styles.ViewAnnonceAvecActions}>
-                                            <Image
-                                                style={styles.imageAnnonceAvecActions}
-                                                source={{
-                                                    uri: item.Id_Plante[0],
-                                                }}
-                                            />
+                        user.Annonces.length != 0 ? (
+                            <View style={styles.ViewAnnonces}>
+                                {user.Annonces.map(item => (
+                                    <View key={item.Id_Annonce} style={styles.ViewActions}>
+                                        <Pressable
+                                            onPress={() => {
+                                                navigation.navigate({
+                                                    name: "AnnonceScreen",
+                                                    params: { id: item.Id_Annonce },
+                                                })
+                                            }}
+                                            style={{ width: "80%" }}
+                                        >
+                                            <View style={styles.ViewAnnonceAvecActions}>
+                                                <Image
+                                                    style={styles.imageAnnonceAvecActions}
+                                                    source={{
+                                                        uri: item.Id_Plante[0],
+                                                    }}
+                                                />
 
-                                            <View style={styles.infoAnnonce}>
-                                                <Text style={styles.titreAnnonceAvecActions}>
-                                                    {item.Titre.charAt(0).toUpperCase() +
-                                                        item.Titre.slice(1)}
-                                                </Text>
-                                                <Text style={styles.villeAnnonceAvecActions}>
-                                                    {item.Ville}
-                                                </Text>
+                                                <View style={styles.infoAnnonce}>
+                                                    <Text style={styles.titreAnnonceAvecActions}>
+                                                        {item.Titre.charAt(0).toUpperCase() +
+                                                            item.Titre.slice(1)}
+                                                    </Text>
+                                                    <Text style={styles.villeAnnonceAvecActions}>
+                                                        {item.Ville}
+                                                    </Text>
+                                                </View>
                                             </View>
+                                        </Pressable>
+                                        <View style={styles.BoutonsActions}>
+                                            <Pressable
+                                                onPress={() => {
+                                                    modifierAnnonce(item.Id_Annonce)
+                                                }}
+                                            >
+                                                <AiFillEdit size={20} />
+                                            </Pressable>
+                                            <Pressable
+                                                onPress={() => {
+                                                    supprimerAnnonce(item.Id_Annonce)
+                                                }}
+                                            >
+                                                <AiFillDelete size={20} />
+                                            </Pressable>
                                         </View>
-                                    </Pressable>
-                                    <View style={styles.BoutonsActions}>
-                                        <Pressable
-                                            onPress={() => {
-                                                modifierAnnonce(item.Id_Annonce)
-                                            }}
-                                        >
-                                            <AiFillEdit size={20} />
-                                        </Pressable>
-                                        <Pressable
-                                            onPress={() => {
-                                                supprimerAnnonce(item.Id_Annonce)
-                                            }}
-                                        >
-                                            <AiFillDelete size={20} />
-                                        </Pressable>
                                     </View>
-                                </View>
-                            ))}
-                        </View>
+                                ))}
+                            </View>
+                        ) : (
+                            <View>
+                                <Text style={styles.noAnnouncementsText}>
+                                    Vous avez aucune annonce
+                                </Text>
+                            </View>
+                        )
                     ) : (
-                        <View>
-                            <Text style={styles.noAnnouncementsText}>Vous avez aucune annonce</Text>
-                        </View>
+                        <View></View>
                     )
                 ) : (
                     <View></View>
                 )}
                 {isVisibleGardiennage ? (
                     user && user.Gardiennage ? (
-                        <View style={styles.ViewAnnonces}>
-                            {user.Gardiennage.map(item => (
-                                <View key={item.Id_Annonce} style={styles.ViewActions}>
-                                    <Pressable
-                                        onPress={() => {
-                                            navigation.navigate({
-                                                name: "AnnonceScreen",
-                                                params: { id: item.Id_Annonce },
-                                            })
-                                        }}
-                                        style={{ width: "80%" }}
-                                    >
-                                        <View style={styles.ViewAnnonceAvecActions}>
-                                            <Image
-                                                style={styles.imageAnnonceAvecActions}
-                                                source={{
-                                                    uri: item.Id_Plante[0],
-                                                }}
-                                            />
+                        user.Gardiennage.length != 0 ? (
+                            <View style={styles.ViewAnnonces}>
+                                {user.Gardiennage.map(item => (
+                                    <View key={item.Id_Annonce} style={styles.ViewActions}>
+                                        <Pressable
+                                            onPress={() => {
+                                                navigation.navigate({
+                                                    name: "AnnonceScreen",
+                                                    params: { id: item.Id_Annonce },
+                                                })
+                                            }}
+                                            style={{ width: "80%" }}
+                                        >
+                                            <View style={styles.ViewAnnonceAvecActions}>
+                                                <Image
+                                                    style={styles.imageAnnonceAvecActions}
+                                                    source={{
+                                                        uri: item.Id_Plante[0],
+                                                    }}
+                                                />
 
-                                            <View style={styles.infoAnnonce}>
-                                                <Text style={styles.titreAnnonceAvecActions}>
-                                                    {item.Titre.charAt(0).toUpperCase() +
-                                                        item.Titre.slice(1)}
-                                                </Text>
-                                                <Text style={styles.villeAnnonceAvecActions}>
-                                                    {item.Ville}
-                                                </Text>
+                                                <View style={styles.infoAnnonce}>
+                                                    <Text style={styles.titreAnnonceAvecActions}>
+                                                        {item.Titre.charAt(0).toUpperCase() +
+                                                            item.Titre.slice(1)}
+                                                    </Text>
+                                                    <Text style={styles.villeAnnonceAvecActions}>
+                                                        {item.Ville}
+                                                    </Text>
+                                                </View>
                                             </View>
-                                        </View>
-                                    </Pressable>
-                                </View>
-                            ))}
-                        </View>
+                                        </Pressable>
+                                    </View>
+                                ))}
+                            </View>
+                        ) : (
+                            <View>
+                                <Text style={styles.noAnnouncementsText}>
+                                    Vous n'avez aucune plante à garder
+                                </Text>
+                            </View>
+                        )
                     ) : (
-                        <View>
-                            <Text style={styles.noAnnouncementsText}>
-                                Vous n'avez aucune plante à garder
-                            </Text>
-                        </View>
+                        <View></View>
                     )
                 ) : (
                     <View></View>
@@ -484,6 +506,8 @@ const styles = StyleSheet.create({
     noAnnouncementsText: {
         fontSize: 16,
         color: "#888",
+        textAlign: "center",
+        marginTop: "3%",
     },
     ViewGlobale: {
         paddingHorizontal: "5%",

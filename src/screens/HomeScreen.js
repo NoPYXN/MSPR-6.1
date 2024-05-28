@@ -88,14 +88,18 @@ const ListeAnnonces = ({ isLoaded }) => {
             }
         }
 
-        let requete = `http://localhost:8080/api/v1/annonces?page=${nombrePage - 1}`
+        let requete = `http://localhost:8080/api/v1/annonces?page=${
+            nombrePage - 1
+        }&IsVisiblePublication=true`
         if (ville != "") {
             requete += `&Ville=${ville}`
         }
 
-        NumeroPage(ville, isVisiblePublication).then(numero => {
-            setCalculPage(numero)
-        })
+        NumeroPage(ville, isVisiblePublication, false, true, setAnnonces, nombrePage - 1).then(
+            numero => {
+                setCalculPage(numero)
+            },
+        )
         axios
             .get(requete)
             .then(data => {
@@ -145,23 +149,23 @@ const ListeAnnonces = ({ isLoaded }) => {
         console.log(annonces, "annocnes")
     }, [annonces])
 
-    const getAnnonces = () => {
-        axios.get(`http://localhost:8080/api/v1/annonces?page=0`).then(data => {
-            setAnnonces(data.data.content)
-        })
-        setNumPage(0)
-    }
-    const supprimerAnnonce = id => {
-        axios
-            .delete(`http://localhost:8080/api/v1/annonces/${id}`)
-            .then(data => {
-                if (data.status == 200) {
-                    setIsDelete(true)
-                    navigation.replace("HomeScreen", { popup: "Votre annonce a été supprimée" })
-                }
-            })
-            .catch(err => console.log(err))
-    }
+    // const getAnnonces = () => {
+    //     axios.get(`http://localhost:8080/api/v1/annonces?page=0`).then(data => {
+    //         setAnnonces(data.data.content)
+    //     })
+    //     setNumPage(0)
+    // }
+    // const supprimerAnnonce = id => {
+    //     axios
+    //         .delete(`http://localhost:8080/api/v1/annonces/${id}`)
+    //         .then(data => {
+    //             if (data.status == 200) {
+    //                 setIsDelete(true)
+    //                 navigation.replace("HomeScreen", { popup: "Votre annonce a été supprimée" })
+    //             }
+    //         })
+    //         .catch(err => console.log(err))
+    // }
 
     useEffect(() => {
         if (!showFirstView) {

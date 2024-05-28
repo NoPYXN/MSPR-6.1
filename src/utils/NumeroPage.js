@@ -7,6 +7,7 @@ export const NumeroPage = async (
     isVisibleGardiennage,
     isSetAnnonces,
     setAnnonces,
+    nbPage,
 ) => {
     let x = 0
     try {
