@@ -94,15 +94,12 @@ const AnnonceScreen = () => {
             await axios
                 .put(`http://localhost:8080/api/v1/annonces/${id}`, {
                     AnnonceUserGard: parseInt(localStorage.getItem("id")),
+                    Etat: true,
                 })
                 .then(data => {
-                    // console.log(data)
-                    // if (data.status == 201) {
-                    //     navigation.replace("HomeScreen", { popup: "Votre annonce a bien été ajoutée" })
-                    // }
                     if (data.status == 200) {
                         console.log(data)
-                        // setMessage(data.data.message)
+                        window.location.reload() //à garder car recharge la page mais retourne sur la home
                     }
                 })
                 .catch(err => {
@@ -122,34 +119,52 @@ const AnnonceScreen = () => {
                     : "Pas de titre"}
             </Text>
             <Carousel images={images} imageHeight={100} />
-            <Pressable
-                style={
-                    isClicked
-                        ? {
-                              marginLeft: "auto",
-                              marginRight: "auto",
-                              width: "50%",
-                              borderRadius: "5px",
-                              padding: "5%",
-                              backgroundColor: "green",
-                              marginTop: "5%",
-                          }
-                        : {
-                              marginLeft: "auto",
-                              marginRight: "auto",
-                              width: "50%",
-                              borderRadius: "5px",
-                              padding: "5%",
-                              backgroundColor: "grey",
-                              marginTop: "5%",
-                          }
-                }
-                onPress={() => {
-                    demandeGardiennage()
-                }}
-            >
-                <Text style={{ color: "white", textAlign: "center" }}>Demande de gardiennage</Text>
-            </Pressable>
+            {annonce && annonce.AnnonceUserGard ? (
+                <View>
+                    <Text>Annonce gardé par</Text>
+                    {annonce.AnnonceGardien.Image ? (
+                        <Image
+                            source={{ uri: annonce.AnnonceGardien.Image }}
+                            style={styles.iconImage}
+                        />
+                    ) : (
+                        <Image source={require("../assets/profil.png")} style={styles.icon} />
+                    )}
+                    <Text>{annonce.AnnonceGardien.Pseudo}</Text>
+                </View>
+            ) : (
+                <Pressable
+                    style={
+                        isClicked
+                            ? {
+                                  marginLeft: "auto",
+                                  marginRight: "auto",
+                                  width: "50%",
+                                  borderRadius: "5px",
+                                  padding: "5%",
+                                  backgroundColor: "green",
+                                  marginTop: "5%",
+                              }
+                            : {
+                                  marginLeft: "auto",
+                                  marginRight: "auto",
+                                  width: "50%",
+                                  borderRadius: "5px",
+                                  padding: "5%",
+                                  backgroundColor: "grey",
+                                  marginTop: "5%",
+                              }
+                    }
+                    onPress={() => {
+                        demandeGardiennage()
+                    }}
+                >
+                    <Text style={{ color: "white", textAlign: "center" }}>
+                        Demande de gardiennage
+                    </Text>
+                </Pressable>
+            )}
+
             <View style={styles.blocInfo}>
                 <Text style={styles.descriptionText}>
                     {annonce.Description && annonce.Description.length > 0
@@ -187,16 +202,7 @@ const AnnonceScreen = () => {
                 selectedImages={selectedImages}
                 id={id}
             />
-            {
-                //à enlever
-                <Pressable
-                    onPress={() => {
-                        demandeGardePlante()
-                    }}
-                >
-                    <Text>DEMANDER A GARDER LA PLANTE</Text>
-                </Pressable>
-            }
+
             <View style={styles.separateur}></View>
 
             <View style={styles.messageContainer}>

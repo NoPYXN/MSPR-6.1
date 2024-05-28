@@ -48,6 +48,8 @@ const ListeAnnonces = ({ isLoaded }) => {
     const route = useRoute()
     const [message, setMessage] = useState(route.params?.popup || "")
     const [isVisibleLocalisation, setIsVisibleLocalisation] = useState(false)
+    const [isVisiblePublication, setIsVisiblePublication] = useState(true)
+    const [isVisibleGardiennage, setIsVisibleGardiennage] = useState(false)
 
     const changeUrlPagination = pageNumber => {
         pageNumber += 1
@@ -63,8 +65,6 @@ const ListeAnnonces = ({ isLoaded }) => {
     }
 
     useEffect(() => {
-        ///que je fasse le verifytoken et si ok aller chercher le pseudo de la personne
-
         let urlParam = ""
         let nombrePage = 1
         let separerFiltre = ""
@@ -93,7 +93,7 @@ const ListeAnnonces = ({ isLoaded }) => {
             requete += `&Ville=${ville}`
         }
 
-        NumeroPage(ville).then(numero => {
+        NumeroPage(ville, isVisiblePublication).then(numero => {
             setCalculPage(numero)
         })
         axios
@@ -140,6 +140,10 @@ const ListeAnnonces = ({ isLoaded }) => {
             </Pressable>
         </View>
     ))
+
+    useEffect(() => {
+        console.log(annonces, "annocnes")
+    }, [annonces])
 
     const getAnnonces = () => {
         axios.get(`http://localhost:8080/api/v1/annonces?page=0`).then(data => {
@@ -193,6 +197,24 @@ const ListeAnnonces = ({ isLoaded }) => {
         } else {
             navigation.navigate({ name: "LoginScreen" })
         }
+    }
+
+    const showAnnoncePubliee = () => {
+        setIsVisibleGardiennage(false)
+        setIsVisiblePublication(true)
+        console.log(searchVille, "serachville")
+        NumeroPage(searchVille ? searchVille : "", true, false, true, setAnnonces).then(numero => {
+            setCalculPage(numero)
+        })
+    }
+
+    const showGardiennage = () => {
+        setIsVisibleGardiennage(true)
+        setIsVisiblePublication(false)
+        console.log(searchVille, "serachville")
+        NumeroPage(searchVille ? searchVille : "", false, true, true, setAnnonces).then(numero => {
+            setCalculPage(numero)
+        })
     }
 
     return (
@@ -307,96 +329,266 @@ const ListeAnnonces = ({ isLoaded }) => {
                             </View>
                         )}
 
-                        {annonces ? (
-                            <View style={styles.ViewAnnonces}>
-                                {annonces.map(item => (
-                                    <View key={item.Id_Annonce} style={styles.ViewActions}>
-                                        <Pressable
-                                            onPress={() => {
-                                                navigation.navigate({
-                                                    name: "AnnonceScreen",
-                                                    params: { id: item.Id_Annonce },
-                                                })
-                                            }}
-                                            style={isVisible ? { width: "80%" } : { width: "100%" }}
-                                        >
-                                            <View
-                                                style={
-                                                    isVisible
-                                                        ? styles.ViewAnnonceAvecActions
-                                                        : styles.ViewAnnonce
-                                                }
-                                            >
-                                                <Image
+                        {/* début de ce que j'ai rajouté */}
+
+                        <View
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                width: "100%",
+                                marginTop: "5%",
+                            }}
+                        >
+                            <Pressable
+                                style={
+                                    !isVisiblePublication
+                                        ? {
+                                              width: "50%",
+                                              backgroundColor: "#f0f0f0",
+                                              padding: "5%",
+                                          }
+                                        : { width: "50%", backgroundColor: "green", padding: "5%" }
+                                }
+                                onPress={() => {
+                                    showAnnoncePubliee()
+                                }}
+                            >
+                                <Text
+                                    style={
+                                        !isVisiblePublication
+                                            ? {
+                                                  textAlign: "center",
+                                                  fontSize: "16px",
+                                                  color: "black",
+                                              }
+                                            : {
+                                                  textAlign: "center",
+                                                  fontSize: "16px",
+                                                  color: "white",
+                                              }
+                                    }
+                                >
+                                    Plantes à garder
+                                </Text>
+                            </Pressable>
+                            <Pressable
+                                style={
+                                    isVisibleGardiennage
+                                        ? {
+                                              width: "50%",
+                                              backgroundColor: "green",
+                                              padding: "5%",
+                                          }
+                                        : {
+                                              width: "50%",
+                                              backgroundColor: "#f0f0f0",
+                                              padding: "5%",
+                                          }
+                                }
+                                onPress={() => {
+                                    showGardiennage()
+                                }}
+                            >
+                                <Text
+                                    style={
+                                        isVisibleGardiennage
+                                            ? {
+                                                  fontSize: "16px",
+                                                  textAlign: "center",
+                                                  color: "white",
+                                              }
+                                            : {
+                                                  textAlign: "center",
+                                                  fontSize: "16px",
+                                                  color: "black",
+                                              }
+                                    }
+                                >
+                                    Plantes gardées
+                                </Text>
+                            </Pressable>
+                        </View>
+
+                        {/* fin de ce que j'ai rajouté */}
+
+                        {isVisiblePublication ? (
+                            annonces ? (
+                                <View style={styles.ViewAnnonces}>
+                                    {annonces.map(item =>
+                                        item.Etat == false ? (
+                                            <View key={item.Id_Annonce} style={styles.ViewActions}>
+                                                <Pressable
+                                                    onPress={() => {
+                                                        navigation.navigate({
+                                                            name: "AnnonceScreen",
+                                                            params: { id: item.Id_Annonce },
+                                                        })
+                                                    }}
                                                     style={
                                                         isVisible
-                                                            ? styles.imageAnnonceAvecActions
-                                                            : styles.imageAnnonce
+                                                            ? { width: "80%" }
+                                                            : { width: "100%" }
                                                     }
-                                                    source={{
-                                                        uri: item.Id_Plante[0],
-                                                    }}
-                                                />
+                                                >
+                                                    <View
+                                                        style={
+                                                            isVisible
+                                                                ? styles.ViewAnnonceAvecActions
+                                                                : styles.ViewAnnonce
+                                                        }
+                                                    >
+                                                        <Image
+                                                            style={
+                                                                isVisible
+                                                                    ? styles.imageAnnonceAvecActions
+                                                                    : styles.imageAnnonce
+                                                            }
+                                                            source={{
+                                                                uri: item.Id_Plante[0],
+                                                            }}
+                                                        />
 
-                                                <View style={styles.infoAnnonce}>
-                                                    <Text
-                                                        style={
-                                                            isVisible
-                                                                ? styles.titreAnnonceAvecActions
-                                                                : styles.titreAnnonce
-                                                        }
-                                                    >
-                                                        {item.Titre.charAt(0).toUpperCase() +
-                                                            item.Titre.slice(1)}
-                                                    </Text>
-                                                    <Text
-                                                        style={
-                                                            isVisible
-                                                                ? styles.villeAnnonceAvecActions
-                                                                : styles.villeAnnonce
-                                                        }
-                                                    >
-                                                        {item.Ville}
-                                                    </Text>
-                                                    {!isVisible ? (
-                                                        <View>
-                                                            <Text style={styles.dateAnnonce}>
-                                                                {ConvertirDateHeure(
-                                                                    item.DateCreation,
-                                                                )}
+                                                        <View style={styles.infoAnnonce}>
+                                                            <Text
+                                                                style={
+                                                                    isVisible
+                                                                        ? styles.titreAnnonceAvecActions
+                                                                        : styles.titreAnnonce
+                                                                }
+                                                            >
+                                                                {item.Titre.charAt(
+                                                                    0,
+                                                                ).toUpperCase() +
+                                                                    item.Titre.slice(1)}
                                                             </Text>
+                                                            <Text
+                                                                style={
+                                                                    isVisible
+                                                                        ? styles.villeAnnonceAvecActions
+                                                                        : styles.villeAnnonce
+                                                                }
+                                                            >
+                                                                {item.Ville}
+                                                            </Text>
+                                                            {!isVisible ? (
+                                                                <View>
+                                                                    <Text
+                                                                        style={styles.dateAnnonce}
+                                                                    >
+                                                                        {ConvertirDateHeure(
+                                                                            item.DateCreation,
+                                                                        )}
+                                                                    </Text>
+                                                                </View>
+                                                            ) : (
+                                                                <View></View>
+                                                            )}
                                                         </View>
-                                                    ) : (
-                                                        <View></View>
-                                                    )}
-                                                </View>
-                                            </View>
-                                        </Pressable>
-                                        {/* {isVisible ? (
-                                            <View style={styles.BoutonsActions}>
-                                                <Pressable
-                                                    onPress={() => {
-                                                        modifierAnnonce(item.Id_Annonce)
-                                                    }}
-                                                >
-                                                    <AiFillEdit size={20} />
-                                                </Pressable>
-                                                <Pressable
-                                                    onPress={() => {
-                                                        supprimerAnnonce(item.Id_Annonce)
-                                                    }}
-                                                >
-                                                    <AiFillDelete size={20} />
+                                                    </View>
                                                 </Pressable>
                                             </View>
                                         ) : (
-                                            <View></View>
-                                        )} */}
-                                    </View>
-                                ))}
-                            </View>
+                                            <View key={item.Id_Annonce}></View>
+                                        ),
+                                    )}
+                                </View>
+                            ) : (
+                                <View>
+                                    <Text>Aucune annonce trouvée</Text>
+                                </View>
+                            )
                         ) : (
-                            <View>Aucune annonce trouvée</View>
+                            <View></View>
+                        )}
+
+                        {isVisibleGardiennage ? (
+                            annonces ? (
+                                <View style={styles.ViewAnnonces}>
+                                    {annonces.map(item =>
+                                        item.Etat == true ? (
+                                            <View key={item.Id_Annonce} style={styles.ViewActions}>
+                                                <Pressable
+                                                    onPress={() => {
+                                                        navigation.navigate({
+                                                            name: "AnnonceScreen",
+                                                            params: { id: item.Id_Annonce },
+                                                        })
+                                                    }}
+                                                    style={
+                                                        isVisible
+                                                            ? { width: "80%" }
+                                                            : { width: "100%" }
+                                                    }
+                                                >
+                                                    <View
+                                                        style={
+                                                            isVisible
+                                                                ? styles.ViewAnnonceAvecActions
+                                                                : styles.ViewAnnonce
+                                                        }
+                                                    >
+                                                        <Image
+                                                            style={
+                                                                isVisible
+                                                                    ? styles.imageAnnonceAvecActions
+                                                                    : styles.imageAnnonce
+                                                            }
+                                                            source={{
+                                                                uri: item.Id_Plante[0],
+                                                            }}
+                                                        />
+
+                                                        <View style={styles.infoAnnonce}>
+                                                            <Text
+                                                                style={
+                                                                    isVisible
+                                                                        ? styles.titreAnnonceAvecActions
+                                                                        : styles.titreAnnonce
+                                                                }
+                                                            >
+                                                                {item.Titre.charAt(
+                                                                    0,
+                                                                ).toUpperCase() +
+                                                                    item.Titre.slice(1)}
+                                                            </Text>
+                                                            <Text
+                                                                style={
+                                                                    isVisible
+                                                                        ? styles.villeAnnonceAvecActions
+                                                                        : styles.villeAnnonce
+                                                                }
+                                                            >
+                                                                {item.Ville}
+                                                            </Text>
+                                                            {!isVisible ? (
+                                                                <View>
+                                                                    <Text
+                                                                        style={styles.dateAnnonce}
+                                                                    >
+                                                                        {ConvertirDateHeure(
+                                                                            item.DateCreation,
+                                                                        )}
+                                                                    </Text>
+                                                                </View>
+                                                            ) : (
+                                                                <View></View>
+                                                            )}
+                                                        </View>
+                                                    </View>
+                                                </Pressable>
+                                            </View>
+                                        ) : (
+                                            <View key={item.Id_Annonce}></View>
+                                        ),
+                                    )}
+                                </View>
+                            ) : (
+                                <View>
+                                    <Text>Aucune annonce trouvée</Text>
+                                </View>
+                            )
+                        ) : (
+                            <View></View>
                         )}
                     </View>
 
