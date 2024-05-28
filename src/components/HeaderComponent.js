@@ -4,7 +4,14 @@ import { View, Text, Pressable, StyleSheet, Image } from "react-native"
 const HeaderComponent = ({ navigation }) => {
     const handleReload = () => {
         // window.history.pushState({}, "", "/")
-        navigation.navigate({ name: "HomeScreen" }) // Redirige vers la même page pour la recharger
+        console.log(window, "window")
+        if (window.location.pathname == "/") {
+            window.history.pushState({}, "", "/")
+            // navigation.navigate({ name: "HomeScreen" })
+            window.location.reload()
+        } else {
+            navigation.navigate({ name: "HomeScreen" }) // Redirige vers la même page pour la recharger
+        }
     }
 
     const directionLoginOrProfil = () => {
