@@ -11,6 +11,7 @@ import MapScreen from "../screens/MapScreen"
 import CreateAccount from "../screens/CreateAccount"
 import LoginScreen from "../screens/LoginScreen"
 import ProfilScreen from "../screens/ProfilScreen"
+import DemandeBotaniste from "../screens/DemandeBotaniste"
 
 const Stack = createNativeStackNavigator()
 
@@ -65,6 +66,11 @@ const NavigationStack = isLoaded => {
                     options={{ headerShown: false }}
                     name="ProfilScreen"
                     component={ProfilScreen}
+                />
+                <Stack.Screen
+                    options={{ headerShown: false }}
+                    name="DemandeBotaniste"
+                    component={DemandeBotaniste}
                 />
             </Stack.Navigator>
         </NavigationContainer>
