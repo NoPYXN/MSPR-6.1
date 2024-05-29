@@ -19,12 +19,21 @@ export default function Index({
     isAddPlantFrom,
     annonces,
     valueVille,
+    isVisiblePublication,
+    isVisibleGardiennage,
     // isLoaded,
 }) {
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: "AIzaSyBnyp6JiXQAqF0VIfj9-cIt-OPjehWhY9E",
         libraries: ["places"],
     })
+
+    console.log(isVisibleGardiennage, "is visible gardiennage")
+    console.log(isVisiblePublication, "is visible publication")
+    useEffect(() => {
+        console.log(isVisibleGardiennage, "is visible gardiennage")
+        console.log(isVisiblePublication, "is visible publication")
+    }, [])
 
     if (!isLoaded) return <div>Loading...</div>
     return (
@@ -40,6 +49,8 @@ export default function Index({
             isAddPlantFrom={isAddPlantFrom}
             annonces={annonces}
             valueVille={valueVille}
+            isVisiblePublication={isVisiblePublication}
+            isVisibleGardiennage={isVisibleGardiennage}
         />
     )
 }
@@ -55,6 +66,8 @@ function Map({
     isAddPlantFrom,
     annonces,
     valueVille,
+    isVisiblePublication,
+    isVisibleGardiennage,
 }) {
     return (
         <View>
@@ -71,6 +84,8 @@ function Map({
                     isAddPlantFrom={isAddPlantFrom}
                     annonces={annonces}
                     valueVille={valueVille}
+                    isVisiblePublication={isVisiblePublication}
+                    isVisibleGardiennage={isVisibleGardiennage}
                 />
             </View>
         </View>
@@ -89,6 +104,8 @@ const PlacesAutocomplete = ({
     isAddPlantFrom,
     annonces,
     valueVille,
+    isVisibleGardiennage,
+    isVisiblePublication,
 }) => {
     const {
         ready,
@@ -136,15 +153,16 @@ const PlacesAutocomplete = ({
     }
 
     const search = () => {
-        NumeroPage(countryChoice).then(numero => {
+        NumeroPage(countryChoice, isVisiblePublication, isVisibleGardiennage).then(numero => {
             setCalculPage(numero)
         })
+
         if (selected) {
             axios
                 .get(
                     `http://localhost:8080/api/v1/annonces?page=${
                         pageChoisie ? pageChoisie : 0
-                    }&Ville=${countryChoice}`,
+                    }&Ville=${countryChoice}&IsVisiblePublication=${isVisiblePublication}&IsVisibleGardiennage=${isVisibleGardiennage}`,
                 )
                 .then(data => {
                     if (data.status == 200) {

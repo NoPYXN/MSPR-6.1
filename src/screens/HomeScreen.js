@@ -27,12 +27,28 @@ export default function HomeScreen() {
         googleMapsApiKey: "AIzaSyBnyp6JiXQAqF0VIfj9-cIt-OPjehWhY9E",
         libraries: ["places"],
     })
+    const [isVisiblePublication, setIsVisiblePublication] = useState(true)
+    const [isVisibleGardiennage, setIsVisibleGardiennage] = useState(false)
 
-    if (!isLoaded) return <div>Loading...</div>
-    return <ListeAnnonces isLoaded={isLoaded} />
+    if (!isLoaded && isVisiblePublication) return <div>Loading...</div>
+    return (
+        <ListeAnnonces
+            isLoaded={isLoaded}
+            isVisiblePublication={isVisiblePublication}
+            setIsVisiblePublication={setIsVisiblePublication}
+            isVisibleGardiennage={isVisibleGardiennage}
+            setIsVisibleGardiennage={setIsVisibleGardiennage}
+        />
+    )
 }
 
-const ListeAnnonces = ({ isLoaded }) => {
+const ListeAnnonces = ({
+    isLoaded,
+    isVisiblePublication,
+    setIsVisiblePublication,
+    isVisibleGardiennage,
+    setIsVisibleGardiennage,
+}) => {
     const [annonces, setAnnonces] = useState([])
     const [showFirstView, setShowFirstView] = useState(true)
     const [calculPage, setCalculPage] = useState(0)
@@ -48,8 +64,8 @@ const ListeAnnonces = ({ isLoaded }) => {
     const route = useRoute()
     const [message, setMessage] = useState(route.params?.popup || "")
     const [isVisibleLocalisation, setIsVisibleLocalisation] = useState(false)
-    const [isVisiblePublication, setIsVisiblePublication] = useState(true)
-    const [isVisibleGardiennage, setIsVisibleGardiennage] = useState(false)
+    // const [isVisiblePublication, setIsVisiblePublication] = useState(true)
+    // const [isVisibleGardiennage, setIsVisibleGardiennage] = useState(false)
 
     const changeUrlPagination = pageNumber => {
         pageNumber += 1
@@ -175,7 +191,7 @@ const ListeAnnonces = ({ isLoaded }) => {
     }, [showFirstView])
 
     const changePage = index => {
-        let requete = `http://localhost:8080/api/v1/annonces?page=${index}`
+        let requete = `http://localhost:8080/api/v1/annonces?page=${index}&IsVisiblePublication=${isVisiblePublication}&IsVisibleGardiennage=${isVisibleGardiennage}`
         if (searchVille) {
             requete += `&Ville=${searchVille}`
         }
@@ -207,18 +223,26 @@ const ListeAnnonces = ({ isLoaded }) => {
         setIsVisibleGardiennage(false)
         setIsVisiblePublication(true)
         console.log(searchVille, "serachville")
-        NumeroPage(searchVille ? searchVille : "", true, false, true, setAnnonces).then(numero => {
-            setCalculPage(numero)
-        })
+        NumeroPage(searchVille ? searchVille : "", true, false, true, setAnnonces, 0).then(
+            numero => {
+                setCalculPage(numero)
+            },
+            setNumPage(0),
+        )
+        changeUrlPagination(0)
     }
 
     const showGardiennage = () => {
         setIsVisibleGardiennage(true)
         setIsVisiblePublication(false)
         console.log(searchVille, "serachville")
-        NumeroPage(searchVille ? searchVille : "", false, true, true, setAnnonces).then(numero => {
-            setCalculPage(numero)
-        })
+        NumeroPage(searchVille ? searchVille : "", false, true, true, setAnnonces, 0).then(
+            numero => {
+                setCalculPage(numero)
+            },
+        )
+        setNumPage(0)
+        changeUrlPagination(0)
     }
 
     return (
@@ -318,6 +342,8 @@ const ListeAnnonces = ({ isLoaded }) => {
                                     setAnnonces={setAnnonces}
                                     pageChoisie={pageChoisie}
                                     isLoaded={isLoaded}
+                                    isVisiblePublication={isVisiblePublication}
+                                    isVisibleGardiennage={isVisibleGardiennage}
                                 />
                             </View>
                         ) : (

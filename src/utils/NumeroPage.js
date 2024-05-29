@@ -7,7 +7,7 @@ export const NumeroPage = async (
     isVisibleGardiennage,
     isSetAnnonces,
     setAnnonces,
-    nbPage,
+    page,
 ) => {
     let x = 0
     try {
@@ -23,6 +23,15 @@ export const NumeroPage = async (
         }
         if (response.status === 200) {
             x = Math.ceil(response.data.content.length / 5)
+        }
+        if (ville === "") {
+            response = await axios.get(
+                `http://localhost:8080/api/v1/annonces?IsVisiblePublication=${isVisiblePublication}&IsVisibleGardiennage=${isVisibleGardiennage}&page=${page}`,
+            )
+        } else {
+            response = await axios.get(
+                `http://localhost:8080/api/v1/annonces?Ville=${ville}&IsVisiblePublication=${isVisiblePublication}&IsVisibleGardiennage=${isVisibleGardiennage}&page=${page}`,
+            )
         }
         if (isSetAnnonces) {
             setAnnonces(response.data.content)
