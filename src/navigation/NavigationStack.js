@@ -18,6 +18,11 @@ const config = {
     screens: {
         HomeScreen: "",
         FormulaireAnnonceScreen: "FormulaireAnnonceScreen",
+        LoginScreen: "LoginScreen",
+        AnnonceScreen: "AnnonceScreen",
+        MapScreen: "MapScreen",
+        CreateAccount: "CreateAccount",
+        ProfilScreen: "ProfilScreen",
     },
 }
 

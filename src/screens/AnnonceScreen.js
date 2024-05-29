@@ -24,13 +24,15 @@ const AnnonceScreen = () => {
     const [isVisible, setIsVisible] = useState(false)
     const [selectedImages, setSelectedImages] = useState([])
     const [id, setId] = useState()
+    const [error, setError] = useState(false)
 
     useEffect(() => {
+        // console.log(router.params.id, "ID")
         axios
             .get(`http://localhost:8080/api/v1/annonces/${router.params.id}`)
             .then(data => {
                 if (data.status == 200) {
-                    console.log("data getif annonce", data)
+                    // console.log("data getif annonce", data)
                     data.data.content.DateDebut = convertirDate(data.data.content.DateDebut)
                     data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                     setAnnonce(data.data.content)
@@ -56,7 +58,7 @@ const AnnonceScreen = () => {
             .catch(err => {
                 console.log(err)
             })
-    }, [])
+    }, [router])
 
     const afficherPlus = () => {
         let tab = []
@@ -73,18 +75,24 @@ const AnnonceScreen = () => {
     }
 
     const demandeGardiennage = async () => {
-        await axios
-            .put(`http://localhost:8080/api/v1/annonces/${id}`, {
+        await axios({
+            method: "put",
+            url: `http://localhost:8080/api/v1/annonces/${id}`,
+            headers: { Authorization: localStorage.getItem("token") },
+            data: {
                 AnnonceUserGard: parseInt(localStorage.getItem("id")),
                 Etat: true,
-            })
+            },
+        })
             .then(data => {
                 if (data.status == 200) {
                     console.log(data)
-                    window.location.reload() //à garder car recharge la page mais retourne sur la home
+                    window.location.reload()
                 }
+                console.log(data)
             })
             .catch(err => {
+                setError(true)
                 console.log(err)
             })
     }
@@ -189,30 +197,52 @@ const AnnonceScreen = () => {
                     </View>
                 </View>
             ) : (
-                <Pressable
-                    style={{
-                        marginLeft: "auto",
-                        marginRight: "auto",
-                        width: "50%",
-                        borderRadius: "5px",
-                        marginBottom: "1%",
-                        backgroundColor: "green",
-                        padding: "3%",
-                        marginTop: "5%",
-                    }}
-                    onPress={() => {
-                        demandeGardiennage()
-                    }}
-                >
-                    <Text
-                        style={{
-                            color: "white",
-                            textAlign: "center",
+                <View>
+                    <Pressable
+                        style={
+                            error
+                                ? {
+                                      marginLeft: "auto",
+                                      marginRight: "auto",
+                                      width: "50%",
+                                      borderRadius: "5px",
+                                      marginBottom: "1%",
+                                      backgroundColor: "grey",
+                                      padding: "3%",
+                                      marginTop: "5%",
+                                  }
+                                : {
+                                      marginLeft: "auto",
+                                      marginRight: "auto",
+                                      width: "50%",
+                                      borderRadius: "5px",
+                                      marginBottom: "1%",
+                                      backgroundColor: "green",
+                                      padding: "3%",
+                                      marginTop: "5%",
+                                  }
+                        }
+                        onPress={() => {
+                            demandeGardiennage()
                         }}
                     >
-                        Demande de gardiennage
-                    </Text>
-                </Pressable>
+                        <Text
+                            style={{
+                                color: "white",
+                                textAlign: "center",
+                            }}
+                        >
+                            Demande de gardiennage
+                        </Text>
+                    </Pressable>
+                    {error ? (
+                        <Text style={{ textAlign: "center", fontStyle: "italic" }}>
+                            Il faut vous connecter pour garder une plante
+                        </Text>
+                    ) : (
+                        <Text></Text>
+                    )}
+                </View>
             )}
             {annonce && annonce.AnnonceUserGard ? (
                 <PhotoPicker

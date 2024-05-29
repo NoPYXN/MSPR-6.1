@@ -77,7 +77,6 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
         } else {
             setError(false)
             setMessage("")
-
             await axios
                 .post(`http://localhost:8080/api/v1/users/register`, {
                     ...user,

@@ -16,6 +16,7 @@ const HeaderComponent = ({ navigation }) => {
 
     const directionLoginOrProfil = () => {
         if (localStorage.getItem("token")) {
+            console.log("Test redirection")
             navigation.navigate({ name: "ProfilScreen" })
         } else {
             navigation.navigate({ name: "LoginScreen" })
