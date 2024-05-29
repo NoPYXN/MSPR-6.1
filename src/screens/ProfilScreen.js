@@ -165,7 +165,7 @@ const ProfilScreen = () => {
     }
 
     const seDeconnecter = () => {
-        const keysToRemove = ["id", "token", "image", "pseudo"]
+        const keysToRemove = ["id", "token", "image", "pseudo", "image", "botanniste"]
 
         keysToRemove.forEach(key => {
             console.log(key)

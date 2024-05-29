@@ -38,6 +38,7 @@ const LoginComponent = () => {
                         localStorage.setItem("token", data.data.token)
                         localStorage.setItem("pseudo", data.data.pseudo)
                         localStorage.setItem("id", data.data.id)
+                        localStorage.setItem("image", data.data.image)
                         if (data.data.botanniste) {
                             localStorage.setItem("botanniste", data.data.botanniste)
                         }
