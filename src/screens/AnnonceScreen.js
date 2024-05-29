@@ -25,6 +25,7 @@ const AnnonceScreen = () => {
     const [selectedImages, setSelectedImages] = useState([])
     const [id, setId] = useState()
     const [error, setError] = useState(false)
+    const [isVisibleBotanniste, setIsVisibleBotanniste] = useState(false)
 
     useEffect(() => {
         // console.log(router.params.id, "ID")
@@ -52,6 +53,19 @@ const AnnonceScreen = () => {
                         setMessages(tab)
                         setNumero(numero + 2)
                         setIsVisible(true)
+                    }
+                    if (localStorage.getItem("botanniste")) {
+                        axios({
+                            method: "get",
+                            url: "http://localhost:8080/api/v1/users/" + localStorage.getItem("id"),
+                            headers: { Authorization: localStorage.getItem("token") },
+                        })
+                            .then(data => {
+                                setIsVisibleBotanniste(true)
+                            })
+                            .catch(err => {
+                                console.log(err, "err")
+                            })
                     }
                 }
             })
@@ -259,11 +273,21 @@ const AnnonceScreen = () => {
                 <View>
                     <View style={styles.separateur}></View>
                     <View style={styles.messageContainer}>
-                        <Text style={styles.TextIndication}>
-                            Avez-vous des indications à transmettre ?
-                        </Text>
-                        {id ? (
-                            <TextZoneInfo messages={messages} setMessages={setMessages} id={id} />
+                        {isVisibleBotanniste ? (
+                            <View>
+                                <Text style={styles.TextIndication}>
+                                    Avez-vous des indications à transmettre ?
+                                </Text>
+                                {id ? (
+                                    <TextZoneInfo
+                                        messages={messages}
+                                        setMessages={setMessages}
+                                        id={id}
+                                    />
+                                ) : (
+                                    <View></View>
+                                )}
+                            </View>
                         ) : (
                             <View></View>
                         )}
