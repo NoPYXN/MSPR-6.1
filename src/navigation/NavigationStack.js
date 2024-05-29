@@ -12,6 +12,7 @@ import CreateAccount from "../screens/CreateAccount"
 import LoginScreen from "../screens/LoginScreen"
 import ProfilScreen from "../screens/ProfilScreen"
 import DemandeBotaniste from "../screens/DemandeBotaniste"
+import ConditionGeneralUtilisation from "../screens/ConditionGeneralUtilisation"
 
 const Stack = createNativeStackNavigator()
 
@@ -77,6 +78,11 @@ const NavigationStack = isLoaded => {
                     options={{ headerShown: false }}
                     name="DemandeBotaniste"
                     component={DemandeBotaniste}
+                />
+                <Stack.Screen
+                    options={{ headerShown: false }}
+                    name="ConditionGeneralUtilisation"
+                    component={ConditionGeneralUtilisation}
                 />
             </Stack.Navigator>
         </NavigationContainer>

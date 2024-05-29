@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity } from "react-native"
+import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity,Pressable } from "react-native"
 import { Formik } from "formik"
 import * as Yup from "yup"
 import { useLoadScript } from "@react-google-maps/api"
@@ -55,6 +55,7 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
     const [coordonnees, setCoordonnees] = useState({})
     const [error, setError] = useState(false)
     const [message, setMessage] = useState("")
+    const [termsAccepted, settermsAccepted] = useState(false)
 
     const selectGender = gender => {
         setUser({ ...user, Civilite: gender })
@@ -70,7 +71,8 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
             !user.Mdp ||
             !coordonnees ||
             !coordonnees.localization ||
-            !coordonnees.country
+            !coordonnees.country ||
+            !termsAccepted
         ) {
             setError(true)
             setMessage("Tous les champs sont obligatoires")
@@ -217,6 +219,30 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
                     /> */}
                     {touched.Adresse && errors.Adresse && <Text>{errors.Adresse}</Text>}
 
+                    {/* Case à cocher pour accepter les conditions d'utilisation */}
+                    <View style={styles.checkboxContainer}>
+                        <Pressable
+                            style={styles.checkboxContainer}
+                            value = {termsAccepted}
+                            onPress = {()=> termsAccepted?settermsAccepted(false): settermsAccepted(true)} 
+                        >
+                            <View style={[styles.checkbox, { backgroundColor: termsAccepted ? "#5cb85c" : "#fff" }]} />
+                            <Text style={styles.checkboxLabel}>Accepter les </Text>
+                            <Pressable
+                            onPress={() => {
+                                navigation.navigate({
+                                    name: "ConditionGeneralUtilisation",
+                                });
+                            }}
+                            >
+                                <Text style={styles.linkText}>conditions d'utilisation</Text>  
+                            </Pressable>
+                        </Pressable>
+                        {touched.termsAccepted && errors.termsAccepted && (
+                            <Text style={{ color: 'red' }}>{errors.termsAccepted}</Text>
+                        )}
+                    </View>
+
                     {/* Bouton de soumission */}
                     <View style={styles.buttonContainer}>
                         <Button onPress={handleSubmit} title="Valider" color="#5cb85c" />
@@ -310,4 +336,13 @@ const styles = StyleSheet.create({
     checkboxLabel: {
         fontSize: 16,
     },
+    buttonContainer: {
+        marginTop: 20,
+    },
+    linkText: {
+        fontSize: 16,
+        color: "#551A8B",
+        textDecorationLine: "underline",
+    },
+
 })
