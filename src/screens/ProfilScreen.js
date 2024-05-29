@@ -19,11 +19,14 @@ import HeaderComponent from "../components/HeaderComponent"
 import ModifierProfil from "../components/ModifierProfil"
 
 const ProfilScreen = () => {
+    console.log("Test test test")
     //ce qu'il reste à faire
+
     //quand l'utilisateur supprime son annonce elle est supprimée aussi dans l'utilisateur qui la garde
     //quand on clique sur devenir botanniste
     //modifier les droits du botanniste, il a le droit d'écrire des messages sinon les autres les voient juste
-    //pagination fonctionne mal
+    //pagination fonctionne mal  FAUT FAIRE MAINTENANT
+
     const [user, setUser] = useState({})
     const navigation = useNavigation()
     const route = useRoute()
@@ -38,7 +41,10 @@ const ProfilScreen = () => {
     const [isVisiblePublication, setIsVisiblePublication] = useState(true)
     const [isVisibleGardiennage, setIsVisibleGardiennage] = useState(false)
     const [isVisibleNotification, setIsVisibleNotification] = useState(false)
+    const router = useRoute()
+
     useEffect(() => {
+        console.log("Test profil screen")
         axios({
             method: "get",
             url: "http://localhost:8080/api/v1/users/" + localStorage.getItem("id"),
@@ -53,7 +59,7 @@ const ProfilScreen = () => {
                 navigation.navigate({ name: "LoginScreen" })
             })
         //il ne repasse pas dedans je ne sais pas pourquoi
-    }, [])
+    }, [router.params])
 
     const handleFileSelected = async () => {
         try {
@@ -92,6 +98,7 @@ const ProfilScreen = () => {
     }
 
     useEffect(() => {
+        console.log("rrrr")
         setIsChangeUploadFile(true)
         if (isChangeUploadFile) {
             handleSubmit()
@@ -431,7 +438,6 @@ const ProfilScreen = () => {
                 ) : (
                     <View></View>
                 )}
-                :
             </View>
 
             {isVisible ? (
