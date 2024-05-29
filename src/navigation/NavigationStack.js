@@ -24,6 +24,7 @@ const config = {
         MapScreen: "MapScreen",
         CreateAccount: "CreateAccount",
         ProfilScreen: "ProfilScreen",
+        DemandeBotaniste: "DemandeBotaniste",
     },
 }
 
