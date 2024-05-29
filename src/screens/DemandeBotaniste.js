@@ -3,8 +3,7 @@ import { StyleSheet, Text, View, SafeAreaView, Pressable } from "react-native"
 import { useNavigation, useRoute } from "@react-navigation/native"
 
 import HeaderComponent from "../components/HeaderComponent"
-import CreateAccountForm from "../components/CreateAccountForm"
-import LoginComponent from "../components/LoginComponent"
+import DemandeBotanisteComponent from "../components/DemandeBotanisteComponent";
 
 const DemandeBotaniste = () => {
     const navigation = useNavigation()
@@ -20,7 +19,7 @@ const DemandeBotaniste = () => {
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
-            <CreateAccountForm navigation={navigation} />
+            <DemandeBotanisteComponent/>
         </SafeAreaView>
     )
 }

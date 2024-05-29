@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from "react"
-import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity } from "react-native"
+import {
+    View,
+    TextInput,
+    Button,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Pressable,
+} from "react-native"
 import { Formik } from "formik"
 import * as Yup from "yup"
 import { useLoadScript } from "@react-google-maps/api"
 
 import SearchSeLocaliser from "./SearchSeLocaliser"
 import axios from "axios"
+import ConditionGeneralUtilisation from "./conditionUtilisation"
 
 const SignupSchema = Yup.object().shape({
     // nom: Yup.string().required("Champ obligatoire"),
@@ -55,6 +64,8 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
     const [coordonnees, setCoordonnees] = useState({})
     const [error, setError] = useState(false)
     const [message, setMessage] = useState("")
+    const [termsAccepted, settermsAccepted] = useState(false)
+    const [isVisibleConseilUtilisation, setIsVisibleConseilUtilisation] = useState(false)
 
     const selectGender = gender => {
         setUser({ ...user, Civilite: gender })
@@ -70,7 +81,8 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
             !user.Mdp ||
             !coordonnees ||
             !coordonnees.localization ||
-            !coordonnees.country
+            !coordonnees.country ||
+            !termsAccepted
         ) {
             setError(true)
             setMessage("Tous les champs sont obligatoires")
@@ -106,90 +118,92 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
     }
 
     return (
-        <Formik
-            initialValues={user}
-            validationSchema={SignupSchema}
-            onSubmit={values => {
-                // Logique de soumission du formulaire
-                console.log(values, "values")
-                handleSubmit()
-            }}
-        >
-            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-                <View style={styles.formContainer}>
-                    <Text style={styles.label}>Civilité</Text>
-                    <View style={styles.checkboxGroup}>
-                        <Checkbox
-                            label="Homme"
-                            value={user.Civilite === "homme"}
-                            onPress={() => selectGender("homme")}
-                        />
-                        <Checkbox
-                            label="Femme"
-                            value={user.Civilite === "femme"}
-                            onPress={() => selectGender("femme")}
-                        />
-                        <Checkbox
-                            label="Autre"
-                            value={user.Civilite === "autre"}
-                            onPress={() => selectGender("autre")}
-                        />
-                    </View>
+        <View>
+            <View style={{ position: "relative" }}>
+                <Formik
+                    initialValues={user}
+                    validationSchema={SignupSchema}
+                    onSubmit={values => {
+                        // Logique de soumission du formulaire
+                        console.log(values, "values")
+                        handleSubmit()
+                    }}
+                >
+                    {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                        <View style={styles.formContainer}>
+                            <Text style={styles.label}>Civilité</Text>
+                            <View style={styles.checkboxGroup}>
+                                <Checkbox
+                                    label="Homme"
+                                    value={user.Civilite === "homme"}
+                                    onPress={() => selectGender("homme")}
+                                />
+                                <Checkbox
+                                    label="Femme"
+                                    value={user.Civilite === "femme"}
+                                    onPress={() => selectGender("femme")}
+                                />
+                                <Checkbox
+                                    label="Autre"
+                                    value={user.Civilite === "autre"}
+                                    onPress={() => selectGender("autre")}
+                                />
+                            </View>
 
-                    {/* Nom */}
-                    <Text style={styles.label}>Nom</Text>
-                    <TextInput
-                        style={styles.inputField}
-                        onChangeText={text => setUser({ ...user, Nom: text })}
-                        onBlur={handleBlur("Nom")}
-                        //value={values.Nom}
-                    />
-                    {touched.Nom && errors.Nom && <Text>{errors.Nom}</Text>}
+                            {/* Nom */}
+                            <Text style={styles.label}>Nom</Text>
+                            <TextInput
+                                style={styles.inputField}
+                                onChangeText={text => setUser({ ...user, Nom: text })}
+                                onBlur={handleBlur("Nom")}
+                                //value={values.Nom}
+                            />
+                            {touched.Nom && errors.Nom && <Text>{errors.Nom}</Text>}
 
-                    {/* Prénom */}
-                    <Text style={styles.label}>Prénom</Text>
-                    <TextInput
-                        style={styles.inputField}
-                        onChangeText={text => setUser({ ...user, Prenom: text })}
-                        onBlur={handleBlur("Prenom")}
-                        // value={values.Prenom}
-                    />
-                    {touched.Prenom && errors.Prenom && <Text>{errors.Prenom}</Text>}
+                            {/* Prénom */}
+                            <Text style={styles.label}>Prénom</Text>
+                            <TextInput
+                                style={styles.inputField}
+                                onChangeText={text => setUser({ ...user, Prenom: text })}
+                                onBlur={handleBlur("Prenom")}
+                                // value={values.Prenom}
+                            />
+                            {touched.Prenom && errors.Prenom && <Text>{errors.Prenom}</Text>}
 
-                    {/* Pseudo */}
-                    <Text style={styles.label}>Pseudo</Text>
-                    <TextInput
-                        style={styles.inputField}
-                        onChangeText={text => setUser({ ...user, Pseudo: text })}
-                        onBlur={handleBlur("Pseudo")}
-                        //value={values.Pseudo}
-                    />
-                    {touched.Pseudo && errors.Pseudo && <Text>{errors.Pseudo}</Text>}
+                            {/* Pseudo */}
+                            <Text style={styles.label}>Pseudo</Text>
+                            <TextInput
+                                style={styles.inputField}
+                                onChangeText={text => setUser({ ...user, Pseudo: text })}
+                                onBlur={handleBlur("Pseudo")}
+                                //value={values.Pseudo}
+                            />
+                            {touched.Pseudo && errors.Pseudo && <Text>{errors.Pseudo}</Text>}
 
-                    {/* Adresse mail */}
-                    <Text style={styles.label}>Adresse mail</Text>
-                    <TextInput
-                        style={styles.inputField}
-                        onChangeText={text => setUser({ ...user, Email: text })}
-                        onBlur={handleBlur("Email")}
-                        //value={values.Email}
-                        keyboardType="email-address"
-                    />
-                    {touched.Email && errors.Email && <Text>{errors.Email}</Text>}
+                            {/* Adresse mail */}
+                            <Text style={styles.label}>Adresse mail</Text>
+                            <TextInput
+                                style={styles.inputField}
+                                onChangeText={text => setUser({ ...user, Email: text })}
+                                onBlur={handleBlur("Email")}
+                                //value={values.Email}
+                                keyboardType="email-address"
+                            />
+                            {touched.Email && errors.Email && <Text>{errors.Email}</Text>}
 
-                    {/* Mot de passe */}
-                    <Text style={styles.label}>Mot de passe</Text>
-                    <TextInput
-                        style={styles.inputField}
-                        onChangeText={text => setUser({ ...user, Mdp: text })}
-                        onBlur={handleBlur("password")}
-                        //value={values.password}
-                        secureTextEntry
-                    />
-                    {touched.password && errors.password && <Text>{errors.password}</Text>}
+                            {/* Mot de passe */}
+                            <Text style={styles.label}>Mot de passe</Text>
+                            <TextInput
+                                style={styles.inputField}
+                                onChangeText={text => setUser({ ...user, Mdp: text })}
+                                onBlur={handleBlur("password")}
+                                //value={values.password}
+                                secureTextEntry
+                            />
+                            {touched.password && errors.password && <Text>{errors.password}</Text>}
 
-                    {/* Confirmation du mot de passe */}
-                    {/* <Text style={styles.label}>Confirmation du mot de passe</Text>
+                            {/* Confirmation du mot de passe */}
+                            {/* <Text style={styles.label}>Confirmation du mot de passe</Text>
                     <TextInput
                         style={styles.inputField}
                         onChangeText={handleChange("confirmPassword")}
@@ -201,36 +215,80 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
                         <Text>{errors.confirmPassword}</Text>
                     )} */}
 
-                    {/* Adresse postale */}
-                    <Text style={styles.label}>Adresse postale</Text>
-                    <SearchSeLocaliser
-                        //styles={styles.inputField}
-                        setCoordonnees={setCoordonnees}
-                        coordonnees={coordonnees}
-                        isLoaded={isLoaded}
-                    />
-                    {/* <TextInput
+                            {/* Adresse postale */}
+                            <Text style={styles.label}>Adresse postale</Text>
+                            <SearchSeLocaliser
+                                //styles={styles.inputField}
+                                setCoordonnees={setCoordonnees}
+                                coordonnees={coordonnees}
+                                isLoaded={isLoaded}
+                            />
+                            {/* <TextInput
                         style={styles.inputField}
                         onChangeText={handleChange("Adresse")}
                         onBlur={handleBlur("Adresse")}
                         value={values.Adresse}
                     /> */}
-                    {touched.Adresse && errors.Adresse && <Text>{errors.Adresse}</Text>}
+                            {touched.Adresse && errors.Adresse && <Text>{errors.Adresse}</Text>}
 
-                    {/* Bouton de soumission */}
-                    <View style={styles.buttonContainer}>
-                        <Button onPress={handleSubmit} title="Valider" color="#5cb85c" />
-                    </View>
-                    {error ? (
-                        <View>
-                            <Text style={{ color: "red" }}>{message}</Text>
+                            {/* Case à cocher pour accepter les conditions d'utilisation */}
+                            <View style={styles.checkboxContainer}>
+                                <Pressable
+                                    style={styles.checkboxContainer}
+                                    value={termsAccepted}
+                                    onPress={() =>
+                                        termsAccepted
+                                            ? settermsAccepted(false)
+                                            : settermsAccepted(true)
+                                    }
+                                >
+                                    <View
+                                        style={[
+                                            styles.checkbox,
+                                            { backgroundColor: termsAccepted ? "#5cb85c" : "#fff" },
+                                        ]}
+                                    />
+                                    <Text style={styles.checkboxLabel}>Accepter les </Text>
+                                    <Pressable
+                                        onPress={() => {
+                                            setIsVisibleConseilUtilisation(true)
+                                        }}
+                                    >
+                                        <Text style={styles.linkText}>
+                                            conditions d'utilisation
+                                        </Text>
+                                    </Pressable>
+                                </Pressable>
+                                {touched.termsAccepted && errors.termsAccepted && (
+                                    <Text style={{ color: "red" }}>{errors.termsAccepted}</Text>
+                                )}
+                            </View>
+
+                            {/* Bouton de soumission */}
+                            <View style={styles.buttonContainer}>
+                                <Button onPress={handleSubmit} title="Valider" color="#5cb85c" />
+                            </View>
+                            {error ? (
+                                <View>
+                                    <Text style={{ color: "red" }}>{message}</Text>
+                                </View>
+                            ) : (
+                                <View></View>
+                            )}
                         </View>
-                    ) : (
-                        <View></View>
                     )}
+                </Formik>
+            </View>
+            {isVisibleConseilUtilisation ? (
+                <View style={{ position: "absolute", zIndex: 1 }}>
+                    <ConditionGeneralUtilisation
+                        setIsVisibleConseilUtilisation={setIsVisibleConseilUtilisation}
+                    />
                 </View>
+            ) : (
+                <View></View>
             )}
-        </Formik>
+        </View>
     )
 }
 
@@ -309,5 +367,13 @@ const styles = StyleSheet.create({
     },
     checkboxLabel: {
         fontSize: 16,
+    },
+    buttonContainer: {
+        marginTop: 20,
+    },
+    linkText: {
+        fontSize: 16,
+        color: "#551A8B",
+        textDecorationLine: "underline",
     },
 })

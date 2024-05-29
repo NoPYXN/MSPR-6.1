@@ -87,11 +87,15 @@ const PhotoPicker = ({ onImageSelect, selectedImages, setSelectedImages, id, ann
         console.log(data, "DATA")
         if (data.upload) {
             setSelectedImages([...selectedImages, data.message.secure_url])
-            console.log(id, "id")
-            await axios
-                .put(`http://localhost:8080/api/v1/annonces/${id}`, {
+
+            await axios({
+                method: "put",
+                url: `http://localhost:8080/api/v1/annonces/${id}`,
+                headers: { Authorization: localStorage.getItem("token") },
+                data: {
                     EtatPlantes: [...selectedImages, data.message.secure_url],
-                })
+                },
+            })
                 .then(data => {
                     console.log("resultat", data)
                 })
