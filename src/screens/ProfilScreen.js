@@ -236,7 +236,13 @@ const ProfilScreen = () => {
                             <BsCheck color="green" />
                         </View>
                     ) : (
-                        <Text style={styles.userInfoText2}>Devenir Botanniste ?</Text>
+                        <Pressable
+                            onPress={() => {
+                                navigation.navigate("DemandeBotaniste")
+                            }}
+                        >
+                            <Text style={styles.userInfoText2}>Devenir Botanniste ?</Text>
+                        </Pressable>
                     )}
                 </View>
                 <Pressable style={styles.editButton} onPress={() => setIsVisible(true)}>
