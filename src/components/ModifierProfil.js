@@ -1,48 +1,73 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react";
 import {
     StyleSheet,
     Text,
     View,
-    Image,
     SafeAreaView,
-    Linking,
     TextInput,
     Pressable,
-} from "react-native"
-import { AiOutlineClose } from "react-icons/ai"
-import axios from "axios"
+    TouchableOpacity,
+} from "react-native";
+import { AiOutlineClose } from "react-icons/ai";
+import axios from "axios";
+
+const Checkbox = ({ label, value, onPress }) => {
+    return (
+        <TouchableOpacity style={styles.checkboxContainer} onPress={onPress}>
+            <View style={[styles.checkbox, { backgroundColor: value ? "#5cb85c" : "#fff" }]} />
+            <Text style={styles.checkboxLabel}>{label}</Text>
+        </TouchableOpacity>
+    );
+};
 
 const ModifierProfil = ({ user, setUser, setIsVisible }) => {
     const validModifierProfil = async () => {
         await axios
             .put("http://localhost:8080/api/v1/users/" + localStorage.getItem("id"), user)
             .then(data => setIsVisible(false))
-            .catch(err => console.log(err))
-    }
+            .catch(err => console.log(err));
+    };
+
+    const selectGender = gender => {
+        setUser({ ...user, Civilite: gender });
+    };
+
     return (
         <View style={styles.overlay}>
             <View style={styles.viewGlobale}>
                 <Pressable
                     onPress={() => {
-                        setIsVisible(false)
+                        setIsVisible(false);
                     }}
                     style={styles.closeButton}
                 >
                     <AiOutlineClose size={24} />
                 </Pressable>
-                <Text style={styles.label}>Civilite</Text>
-                <TextInput
-                    style={styles.inputField}
-                    onChangeText={text => setUser({ ...user, Civilite: text })}
-                    value={user.Civilite}
-                />
+                <Text style={styles.label}>Civilité</Text>
+                <View style={styles.checkboxGroup}>
+                    <Checkbox
+                        label="Homme"
+                        value={user.Civilite === "homme"}
+                        onPress={() => selectGender("homme")}
+                    />
+                    <Checkbox
+                        label="Femme"
+                        value={user.Civilite === "femme"}
+                        onPress={() => selectGender("femme")}
+                    />
+                    <Checkbox
+                        label="Autre"
+                        value={user.Civilite === "autre"}
+                        onPress={() => selectGender("autre")}
+                    />
+                </View>
                 <Text style={styles.label}>Nom</Text>
                 <TextInput
                     style={styles.inputField}
                     onChangeText={text => setUser({ ...user, Nom: text })}
                     value={user.Nom}
                 />
-                <Text style={styles.label}>Prenom</Text>
+                <Text style={styles.label}>Prénom</Text>
                 <TextInput
                     style={styles.inputField}
                     onChangeText={text => setUser({ ...user, Prenom: text })}
@@ -61,17 +86,15 @@ const ModifierProfil = ({ user, setUser, setIsVisible }) => {
                     value={user.Email}
                 />
                 <Pressable
-                    onPress={() => {
-                        validModifierProfil()
-                    }}
+                    onPress={validModifierProfil}
                     style={styles.modifyButton}
                 >
                     <Text style={styles.modifyButtonText}>Modifier Profil</Text>
                 </Pressable>
             </View>
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     overlay: {
@@ -151,6 +174,28 @@ const styles = StyleSheet.create({
         shadowRadius: 6.27,
         elevation: 10,
     },
-})
+    checkboxGroup: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 20,
+    },
+    checkboxContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    checkbox: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: "#5cb85c",
+        justifyContent: "center",
+        alignItems: "center",
+        marginRight: 5,
+    },
+    checkboxLabel: {
+        fontSize: 16,
+    },
+});
 
-export default ModifierProfil
+export default ModifierProfil;
