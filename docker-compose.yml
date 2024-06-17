@@ -1,38 +1,11 @@
-version: '3.8'
+version: '3'
 services:
-  front:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
+  app:
+    image: node:20
     volumes:
       - .:/app
-    environment:
-      - ANDROID_SDK_ROOT=/usr/lib/android-sdk
-      - PATH=/usr/lib/android-sdk/emulator:/usr/lib/android-sdk/tools:/usr/lib/android-sdk/tools/bin:/usr/lib/android-sdk/platform-tools:$PATH
-
-  back:
-    build:
-      context: ../../Back/arosaje_back
-      dockerfile: Dockerfile
+    working_dir: /app
+    command: /bin/sh -c "npm install && npm run web"
     ports:
-      - "3000:3000"
-    volumes:
-      - ../Back:/app
-    environment:
-      - DATABASE_URL=postgresql://postgres:LCS988-m@db:5432/postgres?schema=Arosaje
-      - CLOUD_NAME=melly-lucas
-      - API_KEY=647417452658933
-      - API_SECRET=gsgUPDpXcAfS4oNKH_Pgo3jXc7I
-
-  db:
-    image: postgres:13
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=LCS988-m
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
+      - "19006:19006"
+      - "8081:8081"
