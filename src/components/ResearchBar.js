@@ -1,20 +1,9 @@
 import React, { useState, useEffect } from "react"
-
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete"
-import { useLoadScript } from "@react-google-maps/api"
-
-import {
-    StyleSheet,
-    Text,
-    View,
-    Image,
-    FlatList,
-    SafeAreaView,
-    TextInput,
-    Pressable,
-} from "react-native"
+import { StyleSheet, Text, View, FlatList, TextInput, Pressable } from "react-native"
 import { FaSearch } from "react-icons/fa"
 import axios from "axios"
+import { useLoadScript } from "@react-google-maps/api"
 
 import { NumeroPage } from "../utils/NumeroPage"
 
@@ -30,10 +19,23 @@ export default function Index({
     isAddPlantFrom,
     annonces,
     valueVille,
-    isLoaded,
+    isVisiblePublication,
+    isVisibleGardiennage,
+    // isLoaded,
 }) {
-    if (!isLoaded) return <div>Loading...</div>
+    const { isLoaded } = useLoadScript({
+        googleMapsApiKey: "AIzaSyBnyp6JiXQAqF0VIfj9-cIt-OPjehWhY9E",
+        libraries: ["places"],
+    })
 
+    console.log(isVisibleGardiennage, "is visible gardiennage")
+    console.log(isVisiblePublication, "is visible publication")
+    useEffect(() => {
+        console.log(isVisibleGardiennage, "is visible gardiennage")
+        console.log(isVisiblePublication, "is visible publication")
+    }, [])
+
+    if (!isLoaded) return <div>Loading...</div>
     return (
         <Map
             setSearchVille={setSearchVille}
@@ -47,6 +49,8 @@ export default function Index({
             isAddPlantFrom={isAddPlantFrom}
             annonces={annonces}
             valueVille={valueVille}
+            isVisiblePublication={isVisiblePublication}
+            isVisibleGardiennage={isVisibleGardiennage}
         />
     )
 }
@@ -62,10 +66,12 @@ function Map({
     isAddPlantFrom,
     annonces,
     valueVille,
+    isVisiblePublication,
+    isVisibleGardiennage,
 }) {
     return (
-        <div>
-            <div>
+        <View>
+            <View>
                 <PlacesAutocomplete
                     setSearchVille={setSearchVille}
                     setSelected={setSelected}
@@ -78,9 +84,11 @@ function Map({
                     isAddPlantFrom={isAddPlantFrom}
                     annonces={annonces}
                     valueVille={valueVille}
+                    isVisiblePublication={isVisiblePublication}
+                    isVisibleGardiennage={isVisibleGardiennage}
                 />
-            </div>
-        </div>
+            </View>
+        </View>
     )
 }
 
@@ -96,6 +104,8 @@ const PlacesAutocomplete = ({
     isAddPlantFrom,
     annonces,
     valueVille,
+    isVisibleGardiennage,
+    isVisiblePublication,
 }) => {
     const {
         ready,
@@ -113,18 +123,13 @@ const PlacesAutocomplete = ({
 
     useEffect(() => {
         if (valueVille) {
-            console.log(valueVille, "valueVille")
             setValue(valueVille)
-            // setSelected(true)
+            console.log("value", value)
         }
+        console.log("111111111", valueVille)
     }, [])
 
-    useEffect(() => {
-        console.log(searchVille, "searchVille")
-    }, [searchVille])
-
     const handleSelect = async address => {
-        console.log(address)
         setValue(address, false)
         clearSuggestions()
         const results = await getGeocode({ address })
@@ -148,15 +153,16 @@ const PlacesAutocomplete = ({
     }
 
     const search = () => {
-        NumeroPage(countryChoice).then(numero => {
+        NumeroPage(countryChoice, isVisiblePublication, isVisibleGardiennage).then(numero => {
             setCalculPage(numero)
         })
+
         if (selected) {
             axios
                 .get(
                     `http://localhost:8080/api/v1/annonces?page=${
                         pageChoisie ? pageChoisie : 0
-                    }&Ville=${countryChoice}`,
+                    }&Ville=${countryChoice}&IsVisiblePublication=${isVisiblePublication}&IsVisibleGardiennage=${isVisibleGardiennage}`,
                 )
                 .then(data => {
                     if (data.status == 200) {
@@ -175,6 +181,7 @@ const PlacesAutocomplete = ({
                     <TextInput
                         value={value ?? ""}
                         onChangeText={text => setValue(text)}
+                        // readOnly={ready}
                         editable={ready}
                         style={isAddPlantFrom ? styles.inputIsAddPlantForm : styles.input}
                         placeholder={isAddPlantFrom ? "Sélectionnez la ville" : searchVille}
@@ -197,7 +204,12 @@ const PlacesAutocomplete = ({
             <View style={isAddPlantFrom ? styles.ViewXXIdAddPlantForm : styles.ViewXX}>
                 {status === "OK" && (
                     <FlatList
-                        data={data}
+                        data={data
+                            .filter(({ types }) => types.includes("locality"))
+
+                            .filter(
+                                ({ terms }) => terms.some(obj => obj.value === "France") == true,
+                            )}
                         keyExtractor={item => item.place_id}
                         renderItem={({ item }) => (
                             <View style={styles.ViewFlatList}>
@@ -225,7 +237,6 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        // paddingRight: 40,
         width: "50%",
         padding: 8,
         borderWidth: 2,

@@ -1,61 +1,60 @@
 import React, { useState, useEffect } from "react"
-import {
-    StyleSheet,
-    Text,
-    View,
-    Image,
-    SafeAreaView,
-    Linking,
-    TextInput,
-    Touchable,
-    Pressable,
-} from "react-native"
-import axios from "axios"
-import { useNavigation, useParams, useRoute } from "@react-navigation/native"
+import { StyleSheet, Text, View, SafeAreaView, Pressable } from "react-native"
+import { useNavigation, useRoute } from "@react-navigation/native"
 import { AiOutlineClose } from "react-icons/ai"
+import { useLoadScript } from "@react-google-maps/api"
 
 import HeaderComponent from "../components/HeaderComponent"
 import AddPlantForm from "../components/AddPlantForm"
+import axios from "axios"
 
 const FormulaireAnnonceScreen = () => {
     const navigation = useNavigation()
     const router = useRoute()
     const [id, setId] = useState()
-    const [isCreate, setIsCreate] = useState(false)
-    const [isLoading, setIsLoading] = useState(false) //useState(!router.params?.id)
-
-    const [annonce, setAnnonce] = useState({})
+    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
+        console.log("dans le useEffect")
         setIsLoading(true)
         setId(router.params?.id)
-        console.log("FormulaireAnnonceScreen", router.param?.id)
+        axios({
+            method: "get",
+            url: "http://localhost:8080/api/v1/users/" + localStorage.getItem("id"),
+            headers: { Authorization: localStorage.getItem("token") },
+        })
+            .then(data => {
+                // if (!data.content) {
+                //     console.log("dans le if")
+                // navigation.navigate({ name: "LoginScreen" })
+                // }
+                console.log(data)
+                // setUser(data.data.content)
+            })
+            .catch(err => {
+                console.log(err, "err")
+                navigation.navigate({ name: "LoginScreen" })
+            })
+        //il ne repasse pas dedans je ne sais pas pourquoi
     }, [router.params])
 
-    const convertirDate = dateString => {
-        const date = new Date(dateString)
-
-        const jour = ("0" + date.getDate()).slice(-2)
-        const mois = ("0" + (date.getMonth() + 1)).slice(-2)
-        const annee = date.getFullYear()
-
-        const dateFormatee = `${jour}/${mois}/${annee}`
-
-        return dateFormatee
+    const goRetour = () => {
+        if (id) {
+            navigation.navigate({
+                name: "ProfilScreen",
+            })
+        } else {
+            navigation.navigate({
+                name: "HomeScreen",
+            })
+        }
     }
 
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
             <View style={styles.ViewGoBack}>
-                <Pressable
-                    onPress={() =>
-                        navigation.navigate({
-                            name: "HomeScreen",
-                            params: { isActions: "true" },
-                        })
-                    }
-                >
+                <Pressable onPress={() => goRetour()}>
                     <AiOutlineClose />
                 </Pressable>
             </View>

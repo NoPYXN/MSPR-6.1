@@ -18,32 +18,30 @@ const AnnonceScreen = () => {
     const navigation = useNavigation()
     const router = useRoute()
     const [images, setImages] = useState([])
-    // const [selectedImage, setSelectedImage] = useState(null)
     const [messages, setMessages] = useState([])
     const [blocMessages, setBlocMessages] = useState([])
     const [numero, setNumero] = useState(0)
     const [isVisible, setIsVisible] = useState(false)
-    const [selectedImages, setSelectedImages] = useState([
-        // "https://res.cloudinary.com/melly-lucas/image/upload/v1704971723/Arosaje/annonces/cf2n96vnymuxuogwarmr.webp",
-    ])
+    const [selectedImages, setSelectedImages] = useState([])
+    const [id, setId] = useState()
+    const [error, setError] = useState(false)
+    const [isVisibleBotanniste, setIsVisibleBotanniste] = useState(false)
 
     useEffect(() => {
+        // console.log(router.params.id, "ID")
         axios
             .get(`http://localhost:8080/api/v1/annonces/${router.params.id}`)
             .then(data => {
                 if (data.status == 200) {
+                    // console.log("data getif annonce", data)
                     data.data.content.DateDebut = convertirDate(data.data.content.DateDebut)
                     data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                     setAnnonce(data.data.content)
                     setImages(data.data.content.Id_Plante)
                     setBlocMessages(data.data.content.Conseils.sort(sortDateConseils))
                     setSelectedImages(data.data.content.EtatPlantes)
-                    console.log(
-                        data.data.content.EtatPlantes,
-                        "SELETEDED IMAGE DANS ANNONCE SCREEN",
-                    )
-                    console.log(data.data.content, "SELETEDED IMAGE DANS ANNONCE SCREEN")
 
+                    setId(router.params.id)
                     if (data.data.content.Conseils.length <= 2) {
                         setMessages(data.data.content.Conseils)
                         setIsVisible(false)
@@ -56,12 +54,25 @@ const AnnonceScreen = () => {
                         setNumero(numero + 2)
                         setIsVisible(true)
                     }
+                    if (localStorage.getItem("botanniste")) {
+                        axios({
+                            method: "get",
+                            url: "http://localhost:8080/api/v1/users/" + localStorage.getItem("id"),
+                            headers: { Authorization: localStorage.getItem("token") },
+                        })
+                            .then(data => {
+                                setIsVisibleBotanniste(true)
+                            })
+                            .catch(err => {
+                                console.log(err, "err")
+                            })
+                    }
                 }
             })
             .catch(err => {
                 console.log(err)
             })
-    }, [])
+    }, [router])
 
     const afficherPlus = () => {
         let tab = []
@@ -77,10 +88,28 @@ const AnnonceScreen = () => {
         }
     }
 
-    // const handleImageSelect = imageUri => {
-    //     // setSelectedImage(imageUri)
-    //     // console.log("Image selected:", imageUri)
-    // }
+    const demandeGardiennage = async () => {
+        await axios({
+            method: "put",
+            url: `http://localhost:8080/api/v1/annonces/${id}`,
+            headers: { Authorization: localStorage.getItem("token") },
+            data: {
+                AnnonceUserGard: parseInt(localStorage.getItem("id")),
+                Etat: true,
+            },
+        })
+            .then(data => {
+                if (data.status == 200) {
+                    console.log(data)
+                    window.location.reload()
+                }
+                console.log(data)
+            })
+            .catch(err => {
+                setError(true)
+                console.log(err)
+            })
+    }
 
     return (
         <SafeAreaView style={styles.SafeAreaView}>
@@ -91,6 +120,39 @@ const AnnonceScreen = () => {
                     : "Pas de titre"}
             </Text>
             <Carousel images={images} imageHeight={100} />
+            {annonce.Annonce ? (
+                <View style={{ marginTop: "5%", marginBottom: "5%" }}>
+                    <Text style={{ fontSize: 16, textAlign: "center" }}>
+                        Contacter le propriétaire
+                    </Text>
+                    <View
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginTop: "3%",
+                        }}
+                    >
+                        {annonce.Annonce.Image ? (
+                            <Image
+                                source={{ uri: annonce.Annonce.Image }}
+                                style={styles.iconImage}
+                            />
+                        ) : (
+                            <Image source={require("../assets/profil.png")} style={styles.icon} />
+                        )}
+                        <Text style={{ fontSize: 16, marginLeft: "2%" }}>
+                            {annonce.Annonce.Pseudo.substr(0, 1).toUpperCase() +
+                                annonce.Annonce.Pseudo.slice(1)}
+                        </Text>
+                    </View>
+                </View>
+            ) : (
+                <View></View>
+            )}
+            <View style={styles.separateur}></View>
+
             <View style={styles.blocInfo}>
                 <Text style={styles.descriptionText}>
                     {annonce.Description && annonce.Description.length > 0
@@ -98,7 +160,6 @@ const AnnonceScreen = () => {
                         : "Pas de description"}
                 </Text>
                 <Text style={styles.descriptionText}>{annonce.Ville}</Text>
-                {/* <Text style={styles.infosTitreText}>Date de gardiennage</Text> */}
                 <View style={styles.descriptionContainer}>
                     <View style={styles.description}>
                         <Text style={styles.infosText}>Début : {annonce.DateDebut}</Text>
@@ -108,57 +169,176 @@ const AnnonceScreen = () => {
                     </View>
                 </View>
             </View>
+
+            {/* {annonce && annonce.AnnonceUserGard ? ( */}
             <View style={styles.separateur}></View>
-
-            <PhotoPicker
-                // onImageSelect={handleImageSelect}
-                setSelectedImages={setSelectedImages}
-                selectedImages={selectedImages}
-            />
-
-            <View style={styles.separateur}></View>
-
-            <View style={styles.messageContainer}>
-                <Text style={styles.TextIndication}>Avez-vous des indications à transmettre ?</Text>
-                <TextZoneInfo messages={messages} setMessages={setMessages} />
-                {messages.length != 0 ? (
-                    messages.sort(sortDateConseils).map((message, index) => (
-                        <View key={index} style={styles.message}>
-                            <View style={styles.infosMessage}>
-                                <View style={styles.avatarContainer}>
-                                    <Ionicons
-                                        name="person-circle-outline"
-                                        size={24}
-                                        color="black"
-                                    />
-                                    <Text style={styles.pseudo}>{message.Username}</Text>
-                                </View>
-                                <Text style={styles.messageTime}>
-                                    {ConvertirDateHeure(message.DateCreation)}
-                                </Text>
-                            </View>
-                            <View style={styles.messageContent}>
-                                <Text style={styles.messageText}>{message.Message}</Text>
-                            </View>
-                        </View>
-                    ))
-                ) : (
-                    <View></View>
-                )}
-                {isVisible ? (
-                    <Pressable
-                        onPress={() => {
-                            afficherPlus()
+            {/* ) : (
+                <View></View>
+            )} */}
+            {annonce && annonce.AnnonceUserGard ? (
+                <View>
+                    <View
+                        style={{
+                            marginTop: "5%",
+                            // marginBottom: "5%",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginTop: "3%",
                         }}
                     >
-                        <Text style={{ textAlign: "center", marginTop: "2%", marginBottom: "2%" }}>
-                            Afficher plus
+                        <Text style={{ fontSize: 16, textAlign: "center" }}>
+                            Annonce gardée par
+                        </Text>
+                        <View style={{ marginLeft: "2%" }}>
+                            {annonce.AnnonceGardien.Image ? (
+                                <Image
+                                    source={{ uri: annonce.AnnonceGardien.Image }}
+                                    style={styles.iconImage}
+                                />
+                            ) : (
+                                <Image
+                                    source={require("../assets/profil.png")}
+                                    style={styles.icon}
+                                />
+                            )}
+                        </View>
+                        <Text style={{ fontSize: 16, marginLeft: "1%" }}>
+                            {annonce.AnnonceGardien.Pseudo.substr(0, 1).toUpperCase() +
+                                annonce.AnnonceGardien.Pseudo.slice(1)}
+                        </Text>
+                    </View>
+                </View>
+            ) : (
+                <View>
+                    <Pressable
+                        style={
+                            error
+                                ? {
+                                      marginLeft: "auto",
+                                      marginRight: "auto",
+                                      width: "50%",
+                                      borderRadius: "5px",
+                                      marginBottom: "1%",
+                                      backgroundColor: "grey",
+                                      padding: "3%",
+                                      marginTop: "5%",
+                                  }
+                                : {
+                                      marginLeft: "auto",
+                                      marginRight: "auto",
+                                      width: "50%",
+                                      borderRadius: "5px",
+                                      marginBottom: "1%",
+                                      backgroundColor: "green",
+                                      padding: "3%",
+                                      marginTop: "5%",
+                                  }
+                        }
+                        onPress={() => {
+                            demandeGardiennage()
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: "white",
+                                textAlign: "center",
+                            }}
+                        >
+                            Demande de gardiennage
                         </Text>
                     </Pressable>
-                ) : (
-                    <View></View>
-                )}
-            </View>
+                    {error ? (
+                        <Text style={{ textAlign: "center", fontStyle: "italic" }}>
+                            Il faut vous connecter pour garder une plante
+                        </Text>
+                    ) : (
+                        <Text></Text>
+                    )}
+                </View>
+            )}
+            {annonce && annonce.AnnonceUserGard ? (
+                <PhotoPicker
+                    setSelectedImages={setSelectedImages}
+                    selectedImages={selectedImages}
+                    id={id}
+                    annonceUserGard={annonce.AnnonceUserGard}
+                />
+            ) : (
+                <View></View>
+            )}
+
+            {annonce && annonce.Etat ? (
+                <View>
+                    <View style={styles.separateur}></View>
+                    <View style={styles.messageContainer}>
+                        {isVisibleBotanniste ? (
+                            <View>
+                                <Text style={styles.TextIndication}>
+                                    Avez-vous des indications à transmettre ?
+                                </Text>
+                                {id ? (
+                                    <TextZoneInfo
+                                        messages={messages}
+                                        setMessages={setMessages}
+                                        id={id}
+                                    />
+                                ) : (
+                                    <View></View>
+                                )}
+                            </View>
+                        ) : (
+                            <View></View>
+                        )}
+                        {messages.length != 0 ? (
+                            messages.sort(sortDateConseils).map((message, index) => (
+                                <View key={index} style={styles.message}>
+                                    <View style={styles.infosMessage}>
+                                        <View style={styles.avatarContainer}>
+                                            <Ionicons
+                                                name="person-circle-outline"
+                                                size={24}
+                                                color="black"
+                                            />
+                                            <Text style={styles.pseudo}>{message.Username}</Text>
+                                        </View>
+                                        <Text style={styles.messageTime}>
+                                            {ConvertirDateHeure(message.DateCreation)}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.messageContent}>
+                                        <Text style={styles.messageText}>{message.Message}</Text>
+                                    </View>
+                                </View>
+                            ))
+                        ) : (
+                            <View></View>
+                        )}
+                        {isVisible ? (
+                            <Pressable
+                                onPress={() => {
+                                    afficherPlus()
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        textAlign: "center",
+                                        marginTop: "2%",
+                                        marginBottom: "2%",
+                                    }}
+                                >
+                                    Afficher plus
+                                </Text>
+                            </Pressable>
+                        ) : (
+                            <View></View>
+                        )}
+                    </View>
+                </View>
+            ) : (
+                <View></View>
+            )}
         </SafeAreaView>
     )
 }
@@ -218,7 +398,6 @@ const styles = StyleSheet.create({
     separateur: {
         height: "1px",
         backgroundColor: "black",
-        // padding: 1,
         marginHorizontal: "6%",
     },
     TextModule: {
@@ -228,10 +407,6 @@ const styles = StyleSheet.create({
         paddingVertical: 70,
     },
     messageContainer: {
-        // paddingHorizontal: 20,
-        // paddingVertical: 10,
-        // marginHorizontal: 20,
-        // marginTop: 10,
         paddingHorizontal: "3%",
         paddingVertical: "2%",
         marginHorizontal: "3%",
@@ -271,8 +446,21 @@ const styles = StyleSheet.create({
     },
     infosMessage: {
         flexDirection: "row",
-        // marginBottom: 10,
         justifyContent: "space-between",
+    },
+    icon: {
+        width: 25,
+        height: 25,
+        // resizeMode: "contain",
+        objectFit: "contain",
+        borderRadius: "50%",
+    },
+    iconImage: {
+        width: 30,
+        height: 30,
+        borderRadius: "50%",
+        // resizeMode: "contain",
+        objectFit: "contain",
     },
 })
 export default AnnonceScreen

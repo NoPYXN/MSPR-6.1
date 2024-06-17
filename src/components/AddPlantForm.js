@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from "react"
-import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView } from "react-native"
-import * as ImagePicker from "expo-image-picker"
+import { View, Text, TextInput, Pressable, StyleSheet, Image } from "react-native"
 import ResearchBar from "./ResearchBar"
-import * as Permissions from "expo-permissions"
 import * as DocumentPicker from "expo-document-picker"
 import { BsTrash } from "react-icons/bs"
 import axios from "axios"
-import { useRoute } from "@react-navigation/native"
-import UploadImage from "./UploadImage"
-// import * as ImagePicker from "react-native-image-picker"
-import DateTimePicker from "@react-native-community/datetimepicker"
 import { AiTwotoneCalendar } from "react-icons/ai"
 import { convertirDateCalendrier } from "../utils/ConvertirDateCalendrier"
 
@@ -20,37 +14,28 @@ require("react-datepicker/dist/react-datepicker.css")
 // }
 
 const AddPlantForm = ({ navigation, id, router }) => {
-    // const [imageUri, setImageUri] = useState(null)
     const [isAddPlantFrom, setIsAddPlantFrom] = useState(true)
     const [searchVille, setSearchVille] = useState()
     const [coordonnees, setCoordonnees] = useState()
     const [selected, setSelected] = useState()
-    // const [annonce2, setAnnonce2] = useState({})
     const [selectedImage, setSelectedImage] = useState()
     const [isChangeUploadFile, setIsChangeUploadFile] = useState(false)
     const [tabImages, setTabImages] = useState([])
     const [selectedFile, setSelectedFile] = useState(null)
-    // const [imageUri, setImageUri] = useState(null);
-    const [date, setDate] = useState(new Date())
-    const [show, setShow] = useState(false)
+    const [date1, setDate1] = useState(new Date())
+    const [date2, setDate2] = useState(new Date())
+    const [show1, setShow1] = useState(false)
+    const [show2, setShow2] = useState(false)
     const [annonce, setAnnonce] = useState({})
-    // const [idd, setIdd] = useState(router.params?.id || undefined)
-
-    // const handleChoosePhoto = () => {
-    //     const options = {
-    //         noData: true,
-    //     }
-    //     ImagePicker.launchImageLibrary(options, response => {
-    //         if (response.uri) {
-    //             setImageUri(response.uri)
-    //         }
-    //     })
-    // }
-
+    const [newDate1, setNewDate1] = useState("")
+    const [newDate2, setNewDate2] = useState("")
+    const [message, setMessage] = useState("")
+    const [valueVille, setValueVille] = useState("")
+    const [isCharged, setIsCharged] = useState(false)
     const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate || date
-        setShow(Platform.OS === "ios") // Only relevant for iOS, to keep the picker open
-        setDate(currentDate)
+        const currentDate = selectedDate || date1
+        setShow1(Platform.OS === "ios") // Only relevant for iOS, to keep the picker open
+        setDate1(currentDate)
     }
 
     const convertirDate = dateString => {
@@ -66,15 +51,14 @@ const AddPlantForm = ({ navigation, id, router }) => {
     }
 
     useEffect(() => {
-        let x = convertirDateCalendrier(date)
-    }, [date])
-
-    // const showDatepicker = () => {
-    //     setShow(true)
-    // }
+        let x = convertirDateCalendrier(date1)
+        let y = convertirDateCalendrier(date2)
+        setNewDate1(x)
+        setNewDate2(y)
+        setAnnonce({ ...annonce, DateDebut: x, DateFin: y })
+    }, [date1, date2])
 
     useEffect(() => {
-        console.log("AddPlantForm", id)
         if (id) {
             async function test() {
                 await axios
@@ -84,7 +68,9 @@ const AddPlantForm = ({ navigation, id, router }) => {
                             data.data.content.DateDebut = convertirDate(data.data.content.DateDebut)
                             data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                             setAnnonce(data.data.content)
-
+                            setNewDate1(data.data.content.DateDebut)
+                            setNewDate2(data.data.content.DateFin)
+                            setValueVille(data.data.content.Ville)
                             let tab = []
                             data.data.content.Id_Plante.forEach(element => {
                                 tab.push({
@@ -95,13 +81,12 @@ const AddPlantForm = ({ navigation, id, router }) => {
                             setTabImages(tab)
                         }
                     })
-                    .catch(err => {
-                        console.log(err)
-                    })
+                    .catch(err => {})
             }
 
             test()
         }
+        setIsCharged(true)
     }, [router.params])
 
     const handleFileSelected = async () => {
@@ -119,7 +104,6 @@ const AddPlantForm = ({ navigation, id, router }) => {
                     setSelectedImage(file)
                 }
             } else {
-                // console.log("Sélection de fichier annulée ou aucun fichier sélectionné")
             }
         } catch (err) {
             console.log("Erreur lors de la sélection du fichier :", err)
@@ -137,7 +121,6 @@ const AddPlantForm = ({ navigation, id, router }) => {
             const blob = await response.blob()
             return new File([blob], name, { type: blob.type })
         } catch (error) {
-            console.error("Erreur lors de la récupération des métadonnées du fichier:", error)
             return null
         }
     }
@@ -158,7 +141,6 @@ const AddPlantForm = ({ navigation, id, router }) => {
             body: formData,
         })
         const data = await response.json()
-        // console.log(data, "DATA")
         if (data.upload) {
             setTabImages([
                 ...tabImages,
@@ -168,7 +150,6 @@ const AddPlantForm = ({ navigation, id, router }) => {
                 },
             ])
         } else {
-            console.log("")
         }
     }
 
@@ -184,19 +165,27 @@ const AddPlantForm = ({ navigation, id, router }) => {
             setTabImages(tabImages.filter(element => element.api_key !== id))
         }
     }
-    /////////
 
     const ajouterAnnonce = async () => {
-        // console.log(annonce, "annonce")
+        console.log("dans fonction ajouter annonce")
         let tab = []
         tabImages.forEach(element => {
             tab.push(element.secure_url)
         })
+
         await axios
-            .post(`http://localhost:8080/api/v1/annonces`, { ...annonce, Id_Plante: tab })
+            .post(`http://localhost:8080/api/v1/annonces`, {
+                ...annonce,
+                Id_Plante: tab,
+                AnnonceUser: parseInt(localStorage.getItem("id")),
+            })
             .then(data => {
+                console.log(data)
                 if (data.status == 201) {
                     navigation.replace("HomeScreen", { popup: "Votre annonce a bien été ajoutée" })
+                }
+                if (data.status == 200) {
+                    setMessage(data.data.message)
                 }
             })
             .catch(err => {
@@ -209,8 +198,13 @@ const AddPlantForm = ({ navigation, id, router }) => {
         tabImages.forEach(element => {
             tab.push(element.secure_url)
         })
-        await axios
-            .put(`http://localhost:8080/api/v1/annonces/${id}`, { ...annonce, Id_Plante: tab })
+        await axios({
+            method: "put",
+            url: `http://localhost:8080/api/v1/annonces/${id}`,
+            headers: { Authorization: localStorage.getItem("token") },
+            data: { ...annonce, Id_Plante: tab },
+        })
+            // .put(`http://localhost:8080/api/v1/annonces/${id}`, { ...annonce, Id_Plante: tab })
             .then(data => {
                 if (data.status == 200) {
                     navigation.replace("HomeScreen", { popup: "Votre annonce a bien été modifiée" })
@@ -244,76 +238,74 @@ const AddPlantForm = ({ navigation, id, router }) => {
                     style={styles.input}
                     onChangeText={text => setAnnonce({ ...annonce, DateDebut: text })}
                     placeholder="Sélectionnez une date"
-                    value={annonce?.DateDebut || ""}
+                    value={newDate1 || annonce?.DateDebut || ""}
                 />
                 <Pressable
                     onPress={() => {
-                        show ? setShow(false) : setShow(true)
+                        show1 ? setShow1(false) : setShow1(true)
                     }}
                 >
                     <View style={styles.sendButton}>
-                        <AiTwotoneCalendar style={styles.sendButtonContent} size={30} />
+                        <AiTwotoneCalendar size={30} />
                     </View>
                 </Pressable>
             </View>
+            {show1 && DatePicker && (
+                <DatePicker selected={date1} onChange={newDate => setDate1(newDate)} inline />
+            )}
             <Text style={styles.label}>Date de fin de gardiennage</Text>
             <View style={styles.containerDate}>
                 <TextInput
                     style={styles.input}
                     onChangeText={text => setAnnonce({ ...annonce, DateFin: text })}
                     placeholder="Sélectionnez une date"
-                    value={annonce?.DateFin || ""}
+                    value={newDate2 || annonce?.DateFin || ""}
                 />
                 <Pressable
                     onPress={() => {
-                        show ? setShow(false) : setShow(true)
+                        show2 ? setShow2(false) : setShow2(true)
                     }}
                 >
                     <View style={styles.sendButton}>
-                        <AiTwotoneCalendar style={styles.sendButtonContent} size={30} />
+                        <AiTwotoneCalendar size={30} />
                     </View>
                 </Pressable>
             </View>
-
             {/* {show && Platform.OS !== "web" && (
                 <DateTimePicker value={date} mode="date" display="default" onChange={onChange} />
             )} */}
             {/* {show && Platform.OS === "web" && DatePicker && (
                 <DatePicker selected={date} onChange={newDate => setDate(newDate)} inline />
             )} */}
-            {show && DatePicker && (
-                <DatePicker selected={date} onChange={newDate => setDate(newDate)} inline />
+            {show2 && DatePicker && (
+                <DatePicker selected={date2} onChange={newDate => setDate2(newDate)} inline />
             )}
             <Text style={styles.label}>Ville</Text>
-            <ResearchBar
-                isAddPlantFrom={isAddPlantFrom}
-                selected={selected}
-                setSelected={setSelected}
-                searchVille={searchVille}
-                setSearchVille={setSearchVille}
-                setCoordonnees={setCoordonnees}
-                annonces={annonce}
-                setAnnonces={setAnnonce}
-                valueVille={annonce?.Ville || ""}
-            />
-
+            {/* {valueVille ? ( */}
+            {isCharged && (
+                <ResearchBar
+                    isAddPlantFrom={isAddPlantFrom}
+                    selected={selected}
+                    setSelected={setSelected}
+                    searchVille={searchVille}
+                    setSearchVille={setSearchVille}
+                    setCoordonnees={setCoordonnees}
+                    annonces={annonce}
+                    setAnnonces={setAnnonce}
+                    // valueVille={annonce ? annonce.Ville : "xxx"}
+                    valueVille={valueVille}
+                    // isLoaded={isLoaded}
+                />
+            )}
+            {/* ) : ( <View></View>
+             )} */}
             <Text style={styles.label}>Télécharger des images</Text>
-            {/* <UploadImage
-                selectedImage={selectedImage}
-                setSelectedImage={setSelectedImage}
-                setIsChangeUploadFile={setIsChangeUploadFile}
-                isChangeUploadFile={isChangeUploadFile}
-                selectedFile={selectedFile}
-                tabImages={tabImages}
-                setTabImages={setTabImages}
-            /> */}
             <View style={styles.uploadButton}>
                 <Pressable onPress={handleFileSelected}>
                     <Text style={styles.labelUploadButton}>Sélectionner un fichier</Text>
                 </Pressable>
                 {selectedFile && <Text>Fichier sélectionné : {selectedFile.name}</Text>}
             </View>
-
             <View style={styles.viewTabImage}>
                 {tabImages
                     ? tabImages.map((image, index) => (
@@ -352,12 +344,18 @@ const AddPlantForm = ({ navigation, id, router }) => {
                     <Text style={styles.submitButtonText}>Valider</Text>
                 </Pressable>
             )}
+            {message ? (
+                <View>
+                    <Text style={{ color: "red" }}>{message}</Text>
+                </View>
+            ) : (
+                <View></View>
+            )}
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    ////
     viewImageMap: {
         marginLeft: "2%",
         marginRight: "2%",
@@ -375,11 +373,9 @@ const styles = StyleSheet.create({
         right: 2,
         zIndex: 1,
     },
-    ////
     container: {
         flex: 1,
     },
-    ////////////
     viewTabImage: {
         display: "flex",
         flexDirection: "row",
@@ -387,7 +383,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         marginBottom: "5%",
     },
-    ////////
     formContainer: {
         padding: 20,
     },
@@ -407,12 +402,9 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 15,
         backgroundColor: "#fff",
-        //ajouter
         height: 50,
         flex: 1,
-        //fin ajouter
     },
-    ///////////
     uploadButton: {
         borderWidth: 1,
         borderColor: "#ccc",
@@ -423,7 +415,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-    ///////
     submitButton: {
         backgroundColor: "green",
         borderRadius: 10,
@@ -435,7 +426,6 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "bold",
     },
-    ///////////
     labelUploadButton: {
         display: "flex",
         justifyContent: "center",
@@ -443,17 +433,8 @@ const styles = StyleSheet.create({
         textAlign: "center",
         height: "100%",
     },
-    //////////
     containerDate: {
-        // // width: "100%",
-        // borderWidth: 1,
-        // borderColor: "gray",
-        // borderRadius: 5,
-        // // marginHorizontal: 20,
-        // marginTop: 10,
-        // marginBottom: 20,
         flexDirection: "row",
-        // alignItems: "center",
     },
     sendButton: {
         padding: 10,
@@ -462,57 +443,6 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginRight: 10,
     },
-    sendButtonContent: {
-        // justifyContent: "center",
-        // alignItems: "center",
-    },
 })
-
-//   const styles = StyleSheet.create({
-//     container: {
-//       flex: 1,
-//     },
-//     formContainer: {
-//       padding: 20,
-//     },
-//     image: {
-//       width: 100,
-//       height: 100,
-//       marginTop: 15,
-//     },
-//     label: {
-//       marginBottom: 5,
-//       fontWeight: 'bold',
-//     },
-//     input: {
-//       borderWidth: 1,
-//       borderColor: '#ccc',
-//       borderRadius: 10,
-//       padding: 10,
-//       marginBottom: 15,
-//       backgroundColor: '#fff',
-//     },
-//     uploadButton: {
-//       borderWidth: 1,
-//       borderColor: '#ccc',
-//       borderRadius: 10,
-//       borderStyle: 'dashed',
-//       padding: 20,
-//       marginBottom: 15,
-//       justifyContent: 'center',
-//       alignItems: 'center',
-//     },
-//     submitButton: {
-//       backgroundColor: 'green',
-//       borderRadius: 10,
-//       padding: 15,
-//       justifyContent: 'center',
-//       alignItems: 'center',
-//     },
-//     submitButtonText: {
-//       color: '#fff',
-//       fontWeight: 'bold',
-//     },
-//   });
 
 export default AddPlantForm
