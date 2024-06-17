@@ -9,7 +9,7 @@ module.exports = {
         '^.+\\.[jt]sx?$': 'babel-jest',
     },
     setupFilesAfterEnv: [
-        '@testing-library/jest-native/extend-expect',
+        './jest.setup.js',
     ],
     moduleNameMapper: {
         '\\.(css|less)$': 'jest-css-modules',
