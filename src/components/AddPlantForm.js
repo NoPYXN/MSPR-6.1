@@ -198,8 +198,13 @@ const AddPlantForm = ({ navigation, id, router }) => {
         tabImages.forEach(element => {
             tab.push(element.secure_url)
         })
-        await axios
-            .put(`http://localhost:8080/api/v1/annonces/${id}`, { ...annonce, Id_Plante: tab })
+        await axios({
+            method: "put",
+            url: `http://localhost:8080/api/v1/annonces/${id}`,
+            headers: { Authorization: localStorage.getItem("token") },
+            data: { ...annonce, Id_Plante: tab },
+        })
+            // .put(`http://localhost:8080/api/v1/annonces/${id}`, { ...annonce, Id_Plante: tab })
             .then(data => {
                 if (data.status == 200) {
                     navigation.replace("HomeScreen", { popup: "Votre annonce a bien été modifiée" })
