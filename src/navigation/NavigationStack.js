@@ -13,6 +13,7 @@ import LoginScreen from "../screens/LoginScreen"
 import ProfilScreen from "../screens/ProfilScreen"
 import DemandeBotaniste from "../screens/DemandeBotaniste"
 import ConditionGeneralUtilisation from "../screens/ConditionGeneralUtilisation"
+import PrivateMessageScreen from "../screens/PrivateMessageScreen"
 
 const Stack = createNativeStackNavigator()
 
@@ -26,6 +27,8 @@ const config = {
         CreateAccount: "CreateAccount",
         ProfilScreen: "ProfilScreen",
         DemandeBotaniste: "DemandeBotaniste",
+        ConditionGeneralUtilisation: "ConditionGeneralUtilisation",
+        PrivateMessageScreen: "PrivateMessageScreen",
     },
 }
 
@@ -83,6 +86,11 @@ const NavigationStack = isLoaded => {
                     options={{ headerShown: false }}
                     name="ConditionGeneralUtilisation"
                     component={ConditionGeneralUtilisation}
+                />
+                <Stack.Screen
+                    options={{ headerShown: false }}
+                    name="PrivateMessageScreen"
+                    component={PrivateMessageScreen}
                 />
             </Stack.Navigator>
         </NavigationContainer>
