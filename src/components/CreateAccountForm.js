@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react"
-import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity,Pressable } from "react-native"
-import { Formik } from "formik"
-import * as Yup from "yup"
-import { useLoadScript } from "@react-google-maps/api"
-
-import SearchSeLocaliser from "./SearchSeLocaliser"
-import axios from "axios"
+import React, { useEffect, useState } from "react";
+import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, Pressable } from "react-native";
+import { Formik } from "formik";
+import * as Yup from "yup";
+import SearchSeLocaliser from "./SearchSeLocaliser";
+import axios from "axios";
 
 const SignupSchema = Yup.object().shape({
     // nom: Yup.string().required("Champ obligatoire"),
@@ -19,7 +17,7 @@ const SignupSchema = Yup.object().shape({
     // //     .oneOf([Yup.ref("password"), null], "Les mots de passe doivent correspondre")
     // //     .required("Champ obligatoire"),
     // adresse: Yup.string().required("Champ obligatoire"),
-})
+});
 
 const Checkbox = ({ label, value, onPress }) => {
     return (
@@ -27,20 +25,10 @@ const Checkbox = ({ label, value, onPress }) => {
             <View style={[styles.checkbox, { backgroundColor: value ? "#5cb85c" : "#fff" }]} />
             <Text style={styles.checkboxLabel}>{label}</Text>
         </TouchableOpacity>
-    )
-}
+    );
+};
 
-export default function CreateAccountForm({ navigation }) {
-    const { isLoaded } = useLoadScript({
-        googleMapsApiKey: "AIzaSyBnyp6JiXQAqF0VIfj9-cIt-OPjehWhY9E",
-        libraries: ["places"],
-    })
-
-    if (!isLoaded) return <div>Loading...</div>
-    return <CreateAccountFormSuite isLoaded={isLoaded} navigation={navigation} />
-}
-
-const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
+const CreateAccountForm = ({ navigation }) => {
     const [user, setUser] = useState({
         Civilite: "",
         Nom: "",
@@ -51,15 +39,15 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
         Longitude: "",
         Latitude: "",
         Ville: "",
-    })
-    const [coordonnees, setCoordonnees] = useState({})
-    const [error, setError] = useState(false)
-    const [message, setMessage] = useState("")
-    const [termsAccepted, settermsAccepted] = useState(false)
+    });
+    const [coordonnees, setCoordonnees] = useState({});
+    const [error, setError] = useState(false);
+    const [message, setMessage] = useState("");
+    const [termsAccepted, settermsAccepted] = useState(false);
 
-    const selectGender = gender => {
-        setUser({ ...user, Civilite: gender })
-    }
+    const selectGender = (gender) => {
+        setUser({ ...user, Civilite: gender });
+    };
 
     const handleSubmit = async () => {
         if (
@@ -69,16 +57,15 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
             !user.Pseudo ||
             !user.Email ||
             !user.Mdp ||
-            !coordonnees ||
             !coordonnees.localization ||
             !coordonnees.country ||
             !termsAccepted
         ) {
-            setError(true)
-            setMessage("Tous les champs sont obligatoires")
+            setError(true);
+            setMessage("Tous les champs sont obligatoires");
         } else {
-            setError(false)
-            setMessage("")
+            setError(false);
+            setMessage("");
             await axios
                 .post(`http://localhost:8080/api/v1/users/register`, {
                     ...user,
@@ -86,35 +73,33 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
                     Longitude: coordonnees.localization.lng,
                     Ville: coordonnees.country,
                 })
-                .then(data => {
+                .then((data) => {
                     if (data.status == 200) {
                         if (data.data.register == false) {
-                            setError(true)
-                            setMessage(data.data.message)
+                            setError(true);
+                            setMessage(data.data.message);
                         }
                     }
                     if (data.status == 201) {
                         if (data.data.register) {
                             navigation.replace("LoginScreen", {
                                 popup: "Votre compte a bien été ajouté",
-                            })
+                            });
                         }
                     }
                 })
-                .catch(err => {
-                    console.log(err)
-                })
+                .catch((err) => {
+                    console.log(err);
+                });
         }
-    }
+    };
 
     return (
         <Formik
             initialValues={user}
             validationSchema={SignupSchema}
-            onSubmit={values => {
-                // Logique de soumission du formulaire
-                console.log(values, "values")
-                handleSubmit()
+            onSubmit={(values) => {
+                handleSubmit();
             }}
         >
             {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
@@ -142,9 +127,8 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
                     <Text style={styles.label}>Nom</Text>
                     <TextInput
                         style={styles.inputField}
-                        onChangeText={text => setUser({ ...user, Nom: text })}
+                        onChangeText={(text) => setUser({ ...user, Nom: text })}
                         onBlur={handleBlur("Nom")}
-                        //value={values.Nom}
                     />
                     {touched.Nom && errors.Nom && <Text>{errors.Nom}</Text>}
 
@@ -152,9 +136,8 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
                     <Text style={styles.label}>Prénom</Text>
                     <TextInput
                         style={styles.inputField}
-                        onChangeText={text => setUser({ ...user, Prenom: text })}
+                        onChangeText={(text) => setUser({ ...user, Prenom: text })}
                         onBlur={handleBlur("Prenom")}
-                        // value={values.Prenom}
                     />
                     {touched.Prenom && errors.Prenom && <Text>{errors.Prenom}</Text>}
 
@@ -162,9 +145,8 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
                     <Text style={styles.label}>Pseudo</Text>
                     <TextInput
                         style={styles.inputField}
-                        onChangeText={text => setUser({ ...user, Pseudo: text })}
+                        onChangeText={(text) => setUser({ ...user, Pseudo: text })}
                         onBlur={handleBlur("Pseudo")}
-                        //value={values.Pseudo}
                     />
                     {touched.Pseudo && errors.Pseudo && <Text>{errors.Pseudo}</Text>}
 
@@ -172,9 +154,8 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
                     <Text style={styles.label}>Adresse mail</Text>
                     <TextInput
                         style={styles.inputField}
-                        onChangeText={text => setUser({ ...user, Email: text })}
+                        onChangeText={(text) => setUser({ ...user, Email: text })}
                         onBlur={handleBlur("Email")}
-                        //value={values.Email}
                         keyboardType="email-address"
                     />
                     {touched.Email && errors.Email && <Text>{errors.Email}</Text>}
@@ -183,63 +164,46 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
                     <Text style={styles.label}>Mot de passe</Text>
                     <TextInput
                         style={styles.inputField}
-                        onChangeText={text => setUser({ ...user, Mdp: text })}
+                        onChangeText={(text) => setUser({ ...user, Mdp: text })}
                         onBlur={handleBlur("password")}
-                        //value={values.password}
                         secureTextEntry
                     />
                     {touched.password && errors.password && <Text>{errors.password}</Text>}
 
-                    {/* Confirmation du mot de passe */}
-                    {/* <Text style={styles.label}>Confirmation du mot de passe</Text>
-                    <TextInput
-                        style={styles.inputField}
-                        onChangeText={handleChange("confirmPassword")}
-                        onBlur={handleBlur("confirmPassword")}
-                        value={values.confirmPassword}
-                        secureTextEntry
-                    />
-                    {touched.confirmPassword && errors.confirmPassword && (
-                        <Text>{errors.confirmPassword}</Text>
-                    )} */}
-
                     {/* Adresse postale */}
                     <Text style={styles.label}>Adresse postale</Text>
                     <SearchSeLocaliser
-                        //styles={styles.inputField}
                         setCoordonnees={setCoordonnees}
                         coordonnees={coordonnees}
-                        isLoaded={isLoaded}
                     />
-                    {/* <TextInput
-                        style={styles.inputField}
-                        onChangeText={handleChange("Adresse")}
-                        onBlur={handleBlur("Adresse")}
-                        value={values.Adresse}
-                    /> */}
                     {touched.Adresse && errors.Adresse && <Text>{errors.Adresse}</Text>}
 
                     {/* Case à cocher pour accepter les conditions d'utilisation */}
                     <View style={styles.checkboxContainer}>
                         <Pressable
                             style={styles.checkboxContainer}
-                            value = {termsAccepted}
-                            onPress = {()=> termsAccepted?settermsAccepted(false): settermsAccepted(true)} 
+                            value={termsAccepted}
+                            onPress={() => settermsAccepted(!termsAccepted)}
                         >
-                            <View style={[styles.checkbox, { backgroundColor: termsAccepted ? "#5cb85c" : "#fff" }]} />
+                            <View
+                                style={[
+                                    styles.checkbox,
+                                    { backgroundColor: termsAccepted ? "#5cb85c" : "#fff" },
+                                ]}
+                            />
                             <Text style={styles.checkboxLabel}>Accepter les </Text>
                             <Pressable
-                            onPress={() => {
-                                navigation.navigate({
-                                    name: "ConditionGeneralUtilisation",
-                                });
-                            }}
+                                onPress={() => {
+                                    navigation.navigate({
+                                        name: "ConditionGeneralUtilisation",
+                                    });
+                                }}
                             >
-                                <Text style={styles.linkText}>conditions d'utilisation</Text>  
+                                <Text style={styles.linkText}>conditions d'utilisation</Text>
                             </Pressable>
                         </Pressable>
                         {touched.termsAccepted && errors.termsAccepted && (
-                            <Text style={{ color: 'red' }}>{errors.termsAccepted}</Text>
+                            <Text style={{ color: "red" }}>{errors.termsAccepted}</Text>
                         )}
                     </View>
 
@@ -257,8 +221,8 @@ const CreateAccountFormSuite = ({ isLoaded, navigation }) => {
                 </View>
             )}
         </Formik>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     formContainer: {
@@ -277,38 +241,14 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 15,
         marginBottom: 20,
-        boxShadowColor: "#000",
-        boxShadowOffset: {
+        shadowColor: "#000",
+        shadowOffset: {
             width: 0,
             height: 2,
         },
-        boxShadowOpacity: 0.25,
-        boxShadowRadius: 3.84,
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
         elevation: 5,
-    },
-    button: {
-        alignItems: "center",
-        padding: 20,
-    },
-    radioContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: 20,
-    },
-    radioButton: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    radioCircle: {
-        width: 20,
-        height: 20,
-        borderRadius: 10,
-        borderWidth: 2,
-        borderColor: "#5cb85c",
-        marginRight: 10,
-    },
-    radioText: {
-        fontSize: 16,
     },
     checkboxGroup: {
         flexDirection: "row",
@@ -329,10 +269,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginRight: 5,
     },
-    checkboxText: {
-        color: "#fff",
-        fontSize: 16,
-    },
     checkboxLabel: {
         fontSize: 16,
     },
@@ -344,5 +280,6 @@ const styles = StyleSheet.create({
         color: "#551A8B",
         textDecorationLine: "underline",
     },
+});
 
-})
+export default CreateAccountForm;

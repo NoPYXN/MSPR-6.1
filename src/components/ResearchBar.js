@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react"
-import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete"
-import { StyleSheet, Text, View, FlatList, TextInput, Pressable } from "react-native"
-import { FaSearch } from "react-icons/fa"
-import axios from "axios"
-import { useLoadScript } from "@react-google-maps/api"
+import React, { useState, useEffect } from "react";
+import { getGeocode, getLatLng } from "use-places-autocomplete";
+import { StyleSheet, Text, View, FlatList, TextInput, Pressable, ActivityIndicator } from "react-native";
+import { Ionicons } from "@expo/vector-icons"; // Utilisation d'Ionicons de @expo/vector-icons
+import axios from "axios";
 
-import { NumeroPage } from "../utils/NumeroPage"
+import { NumeroPage } from "../utils/NumeroPage";
 
+// Composant principal
 export default function Index({
     setSearchVille,
     setCoordonnees,
@@ -21,21 +21,18 @@ export default function Index({
     valueVille,
     isVisiblePublication,
     isVisibleGardiennage,
-    // isLoaded,
 }) {
-    const { isLoaded } = useLoadScript({
-        googleMapsApiKey: "AIzaSyBnyp6JiXQAqF0VIfj9-cIt-OPjehWhY9E",
-        libraries: ["places"],
-    })
+    const [isLoaded, setIsLoaded] = useState(false);
 
-    console.log(isVisibleGardiennage, "is visible gardiennage")
-    console.log(isVisiblePublication, "is visible publication")
     useEffect(() => {
-        console.log(isVisibleGardiennage, "is visible gardiennage")
-        console.log(isVisiblePublication, "is visible publication")
-    }, [])
+        // Simuler le chargement de la bibliothèque Google Maps (à remplacer par votre propre logique de chargement)
+        setTimeout(() => {
+            setIsLoaded(true);
+        }, 1000);
+    }, []);
 
-    if (!isLoaded) return <div>Loading...</div>
+    if (!isLoaded) return <ActivityIndicator size="large" color="#0000ff" />;
+
     return (
         <Map
             setSearchVille={setSearchVille}
@@ -52,8 +49,10 @@ export default function Index({
             isVisiblePublication={isVisiblePublication}
             isVisibleGardiennage={isVisibleGardiennage}
         />
-    )
+    );
 }
+
+// Composant Map
 function Map({
     setSearchVille,
     setCoordonnees,
@@ -89,9 +88,10 @@ function Map({
                 />
             </View>
         </View>
-    )
+    );
 }
 
+// Composant PlacesAutocomplete
 const PlacesAutocomplete = ({
     setSelected,
     setSearchVille,
@@ -107,55 +107,46 @@ const PlacesAutocomplete = ({
     isVisibleGardiennage,
     isVisiblePublication,
 }) => {
-    const {
-        ready,
-        value,
-        setValue,
-        suggestions: { status, data },
-        clearSuggestions,
-    } = usePlacesAutocomplete({
-        requestOptions: {
-            types: ["geocode"],
-        },
-    })
-
-    const [countryChoice, setCountryChoice] = useState("")
+    const [value, setValue] = useState(valueVille || "");
+    const [suggestions, setSuggestions] = useState([]);
+    const [countryChoice, setCountryChoice] = useState("");
 
     useEffect(() => {
         if (valueVille) {
-            setValue(valueVille)
-            console.log("value", value)
+            setValue(valueVille);
+            console.log("value", value);
         }
-        console.log("111111111", valueVille)
-    }, [])
+        console.log("111111111", valueVille);
+    }, []);
 
     const handleSelect = async address => {
-        setValue(address, false)
-        clearSuggestions()
-        const results = await getGeocode({ address })
-        const { lat, lng } = getLatLng(results[0])
-        setSearchVille(address.split(",")[0])
-        setCoordonnees({ lat: lat, lng: lng })
-        setSelected(true)
-        setCountryChoice(address.split(",")[0])
+        setValue(address, false);
+        setSuggestions([]);
+        const results = await getGeocode({ address });
+        const { lat, lng } = getLatLng(results[0]);
+        setSearchVille(address.split(",")[0]);
+        setCoordonnees({ lat, lng });
+        setSelected(true);
+        setCountryChoice(address.split(",")[0]);
         if (isAddPlantFrom) {
             setAnnonces({
                 ...annonces,
                 Ville: address.split(",")[0],
                 Latitude: lat,
                 Longitude: lng,
-            })
+            });
         }
-    }
+    };
 
     const changeUrlVille = ville => {
-        window.history.pushState({ page: ville }, "", "?page=1&ville=" + ville)
-    }
+        // Remplacez par votre propre logique de changement d'URL si nécessaire
+        console.log("Change URL to:", ville);
+    };
 
     const search = () => {
         NumeroPage(countryChoice, isVisiblePublication, isVisibleGardiennage).then(numero => {
-            setCalculPage(numero)
-        })
+            setCalculPage(numero);
+        });
 
         if (selected) {
             axios
@@ -166,13 +157,13 @@ const PlacesAutocomplete = ({
                 )
                 .then(data => {
                     if (data.status == 200) {
-                        setAnnonces(data.data.content)
-                        changeUrlVille(countryChoice)
+                        setAnnonces(data.data.content);
+                        changeUrlVille(countryChoice);
                     }
                 })
-                .catch(err => console.log(err))
+                .catch(err => console.log(err));
         }
-    }
+    };
 
     return (
         <View>
@@ -181,35 +172,29 @@ const PlacesAutocomplete = ({
                     <TextInput
                         value={value ?? ""}
                         onChangeText={text => setValue(text)}
-                        // readOnly={ready}
-                        editable={ready}
+                        editable
                         style={isAddPlantFrom ? styles.inputIsAddPlantForm : styles.input}
                         placeholder={isAddPlantFrom ? "Sélectionnez la ville" : searchVille}
                     />
-                    {isAddPlantFrom ? (
-                        <View></View>
-                    ) : (
+                    {!isAddPlantFrom && (
                         <Pressable
                             style={styles.iconSearch}
                             onPress={() => {
-                                search()
+                                search();
                             }}
                         >
-                            <FaSearch />
+                            <Ionicons name="search" size={20} color="black" />
                         </Pressable>
                     )}
                 </View>
             </View>
 
             <View style={isAddPlantFrom ? styles.ViewXXIdAddPlantForm : styles.ViewXX}>
-                {status === "OK" && (
+                {suggestions.length > 0 && (
                     <FlatList
-                        data={data
+                        data={suggestions
                             .filter(({ types }) => types.includes("locality"))
-
-                            .filter(
-                                ({ terms }) => terms.some(obj => obj.value === "France") == true,
-                            )}
+                            .filter(({ terms }) => terms.some(obj => obj.value === "France"))}
                         keyExtractor={item => item.place_id}
                         renderItem={({ item }) => (
                             <View style={styles.ViewFlatList}>
@@ -226,8 +211,8 @@ const PlacesAutocomplete = ({
                 )}
             </View>
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -270,7 +255,7 @@ const styles = StyleSheet.create({
     },
     ViewFlatList: {
         justifyContent: "center",
-        alignItems: "left",
+        alignItems: "flex-start",
     },
     ViewXX: {
         width: "55%",
@@ -281,4 +266,4 @@ const styles = StyleSheet.create({
     ViewXXIdAddPlantForm: {
         marginLeft: "2%",
     },
-})
+});

@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react"
-import { View, ScrollView, Image, Dimensions, StyleSheet } from "react-native"
+import React, { useState } from "react";
+import { View, ScrollView, Image, Dimensions, StyleSheet } from "react-native";
 
 const Carousel = ({ images }) => {
-    const [activeIndex, setActiveIndex] = useState(0)
+    const [activeIndex, setActiveIndex] = useState(0);
 
-    const handleScroll = event => {
-        const slideSize = event.nativeEvent.layoutMeasurement.width
-        const index = event.nativeEvent.contentOffset.x / slideSize
-        setActiveIndex(Math.round(index))
-    }
+    const handleScroll = (event) => {
+        const slideSize = event.nativeEvent.layoutMeasurement.width;
+        const index = event.nativeEvent.contentOffset.x / slideSize;
+        setActiveIndex(Math.round(index));
+    };
 
     return (
         <View style={styles.container}>
@@ -37,11 +37,11 @@ const Carousel = ({ images }) => {
                 ))}
             </View>
         </View>
-    )
-}
+    );
+};
 
-const windowWidth = Dimensions.get("window").width
-const windowHeight = Dimensions.get("window").height
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
     container: {
@@ -56,8 +56,7 @@ const styles = StyleSheet.create({
     image: {
         width: "100%",
         height: "100%",
-        // resizeMode: "cover",
-        objectFit: "cover",
+        resizeMode: "cover", // Remplacement de objectFit
         alignContent: "center",
     },
     pagination: {
@@ -76,6 +75,6 @@ const styles = StyleSheet.create({
     activeDot: {
         backgroundColor: "#333",
     },
-})
+});
 
-export default Carousel
+export default Carousel;

@@ -3,12 +3,12 @@ import {
     StyleSheet,
     Text,
     View,
-    SafeAreaView,
     TextInput,
     Pressable,
     TouchableOpacity,
 } from "react-native";
-import { AiOutlineClose } from "react-icons/ai";
+import { MaterialIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 const Checkbox = ({ label, value, onPress }) => {
@@ -22,10 +22,18 @@ const Checkbox = ({ label, value, onPress }) => {
 
 const ModifierProfil = ({ user, setUser, setIsVisible }) => {
     const validModifierProfil = async () => {
-        await axios
-            .put("http://localhost:8080/api/v1/users/" + localStorage.getItem("id"), user)
-            .then(data => setIsVisible(false))
-            .catch(err => console.log(err));
+        const userId = await AsyncStorage.getItem("id");
+        if (!userId) {
+            console.error("User ID is undefined");
+            return;
+        }
+
+        try {
+            await axios.put(`http://localhost:8080/api/v1/users/${userId}`, user);
+            setIsVisible(false);
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     const selectGender = gender => {
@@ -41,7 +49,7 @@ const ModifierProfil = ({ user, setUser, setIsVisible }) => {
                     }}
                     style={styles.closeButton}
                 >
-                    <AiOutlineClose size={24} />
+                    <MaterialIcons name="close" size={24} color="black" />
                 </Pressable>
                 <Text style={styles.label}>Civilité</Text>
                 <View style={styles.checkboxGroup}>

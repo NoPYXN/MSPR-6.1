@@ -1,32 +1,34 @@
-import React, { useState } from "react"
-import { View, TextInput, StyleSheet, Pressable } from "react-native"
-import { FontAwesome } from "@expo/vector-icons"
-import axios from "axios"
+import React, { useState } from "react";
+import { View, TextInput, StyleSheet, Pressable } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const TextZoneInfo = ({ setMessages, messages, id }) => {
-    const [inputValue, setInputValue] = useState("")
+    const [inputValue, setInputValue] = useState("");
 
     const handleSubmit = async () => {
-        console.log(id, "id")
+        console.log(id, "id");
         if (inputValue.trim() !== "") {
+            const pseudo = await AsyncStorage.getItem("pseudo");
             await axios
                 .post(`http://localhost:8080/api/v1/conseils`, {
                     Message: inputValue,
                     ConseilId: id,
-                    Username: localStorage.getItem("pseudo"),
+                    Username: pseudo,
                 })
                 .then(data => {
-                    if (data.status == 201) {
-                        console.log(data)
-                        setMessages([...messages, data.data.content])
-                        setInputValue("")
+                    if (data.status === 201) {
+                        console.log(data);
+                        setMessages([...messages, data.data.content]);
+                        setInputValue("");
                     }
                 })
                 .catch(err => {
-                    console.log(err)
-                })
+                    console.log(err);
+                });
         }
-    }
+    };
 
     return (
         <View style={styles.container}>
@@ -38,14 +40,14 @@ const TextZoneInfo = ({ setMessages, messages, id }) => {
                 multiline={true}
                 numberOfLines={4}
             />
-            <Pressable style={styles.sendButton} onPress={() => handleSubmit()}>
+            <Pressable style={styles.sendButton} onPress={handleSubmit}>
                 <View style={styles.sendButtonContent}>
                     <FontAwesome name="send" size={20} color="white" />
                 </View>
             </Pressable>
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -73,6 +75,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-})
+});
 
-export default TextZoneInfo
+export default TextZoneInfo;
