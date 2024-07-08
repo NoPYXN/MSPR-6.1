@@ -1,5 +1,6 @@
 import React from "react"
 import { View, Text, Pressable, StyleSheet, Image } from "react-native"
+import { MdNotifications } from "react-icons/md"
 
 const HeaderComponent = ({ navigation }) => {
     const handleReload = () => {
@@ -47,6 +48,9 @@ const HeaderComponent = ({ navigation }) => {
                         <Image source={require("../assets/profil.png")} style={styles.icon} />
                     )}
                 </View>
+            </Pressable>
+            <Pressable onPress={() => navigation.navigate("PrivateMessageScreen")}>
+                <MdNotifications />
             </Pressable>
         </View>
     )
