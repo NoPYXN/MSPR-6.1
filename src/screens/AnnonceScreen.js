@@ -33,7 +33,7 @@ const AnnonceScreen = () => {
             .get(`http://localhost:8080/api/v1/annonces/${router.params.id}`)
             .then(data => {
                 if (data.status == 200) {
-                    console.log("data getif annonce", data)
+                    // console.log("data getif annonce", data)
                     data.data.content.DateDebut = convertirDate(data.data.content.DateDebut)
                     data.data.content.DateFin = convertirDate(data.data.content.DateFin)
                     setAnnonce(data.data.content)
