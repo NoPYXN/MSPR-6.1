@@ -8,24 +8,28 @@ import {
     Platform,
     FlatList,
     Text,
+    Image,
 } from "react-native"
 import { FontAwesome } from "@expo/vector-icons"
 import axios from "axios"
 import { Ionicons } from "@expo/vector-icons" // Import Ionicons from expo
 import { ConvertirDateHeure } from "../utils/ConvertirDateHeure"
-const PrivateMessageComponent = ({ idConversation, IdUser }) => {
+const PrivateMessageComponent = ({ idConversation }) => {
     const [inputValue, setInputValue] = useState("")
     const [messages, setMessages] = useState([])
+    const [user1, setUser1] = useState({})
+    const [user2, setUser2] = useState({})
 
     useEffect(() => {
         axios({
             method: "get",
-            url: `http://localhost:8080/api/v1/users/` + localStorage.getItem("id"),
-            headers: { Authorization: localStorage.getItem("token") },
+            url: `http://localhost:8080/api/v1/conversations/` + idConversation,
         })
             .then(data => {
                 if (data.status == 200) {
-                    setMessages(data.Messages)
+                    setMessages(data.data.content.Messages)
+                    setUser1(data.data.content.user1)
+                    setUser2(data.data.content.user2)
                 }
             })
             .catch(err => {
@@ -83,6 +87,10 @@ const PrivateMessageComponent = ({ idConversation, IdUser }) => {
             })
     }
 
+    useEffect(() => {
+        console.log(user1, "USER1")
+    }, [user1])
+
     return (
         <View style={{ width: "100%", height: "100%", paddingTop: "5%" }}>
             <View style={styles.messageContainer}>
@@ -93,19 +101,32 @@ const PrivateMessageComponent = ({ idConversation, IdUser }) => {
                             <View key={index} style={styles.message}>
                                 <View style={styles.infosMessage}>
                                     <View style={styles.avatarContainer}>
-                                        <Ionicons
-                                            name="person-circle-outline"
-                                            size={24}
-                                            color="black"
-                                        />
-                                        <Text style={styles.pseudo}>{item.Username}</Text>
+                                        {user1 && user1.Image ? (
+                                            <Image
+                                                style={styles.imageConversation}
+                                                source={{
+                                                    uri: user1.Image,
+                                                }}
+                                            />
+                                        ) : (
+                                            <Ionicons
+                                                name="person-circle-outline"
+                                                size={24}
+                                                color="black"
+                                            />
+                                        )}
+                                        {user1 && user1.Pseudo ? (
+                                            <Text style={styles.pseudo}>{user1.Pseudo}</Text>
+                                        ) : (
+                                            <Text style={styles.pseudo}>Anonyme</Text>
+                                        )}
                                     </View>
                                     <Text style={styles.messageTime}>
                                         {ConvertirDateHeure(item.DateCreation)}
                                     </Text>
                                 </View>
                                 <View style={styles.messageContent}>
-                                    <Text style={styles.messageText}>{item.Message}</Text>
+                                    <Text style={styles.messageText}>{item.text}</Text>
                                 </View>
                             </View>
                         )}
@@ -120,6 +141,7 @@ const PrivateMessageComponent = ({ idConversation, IdUser }) => {
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 keyboardVerticalOffset={90}
+                style={styles.keyboardAvoidingView}
             >
                 <View style={styles.container}>
                     <TextInput
@@ -220,6 +242,11 @@ const styles = StyleSheet.create({
         height: "1px",
         backgroundColor: "black",
         marginHorizontal: "6%",
+    },
+    imageConversation: {
+        width: 24,
+        height: 24,
+        borderRadius: 50,
     },
 })
 

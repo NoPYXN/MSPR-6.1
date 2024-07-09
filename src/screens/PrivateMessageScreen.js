@@ -31,6 +31,7 @@ const PrivateMessageScreen = () => {
                 )
                 mergedTabs.sort((a, b) => new Date(b.DateCreation) - new Date(a.DateCreation))
                 setConversations(mergedTabs)
+                console.log(data)
             })
             .catch(err => {
                 console.log(err, "err")
@@ -77,8 +78,9 @@ const PrivateMessageScreen = () => {
             {isVisible ? (
                 <View style={{ width: "100%", height: "80%", paddingBottom: "5%" }}>
                     <PrivateMessageComponent
+                        // conversations={conversations}
                         idConversation={idConversation}
-                        IdUser={localStorage.getItem("id")}
+                        // IdUser={localStorage.getItem("id")}
                     />
                 </View>
             ) : (
