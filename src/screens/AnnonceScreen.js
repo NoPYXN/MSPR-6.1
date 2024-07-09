@@ -26,6 +26,7 @@ const AnnonceScreen = () => {
     const [id, setId] = useState()
     const [error, setError] = useState(false)
     const [isVisibleBotanniste, setIsVisibleBotanniste] = useState(false)
+    const [idProprietaire, setIdProprietaire] = useState()
 
     useEffect(() => {
         // console.log(router.params.id, "ID")
@@ -40,6 +41,7 @@ const AnnonceScreen = () => {
                     setImages(data.data.content.Id_Plante)
                     setBlocMessages(data.data.content.Conseils.sort(sortDateConseils))
                     setSelectedImages(data.data.content.EtatPlantes)
+                    setIdProprietaire(data.data.content.Annonce.Id_Utilisateur)
 
                     setId(router.params.id)
                     if (data.data.content.Conseils.length <= 2) {
@@ -111,6 +113,31 @@ const AnnonceScreen = () => {
             })
     }
 
+    const sendMessage = async () => {
+        console.log("dans fonction")
+        console.log({
+            user1Id: parseInt(localStorage.getItem("id")),
+            user2Id: idProprietaire,
+        })
+        await axios({
+            method: "post",
+            url: `http://localhost:8080/api/v1/conversations/`,
+            data: {
+                user1: parseInt(localStorage.getItem("id")),
+                user2: idProprietaire,
+            },
+        })
+            .then(data => {
+                if (data.status == 201) {
+                    navigation.navigate({ name: "PrivateMessageScreen" })
+                }
+                console.log(data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
@@ -147,6 +174,30 @@ const AnnonceScreen = () => {
                                 annonce.Annonce.Pseudo.slice(1)}
                         </Text>
                     </View>
+                    <Pressable
+                        style={{
+                            marginLeft: "auto",
+                            marginRight: "auto",
+                            width: "50%",
+                            borderRadius: "5px",
+                            marginBottom: "1%",
+                            backgroundColor: "green",
+                            padding: "3%",
+                            marginTop: "5%",
+                        }}
+                        onPress={() => {
+                            sendMessage()
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: "white",
+                                textAlign: "center",
+                            }}
+                        >
+                            Envoyez un message
+                        </Text>
+                    </Pressable>
                 </View>
             ) : (
                 <View></View>
@@ -249,6 +300,7 @@ const AnnonceScreen = () => {
                             Demande de gardiennage
                         </Text>
                     </Pressable>
+
                     {error ? (
                         <Text style={{ textAlign: "center", fontStyle: "italic" }}>
                             Il faut vous connecter pour garder une plante
