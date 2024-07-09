@@ -1,16 +1,63 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, SafeAreaView, FlatList, KeyboardAvoidingView, Platform } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Import Ionicons from expo
+import React, { useState, useEffect } from "react"
+import {
+    StyleSheet,
+    Text,
+    View,
+    SafeAreaView,
+    FlatList,
+    KeyboardAvoidingView,
+    Platform,
+} from "react-native"
+import { Ionicons } from "@expo/vector-icons" // Import Ionicons from expo
+import axios from "axios"
 
-import PrivateMessageComponent from "../components/PrivateMessageComponent";
-import { ConvertirDateHeure } from "../utils/ConvertirDateHeure";
+import PrivateMessageComponent from "../components/PrivateMessageComponent"
+import { ConvertirDateHeure } from "../utils/ConvertirDateHeure"
+import { useNavigation, useRoute } from "@react-navigation/native"
+import HeaderComponent from "../components/HeaderComponent"
 
 const PrivateMessageScreen = () => {
-    const [messages, setMessages] = useState([]); // Pour stocker les messages
+    const [messages, setMessages] = useState([]) // Pour stocker les messages
+    const [user, setUser] = useState({})
+    const router = useRoute()
+    const navigation = useNavigation()
+    const [conversations, setConversations] = useState([])
+
+    useEffect(() => {
+        console.log("Test profil screen")
+        axios({
+            method: "get",
+            url: "http://localhost:8080/api/v1/users/" + localStorage.getItem("id"),
+            headers: { Authorization: localStorage.getItem("token") },
+        })
+            .then(data => {
+                // setConversations(data.data.content.conversations1) + conversation 2 il faut un tableau des deux
+                console.log(data.data.content)
+            })
+            .catch(err => {
+                console.log(err, "err")
+                navigation.navigate({ name: "LoginScreen" })
+            })
+    }, [router.params])
 
     return (
         <SafeAreaView style={styles.SafeAreaView}>
-            <View style={styles.messageContainer}>
+            <HeaderComponent navigation={navigation} />
+            {conversations && conversations.length != 0 ? (
+                <FlatList
+                    data={conversations}
+                    renderItem={({ item, index }) => <View key={index}></View>}
+                    keyExtractor={(item, index) => index.toString()}
+                    inverted
+                    contentContainerStyle={{ flexGrow: 1, justifyContent: "flex-end" }}
+                />
+            ) : (
+                <View>
+                    <Text style={styles.noMessages}>Vous n'avez pas de messages</Text>
+                </View>
+            )}
+
+            {/* <View style={styles.messageContainer}>
                 <FlatList
                     data={messages}
                     renderItem={({ item, index }) => (
@@ -46,10 +93,10 @@ const PrivateMessageScreen = () => {
                     messages={messages}
                     setMessages={setMessages}
                 />
-            </KeyboardAvoidingView>
+            </KeyboardAvoidingView> */}
         </SafeAreaView>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     SafeAreaView: {
@@ -102,6 +149,12 @@ const styles = StyleSheet.create({
         backgroundColor: "black",
         marginHorizontal: "6%",
     },
-});
+    noMessages: {
+        fontSize: 16,
+        color: "#888",
+        textAlign: "center",
+        marginTop: "5%",
+    },
+})
 
-export default PrivateMessageScreen;
+export default PrivateMessageScreen

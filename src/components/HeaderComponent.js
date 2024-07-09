@@ -1,6 +1,6 @@
 import React from "react"
 import { View, Text, Pressable, StyleSheet, Image } from "react-native"
-import { MdNotifications } from "react-icons/md"
+import { FaEnvelope } from "react-icons/fa"
 
 const HeaderComponent = ({ navigation }) => {
     const handleReload = () => {
@@ -24,11 +24,19 @@ const HeaderComponent = ({ navigation }) => {
         }
     }
 
+    const directionLoginOrMessage = () => {
+        if (localStorage.getItem("token")) {
+            navigation.navigate({ name: "PrivateMessageScreen" })
+        } else {
+            navigation.navigate({ name: "LoginScreen" })
+        }
+    }
+
     return (
         <View style={styles.headerContainer}>
-            <Pressable onPress={() => {}}>
+            <Pressable onPress={() => directionLoginOrMessage()}>
                 <View>
-                    <Image source={require("../assets/menu.png")} style={styles.icon} />
+                    <FaEnvelope style={styles.icon} />
                 </View>
             </Pressable>
             <Pressable onPress={() => handleReload()}>
@@ -48,9 +56,6 @@ const HeaderComponent = ({ navigation }) => {
                         <Image source={require("../assets/profil.png")} style={styles.icon} />
                     )}
                 </View>
-            </Pressable>
-            <Pressable onPress={() => navigation.navigate("PrivateMessageScreen")}>
-                <MdNotifications />
             </Pressable>
         </View>
     )

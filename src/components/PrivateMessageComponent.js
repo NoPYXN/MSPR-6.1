@@ -1,9 +1,17 @@
-import React, { useState } from "react";
-import { View, TextInput, StyleSheet, Pressable, KeyboardAvoidingView, Platform } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import React, { useState, useEffect } from "react"
+import {
+    View,
+    TextInput,
+    StyleSheet,
+    Pressable,
+    KeyboardAvoidingView,
+    Platform,
+} from "react-native"
+import { FontAwesome } from "@expo/vector-icons"
+import axios from "axios"
 
 const PrivateMessageComponent = ({ setMessages, messages }) => {
-    const [inputValue, setInputValue] = useState("");
+    const [inputValue, setInputValue] = useState("")
 
     const handleSubmit = () => {
         if (inputValue.trim() !== "") {
@@ -11,11 +19,11 @@ const PrivateMessageComponent = ({ setMessages, messages }) => {
                 Message: inputValue,
                 Username: "Current User", // Vous pouvez changer cela pour obtenir le nom d'utilisateur actuel
                 DateCreation: new Date().toISOString(),
-            };
-            setMessages([newMessage, ...messages]); // Ajouter le message en haut
-            setInputValue("");
+            }
+            setMessages([newMessage, ...messages]) // Ajouter le message en haut
+            setInputValue("")
         }
-    };
+    }
 
     return (
         <KeyboardAvoidingView
@@ -38,8 +46,8 @@ const PrivateMessageComponent = ({ setMessages, messages }) => {
                 </Pressable>
             </View>
         </KeyboardAvoidingView>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     keyboardAvoidingView: {
@@ -71,6 +79,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-});
+})
 
-export default PrivateMessageComponent;
+export default PrivateMessageComponent
