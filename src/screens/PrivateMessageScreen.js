@@ -31,7 +31,7 @@ const PrivateMessageScreen = () => {
                 )
                 mergedTabs.sort((a, b) => new Date(b.DateCreation) - new Date(a.DateCreation))
                 setConversations(mergedTabs)
-                console.log(data)
+                console.log(mergedTabs)
             })
             .catch(err => {
                 console.log(err, "err")

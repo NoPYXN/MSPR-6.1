@@ -12,7 +12,7 @@ import {
 } from "react-native"
 import { FontAwesome } from "@expo/vector-icons"
 import axios from "axios"
-import { Ionicons } from "@expo/vector-icons" // Import Ionicons from expo
+import { Ionicons } from "@expo/vector-icons"
 import { ConvertirDateHeure } from "../utils/ConvertirDateHeure"
 const PrivateMessageComponent = ({ idConversation }) => {
     const [inputValue, setInputValue] = useState("")
@@ -27,7 +27,9 @@ const PrivateMessageComponent = ({ idConversation }) => {
         })
             .then(data => {
                 if (data.status == 200) {
-                    setMessages(data.data.content.Messages)
+                    const tabMessages = data.data.content.Messages
+                    tabMessages.sort((a, b) => new Date(b.DateCreation) - new Date(a.DateCreation))
+                    setMessages(tabMessages)
                     setUser1(data.data.content.user1)
                     setUser2(data.data.content.user2)
                 }
@@ -53,22 +55,12 @@ const PrivateMessageComponent = ({ idConversation }) => {
         })
             .then(data => {
                 if (data.status == 201) {
-                    // navigation.navigate({ name: "PrivateMessageScreen" })
                 }
                 console.log(data)
             })
             .catch(err => {
                 console.log(err)
             })
-        // if (inputValue.trim() !== "") {
-        //     const newMessage = {
-        //         Message: inputValue,
-        //         Username: "Current User", // Vous pouvez changer cela pour obtenir le nom d'utilisateur actuel
-        //         DateCreation: new Date().toISOString(),
-        //     }
-        //     setMessages([newMessage, ...messages]) // Ajouter le message en haut
-        //     setInputValue("")
-        // }
     }
 
     const actualiser = async () => {
@@ -101,24 +93,54 @@ const PrivateMessageComponent = ({ idConversation }) => {
                             <View key={index} style={styles.message}>
                                 <View style={styles.infosMessage}>
                                     <View style={styles.avatarContainer}>
-                                        {user1 && user1.Image ? (
-                                            <Image
-                                                style={styles.imageConversation}
-                                                source={{
-                                                    uri: user1.Image,
-                                                }}
-                                            />
+                                        {item.userId == user1.Id_Utilisateur ? (
+                                            <View style={{ flex: "display", flexDirection: "row" }}>
+                                                {user1 && user1.Image ? (
+                                                    <Image
+                                                        style={styles.imageConversation}
+                                                        source={{
+                                                            uri: user1.Image,
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <Ionicons
+                                                        name="person-circle-outline"
+                                                        size={24}
+                                                        color="black"
+                                                    />
+                                                )}
+                                                {user1 && user1.Pseudo ? (
+                                                    <Text style={styles.pseudo}>
+                                                        {user1.Pseudo}
+                                                    </Text>
+                                                ) : (
+                                                    <Text style={styles.pseudo}>Anonyme</Text>
+                                                )}
+                                            </View>
                                         ) : (
-                                            <Ionicons
-                                                name="person-circle-outline"
-                                                size={24}
-                                                color="black"
-                                            />
-                                        )}
-                                        {user1 && user1.Pseudo ? (
-                                            <Text style={styles.pseudo}>{user1.Pseudo}</Text>
-                                        ) : (
-                                            <Text style={styles.pseudo}>Anonyme</Text>
+                                            <View style={{ flex: "display", flexDirection: "row" }}>
+                                                {user2 && user2.Image ? (
+                                                    <Image
+                                                        style={styles.imageConversation}
+                                                        source={{
+                                                            uri: user2.Image,
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <Ionicons
+                                                        name="person-circle-outline"
+                                                        size={24}
+                                                        color="black"
+                                                    />
+                                                )}
+                                                {user2 && user2.Pseudo ? (
+                                                    <Text style={styles.pseudo}>
+                                                        {user2.Pseudo}
+                                                    </Text>
+                                                ) : (
+                                                    <Text style={styles.pseudo}>Anonyme</Text>
+                                                )}
+                                            </View>
                                         )}
                                     </View>
                                     <Text style={styles.messageTime}>
