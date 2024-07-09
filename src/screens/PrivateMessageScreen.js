@@ -1,31 +1,22 @@
 import React, { useState, useEffect } from "react"
-import {
-    StyleSheet,
-    Text,
-    View,
-    SafeAreaView,
-    FlatList,
-    KeyboardAvoidingView,
-    Platform,
-    Image,
-} from "react-native"
-import { Ionicons } from "@expo/vector-icons" // Import Ionicons from expo
+import { StyleSheet, Text, View, SafeAreaView, FlatList, Image, Pressable } from "react-native"
 import axios from "axios"
 
 import PrivateMessageComponent from "../components/PrivateMessageComponent"
-import { ConvertirDateHeure } from "../utils/ConvertirDateHeure"
 import { useNavigation, useRoute } from "@react-navigation/native"
 import HeaderComponent from "../components/HeaderComponent"
 
 const PrivateMessageScreen = () => {
-    const [messages, setMessages] = useState([]) // Pour stocker les messages
+    // const [messages, setMessages] = useState([])
     const [user, setUser] = useState({})
     const router = useRoute()
     const navigation = useNavigation()
     const [conversations, setConversations] = useState([])
+    const [isVisible, setIsVisible] = useState(false)
+    const [idConversation, setIdConversation] = useState()
 
     useEffect(() => {
-        console.log("Test profil screen")
+        // console.log("Test profil screen")
         axios({
             method: "get",
             url: "http://localhost:8080/api/v1/users/" + localStorage.getItem("id"),
@@ -52,77 +43,60 @@ const PrivateMessageScreen = () => {
     }, [conversations])
 
     const renderItem = ({ item }) => (
-        <View style={styles.ViewConversation}>
-            <Image
-                style={styles.imageConversation}
-                source={{
-                    uri: item.user2.Image,
-                }}
-            />
-            <View style={styles.sousViewConversation}>
-                <Text style={styles.pseudoPrioprietaire}>
-                    {item.user2.Pseudo.charAt(0).toUpperCase() + item.user2.Pseudo.slice(1)} pour{" "}
-                    {item.annonce.Titre.charAt(0).toUpperCase() + item.annonce.Titre.slice(1)}
-                </Text>
-                <Text style={styles.dateConversation}>
-                    {new Date(item.DateCreation).toLocaleString()}
-                </Text>
+        <Pressable
+            onPress={() => {
+                setIsVisible(true)
+                setIdConversation(item.Id_Conversation)
+            }}
+        >
+            <View style={styles.ViewConversation}>
+                <Image
+                    style={styles.imageConversation}
+                    source={{
+                        uri: item.user2.Image,
+                    }}
+                />
+                <View style={styles.sousViewConversation}>
+                    <Text style={styles.pseudoPrioprietaire}>
+                        {item.user2.Pseudo.charAt(0).toUpperCase() + item.user2.Pseudo.slice(1)}{" "}
+                        pour{" "}
+                        {item.annonce.Titre.charAt(0).toUpperCase() + item.annonce.Titre.slice(1)}
+                    </Text>
+                    <Text style={styles.dateConversation}>
+                        {new Date(item.DateCreation).toLocaleString()}
+                    </Text>
+                </View>
             </View>
-        </View>
+        </Pressable>
     )
 
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
-            {conversations && conversations.length != 0 ? (
-                <FlatList
-                    data={conversations}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.Id_Conversation}
-                />
+            {/* <View style={styles.containerView}> */}
+            {isVisible ? (
+                <View style={{ width: "100%", height: "80%", paddingBottom: "5%" }}>
+                    <PrivateMessageComponent
+                        idConversation={idConversation}
+                        IdUser={localStorage.getItem("id")}
+                    />
+                </View>
             ) : (
                 <View>
-                    <Text style={styles.noMessages}>Vous n'avez pas de messages</Text>
-                </View>
-            )}
-
-            {/* <View style={styles.messageContainer}>
-                <FlatList
-                    data={messages}
-                    renderItem={({ item, index }) => (
-                        <View key={index} style={styles.message}>
-                            <View style={styles.infosMessage}>
-                                <View style={styles.avatarContainer}>
-                                    <Ionicons
-                                        name="person-circle-outline"
-                                        size={24}
-                                        color="black"
-                                    />
-                                    <Text style={styles.pseudo}>{item.Username}</Text>
-                                </View>
-                                <Text style={styles.messageTime}>
-                                    {ConvertirDateHeure(item.DateCreation)}
-                                </Text>
-                            </View>
-                            <View style={styles.messageContent}>
-                                <Text style={styles.messageText}>{item.Message}</Text>
-                            </View>
+                    {conversations && conversations.length != 0 ? (
+                        <FlatList
+                            data={conversations}
+                            renderItem={renderItem}
+                            keyExtractor={item => item.Id_Conversation}
+                        />
+                    ) : (
+                        <View>
+                            <Text style={styles.noMessages}>Vous n'avez pas de messages</Text>
                         </View>
                     )}
-                    keyExtractor={(item, index) => index.toString()}
-                    inverted
-                    contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
-                />
-            </View>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                keyboardVerticalOffset={90}
-            >
-                <PrivateMessageComponent
-                    messages={messages}
-                    setMessages={setMessages}
-                />
-            </KeyboardAvoidingView> */}
+                </View>
+            )}
+            {/* </View> */}
         </SafeAreaView>
     )
 }
