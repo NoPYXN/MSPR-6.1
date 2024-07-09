@@ -7,6 +7,7 @@ import {
     FlatList,
     KeyboardAvoidingView,
     Platform,
+    Image,
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons" // Import Ionicons from expo
 import axios from "axios"
@@ -31,8 +32,14 @@ const PrivateMessageScreen = () => {
             headers: { Authorization: localStorage.getItem("token") },
         })
             .then(data => {
-                // setConversations(data.data.content.conversations1) + conversation 2 il faut un tableau des deux
-                console.log(data.data.content)
+                const tableauConversations1 = data.data.content.conversations1
+                const tableauConversations2 = data.data.content.conversations2
+                const mergedTabs = tableauConversations2.reduce(
+                    (acc, val) => acc.concat(val),
+                    tableauConversations1,
+                )
+                mergedTabs.sort((a, b) => new Date(b.DateCreation) - new Date(a.DateCreation))
+                setConversations(mergedTabs)
             })
             .catch(err => {
                 console.log(err, "err")
@@ -40,16 +47,38 @@ const PrivateMessageScreen = () => {
             })
     }, [router.params])
 
+    useEffect(() => {
+        console.log(conversations, "CONVERSATIONS")
+    }, [conversations])
+
+    const renderItem = ({ item }) => (
+        <View style={styles.ViewConversation}>
+            <Image
+                style={styles.imageConversation}
+                source={{
+                    uri: item.user2.Image,
+                }}
+            />
+            <View style={styles.sousViewConversation}>
+                <Text style={styles.pseudoPrioprietaire}>
+                    {item.user2.Pseudo.charAt(0).toUpperCase() + item.user2.Pseudo.slice(1)} pour{" "}
+                    {item.annonce.Titre.charAt(0).toUpperCase() + item.annonce.Titre.slice(1)}
+                </Text>
+                <Text style={styles.dateConversation}>
+                    {new Date(item.DateCreation).toLocaleString()}
+                </Text>
+            </View>
+        </View>
+    )
+
     return (
         <SafeAreaView style={styles.SafeAreaView}>
             <HeaderComponent navigation={navigation} />
             {conversations && conversations.length != 0 ? (
                 <FlatList
                     data={conversations}
-                    renderItem={({ item, index }) => <View key={index}></View>}
-                    keyExtractor={(item, index) => index.toString()}
-                    inverted
-                    contentContainerStyle={{ flexGrow: 1, justifyContent: "flex-end" }}
+                    renderItem={renderItem}
+                    keyExtractor={item => item.Id_Conversation}
                 />
             ) : (
                 <View>
@@ -154,6 +183,41 @@ const styles = StyleSheet.create({
         color: "#888",
         textAlign: "center",
         marginTop: "5%",
+    },
+    ViewConversation: {
+        flexDirection: "row",
+        width: "90%",
+        marginLeft: "5%",
+        marginRight: "5%",
+        marginTop: "7%",
+        borderWidth: "1px",
+        borderColor: "grey",
+        borderRadius: "5px",
+        padding: "3%",
+        display: "flex",
+    },
+    sousViewConversation: {
+        paddingRight: "5%",
+        width: "90%",
+    },
+    imageConversation: {
+        width: 50,
+        height: 50,
+        borderRadius: 50,
+    },
+    pseudoPrioprietaire: {
+        fontSize: "18px",
+        width: "100%",
+        height: "100%",
+        // textAlign: "center",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    dateConversation: {
+        fontSize: 10,
+        color: "#757575",
+        textAlign: "right",
     },
 })
 

@@ -114,24 +114,19 @@ const AnnonceScreen = () => {
     }
 
     const sendMessage = async () => {
-        console.log("dans fonction")
-        console.log({
-            user1Id: parseInt(localStorage.getItem("id")),
-            user2Id: idProprietaire,
-        })
         await axios({
             method: "post",
             url: `http://localhost:8080/api/v1/conversations/`,
             data: {
                 user1: parseInt(localStorage.getItem("id")),
                 user2: idProprietaire,
+                annonce: parseInt(id),
             },
         })
             .then(data => {
                 if (data.status == 201) {
                     navigation.navigate({ name: "PrivateMessageScreen" })
                 }
-                console.log(data)
             })
             .catch(err => {
                 console.log(err)
