@@ -14,9 +14,9 @@ const PrivateMessageScreen = () => {
     const [conversations, setConversations] = useState([])
     const [isVisible, setIsVisible] = useState(false)
     const [idConversation, setIdConversation] = useState()
+    const [idUser, setIdUser] = useState()
 
     useEffect(() => {
-        // console.log("Test profil screen")
         axios({
             method: "get",
             url: "http://localhost:8080/api/v1/users/" + localStorage.getItem("id"),
@@ -31,7 +31,8 @@ const PrivateMessageScreen = () => {
                 )
                 mergedTabs.sort((a, b) => new Date(b.DateCreation) - new Date(a.DateCreation))
                 setConversations(mergedTabs)
-                console.log(mergedTabs)
+                // console.log(data.data.content, "FFF")
+                setIdUser(data.data.content.Id_Utilisateur)
             })
             .catch(err => {
                 console.log(err, "err")
@@ -50,23 +51,50 @@ const PrivateMessageScreen = () => {
                 setIdConversation(item.Id_Conversation)
             }}
         >
-            <View style={styles.ViewConversation}>
-                <Image
-                    style={styles.imageConversation}
-                    source={{
-                        uri: item.user2.Image,
-                    }}
-                />
-                <View style={styles.sousViewConversation}>
-                    <Text style={styles.pseudoPrioprietaire}>
-                        {item.user2.Pseudo.charAt(0).toUpperCase() + item.user2.Pseudo.slice(1)}{" "}
-                        pour{" "}
-                        {item.annonce.Titre.charAt(0).toUpperCase() + item.annonce.Titre.slice(1)}
-                    </Text>
-                    <Text style={styles.dateConversation}>
-                        {new Date(item.DateCreation).toLocaleString()}
-                    </Text>
-                </View>
+            <View>
+                {item.user1.Id_Utilisateur == idUser ? (
+                    <View style={styles.ViewConversation}>
+                        <Image
+                            style={styles.imageConversation}
+                            source={{
+                                uri: item.user2.Image,
+                            }}
+                        />
+                        <View style={styles.sousViewConversation}>
+                            <Text style={styles.pseudoPrioprietaire}>
+                                {item.user2.Pseudo.charAt(0).toUpperCase() +
+                                    item.user2.Pseudo.slice(1)}{" "}
+                                pour{" "}
+                                {item.annonce.Titre.charAt(0).toUpperCase() +
+                                    item.annonce.Titre.slice(1)}
+                            </Text>
+                            <Text style={styles.dateConversation}>
+                                {new Date(item.DateCreation).toLocaleString()}
+                            </Text>
+                        </View>
+                    </View>
+                ) : (
+                    <View style={styles.ViewConversation}>
+                        <Image
+                            style={styles.imageConversation}
+                            source={{
+                                uri: item.user1.Image,
+                            }}
+                        />
+                        <View style={styles.sousViewConversation}>
+                            <Text style={styles.pseudoPrioprietaire}>
+                                {item.user1.Pseudo.charAt(0).toUpperCase() +
+                                    item.user1.Pseudo.slice(1)}{" "}
+                                pour{" "}
+                                {item.annonce.Titre.charAt(0).toUpperCase() +
+                                    item.annonce.Titre.slice(1)}
+                            </Text>
+                            <Text style={styles.dateConversation}>
+                                {new Date(item.DateCreation).toLocaleString()}
+                            </Text>
+                        </View>
+                    </View>
+                )}
             </View>
         </Pressable>
     )
@@ -80,7 +108,9 @@ const PrivateMessageScreen = () => {
                     <PrivateMessageComponent
                         // conversations={conversations}
                         idConversation={idConversation}
-                        // IdUser={localStorage.getItem("id")}
+                        idUser={idUser}
+                        setIsVisible={setIsVisible}
+                        // idUser={localStorage.getItem("id")}
                     />
                 </View>
             ) : (

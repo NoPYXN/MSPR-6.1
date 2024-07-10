@@ -14,7 +14,9 @@ import { FontAwesome } from "@expo/vector-icons"
 import axios from "axios"
 import { Ionicons } from "@expo/vector-icons"
 import { ConvertirDateHeure } from "../utils/ConvertirDateHeure"
-const PrivateMessageComponent = ({ idConversation }) => {
+import { MdRefresh, MdClose } from "react-icons/md"
+
+const PrivateMessageComponent = ({ idConversation, idUser, setIsVisible }) => {
     const [inputValue, setInputValue] = useState("")
     const [messages, setMessages] = useState([])
     const [user1, setUser1] = useState({})
@@ -48,30 +50,35 @@ const PrivateMessageComponent = ({ idConversation }) => {
             method: "post",
             url: `http://localhost:8080/api/v1/messages/`,
             data: {
-                text: "Bonjour Mel",
+                text: inputValue,
                 conversationId: idConversation,
-                userId: parseInt(IdUser),
+                userId: parseInt(idUser),
             },
         })
             .then(data => {
                 if (data.status == 201) {
+                    setInputValue("")
                 }
-                console.log(data)
+                // console.log(data)
             })
             .catch(err => {
                 console.log(err)
             })
+        actualiser()
     }
 
     const actualiser = async () => {
-        axios({
+        await axios({
             method: "get",
-            url: `http://localhost:8080/api/v1/users/` + localStorage.getItem("id"),
-            headers: { Authorization: localStorage.getItem("token") },
+            url: `http://localhost:8080/api/v1/conversations/` + idConversation,
         })
             .then(data => {
                 if (data.status == 200) {
-                    setMessages(data.Messages)
+                    const tabMessages = data.data.content.Messages
+                    tabMessages.sort((a, b) => new Date(b.DateCreation) - new Date(a.DateCreation))
+                    setMessages(tabMessages)
+                    setUser1(data.data.content.user1)
+                    setUser2(data.data.content.user2)
                 }
             })
             .catch(err => {
@@ -79,12 +86,33 @@ const PrivateMessageComponent = ({ idConversation }) => {
             })
     }
 
-    useEffect(() => {
-        console.log(user1, "USER1")
-    }, [user1])
+    // useEffect(() => {
+    //     console.log(user1, "USER1")
+    // }, [user1])
 
     return (
         <View style={{ width: "100%", height: "100%", paddingTop: "5%" }}>
+            <View
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    paddingBottom: "3%",
+                    paddingRight: "3%",
+                    paddingLeft: "3%",
+                }}
+            >
+                <Pressable
+                    onPress={() => {
+                        setIsVisible(false)
+                    }}
+                >
+                    <MdClose />
+                </Pressable>
+                <Pressable onPress={() => actualiser()}>
+                    <MdRefresh />
+                </Pressable>
+            </View>
             <View style={styles.messageContainer}>
                 {messages ? (
                     <FlatList
